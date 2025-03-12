@@ -44,11 +44,13 @@ function Success() {
     <div className="w-full min-h-screen flex items-center pt-[250px] px-4 flex-col">
       <div className="flex pt-10">
         <div className="flex justify-center items-center pr-10">
-          <PartyPopper className="text-gray-100" />
+          <PartyPopper className="text-primary" />
         </div>
         <div className="flex-col">
-          <h1 className="text-lg text-gray-100">Login successful!</h1>
-          <p className="text-sm text-gray-500">You can return to your CLI.</p>
+          <h1 className="text-lg text-primary">Login successful!</h1>
+          <p className="text-sm text-muted-foreground">
+            You can return to your CLI.
+          </p>
         </div>
       </div>
     </div>
@@ -91,10 +93,9 @@ export default function Page() {
         const redirectUrl = new URL(res.redirect);
         redirectUrl.searchParams.append("code", res.code);
         redirectUrl.searchParams.append("key", res.key);
+        redirectUrl.searchParams.append("userId", res.userId);
 
         const redirectUrlString = redirectUrl.toString();
-
-        console.log(redirectUrlString);
 
         await fetch(redirectUrlString);
 
