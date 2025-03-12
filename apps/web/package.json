@@ -3,15 +3,20 @@
   "name": "web",
   "version": "1.0.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev ",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "next": "^14.1.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@clerk/nextjs": "^6.12.5",
+    "@repo/ui": "workspace:*",
+    "eslint-config-next": "^15.2.2",
+    "lucide-react": "^0.475.0",
+    "next": "^15.2.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sonner": "^2.0.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.1",

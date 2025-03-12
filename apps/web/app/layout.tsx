@@ -1,11 +1,18 @@
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { ClerkProvider } from "@clerk/nextjs";
+import { ReactNode } from "react";
+
+import "@repo/ui/globals.css";
+import { Toaster } from "sonner";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          {children}
+          <Toaster />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
