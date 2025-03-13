@@ -44,14 +44,22 @@ export async function POST(request: Request) {
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+    const deviceExist = await prisma.device.findFirst({
+      where: {
+        userId,
+      },
+    });
+
+    if (deviceExist) {
+      return NextResponse.json({ ...deviceExist, redirect }, { status: 200 });
+    }
+
     const device = await prisma.device.create({
       data: {
         userId,
         code: code as string,
       },
     });
-
-    console.log(device);
 
     return NextResponse.json({ ...device, redirect, code }, { status: 201 });
   } catch (error: any) {

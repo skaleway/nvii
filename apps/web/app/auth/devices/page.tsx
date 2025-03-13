@@ -4,11 +4,11 @@ import { notFound, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import {
-  CheckCircle,
-  Fingerprint,
-  Loader2,
-  PartyPopper,
-  XCircle,
+    CheckCircle,
+    Fingerprint,
+    Loader2,
+    PartyPopper,
+    XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -94,6 +94,8 @@ export default function Page() {
         redirectUrl.searchParams.append("code", res.code);
         redirectUrl.searchParams.append("key", res.key);
         redirectUrl.searchParams.append("userId", res.userId);
+        redirectUrl.searchParams.append("deviceId", res.id);
+
 
         const redirectUrlString = redirectUrl.toString();
 
@@ -111,7 +113,7 @@ export default function Page() {
     } catch (_error) {
       console.error(_error);
       setLoading(false);
-      toast.error("Error creating Unkey API key.");
+      toast.error("Error creating Evincible API key.");
     }
   }
 

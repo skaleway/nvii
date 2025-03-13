@@ -17,13 +17,28 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   Device        Device[]
+  Project       Project[]
 }
 
 model Device {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  userId    String
+  key       String    @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code      String
+  Project   Project[]
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
   userId    String
   key       String   @default(cuid())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  code      String
+  deviceId  String
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  content   Json?
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
