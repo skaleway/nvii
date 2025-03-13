@@ -2,16 +2,37 @@ import { prisma } from "@repo/database";
 import { promises as fs } from "fs";
 import path from "path";
 import pc from "picocolors";
+import readline from "readline";
 import { isLogedIn, readConfigFile } from "../helpers";
 import { login } from "./login";
 
 const ENV_FILE = ".envi";
+
+async function promptUser(question: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
 
 export async function createProject() {
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to create a new project."));
       login();
+    }
+
+    const projectName = await promptUser("Enter your project name: ");
+    if (!projectName) {
+      console.error("Project name cannot be empty.");
+      process.exit(1);
     }
 
     const userConfig = await readConfigFile();
@@ -23,7 +44,7 @@ export async function createProject() {
       data: {
         userId: userConfig?.userId ?? "",
         deviceId: userConfig?.deviceId ?? "",
-        name: "Nothing",
+        name: projectName,
       },
     });
 
