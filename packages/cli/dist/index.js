@@ -9,10 +9,6 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -29,7 +25,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // ../../node_modules/.pnpm/commander@11.1.0/node_modules/commander/lib/error.js
 var require_error = __commonJS({
@@ -942,8 +937,8 @@ var require_command = __commonJS({
     "use strict";
     var EventEmitter = require("events").EventEmitter;
     var childProcess = require("child_process");
-    var path2 = require("path");
-    var fs = require("fs");
+    var path5 = require("path");
+    var fs4 = require("fs");
     var process2 = require("process");
     var { Argument: Argument2, humanReadableArgName } = require_argument();
     var { CommanderError: CommanderError2 } = require_error();
@@ -1775,12 +1770,12 @@ Expecting one of '${allowedValues.join("', '")}'`);
         let launchWithNode = false;
         const sourceExt = [".js", ".ts", ".tsx", ".mjs", ".cjs"];
         function findFile(baseDir, baseName) {
-          const localBin = path2.resolve(baseDir, baseName);
-          if (fs.existsSync(localBin))
+          const localBin = path5.resolve(baseDir, baseName);
+          if (fs4.existsSync(localBin))
             return localBin;
-          if (sourceExt.includes(path2.extname(baseName)))
+          if (sourceExt.includes(path5.extname(baseName)))
             return void 0;
-          const foundExt = sourceExt.find((ext) => fs.existsSync(`${localBin}${ext}`));
+          const foundExt = sourceExt.find((ext) => fs4.existsSync(`${localBin}${ext}`));
           if (foundExt)
             return `${localBin}${foundExt}`;
           return void 0;
@@ -1792,23 +1787,23 @@ Expecting one of '${allowedValues.join("', '")}'`);
         if (this._scriptPath) {
           let resolvedScriptPath;
           try {
-            resolvedScriptPath = fs.realpathSync(this._scriptPath);
+            resolvedScriptPath = fs4.realpathSync(this._scriptPath);
           } catch (err) {
             resolvedScriptPath = this._scriptPath;
           }
-          executableDir = path2.resolve(path2.dirname(resolvedScriptPath), executableDir);
+          executableDir = path5.resolve(path5.dirname(resolvedScriptPath), executableDir);
         }
         if (executableDir) {
           let localFile = findFile(executableDir, executableFile);
           if (!localFile && !subcommand._executableFile && this._scriptPath) {
-            const legacyName = path2.basename(this._scriptPath, path2.extname(this._scriptPath));
+            const legacyName = path5.basename(this._scriptPath, path5.extname(this._scriptPath));
             if (legacyName !== this._name) {
               localFile = findFile(executableDir, `${legacyName}-${subcommand._name}`);
             }
           }
           executableFile = localFile || executableFile;
         }
-        launchWithNode = sourceExt.includes(path2.extname(executableFile));
+        launchWithNode = sourceExt.includes(path5.extname(executableFile));
         let proc;
         if (process2.platform !== "win32") {
           if (launchWithNode) {
@@ -2610,7 +2605,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @return {Command}
        */
       nameFromFilename(filename) {
-        this._name = path2.basename(filename, path2.extname(filename));
+        this._name = path5.basename(filename, path5.extname(filename));
         return this;
       }
       /**
@@ -2624,10 +2619,10 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [path]
        * @return {string|null|Command}
        */
-      executableDir(path3) {
-        if (path3 === void 0)
+      executableDir(path6) {
+        if (path6 === void 0)
           return this._executableDir;
-        this._executableDir = path3;
+        this._executableDir = path6;
         return this;
       }
       /**
@@ -2818,15 +2813,6 @@ var require_commander = __commonJS({
   }
 });
 
-// src/index.ts
-var src_exports = {};
-__export(src_exports, {
-  FILENAME: () => FILENAME
-});
-module.exports = __toCommonJS(src_exports);
-var import_async_listen = require("async-listen");
-var import_child_process = require("child_process");
-
 // ../../node_modules/.pnpm/commander@11.1.0/node_modules/commander/esm.mjs
 var import_index = __toESM(require_commander(), 1);
 var {
@@ -2844,16 +2830,75 @@ var {
   Help
 } = import_index.default;
 
-// src/index.ts
-var import_config = require("dotenv/config");
+// src/commands/link.ts
+var import_database = require("@repo/database");
+var import_fs3 = require("fs");
+var import_inquirer = __toESM(require("inquirer"));
+var import_path3 = __toESM(require("path"));
+var import_picocolors3 = __toESM(require("picocolors"));
+
+// src/helpers/index.ts
 var import_fs = require("fs");
-var import_http = __toESM(require("http"));
-var import_nanoid = require("nanoid");
 var import_os = __toESM(require("os"));
 var import_path = __toESM(require("path"));
 var import_picocolors = __toESM(require("picocolors"));
-var import_url = __toESM(require("url"));
 var FILENAME = process.env.FILENAME || ".envincible";
+async function readConfigFile() {
+  try {
+    const homeDir = import_os.default.homedir();
+    const filePath = import_path.default.join(homeDir, FILENAME);
+    const fileContent = await import_fs.promises.readFile(filePath, "utf-8");
+    return JSON.parse(fileContent);
+  } catch (error) {
+    console.error(
+      import_picocolors.default.red("Oups! you're not yet logged-in. run npm install -g @envi/cli")
+    );
+    return null;
+  }
+}
+function getVersion() {
+  const packageJson = (0, import_fs.readFileSync)(
+    import_path.default.join(__dirname, "../..", "package.json"),
+    "utf-8"
+  );
+  const { version: version2 } = JSON.parse(packageJson);
+  return version2;
+}
+function isLogedIn() {
+  const filePath = import_path.default.join(import_os.default.homedir(), FILENAME);
+  return (0, import_fs.existsSync)(filePath);
+}
+async function readEnvFile() {
+  try {
+    const envPath = import_path.default.join(process.cwd(), ".env");
+    const envContent = await import_fs.promises.readFile(envPath, "utf-8");
+    return envContent.split("\n").filter((line) => line.trim() && !line.startsWith("#")).reduce(
+      (acc, line) => {
+        const [key, value] = line.split("=");
+        if (key && value) {
+          acc[key.trim()] = value.trim();
+        }
+        return acc;
+      },
+      {}
+    );
+  } catch (error) {
+    console.error(import_picocolors.default.yellow("\u26A0\uFE0F No .env file found or unable to read it."));
+    return {};
+  }
+}
+
+// src/commands/login.ts
+var import_async_listen = require("async-listen");
+var import_child_process = require("child_process");
+var import_config = require("dotenv/config");
+var import_fs2 = require("fs");
+var import_http = __toESM(require("http"));
+var import_nanoid = require("nanoid");
+var import_os2 = __toESM(require("os"));
+var import_path2 = __toESM(require("path"));
+var import_picocolors2 = __toESM(require("picocolors"));
+var import_url = __toESM(require("url"));
 var UserCancellationError = class extends Error {
   constructor(message) {
     super(message);
@@ -2862,30 +2907,15 @@ var UserCancellationError = class extends Error {
 };
 async function writeToConfigFile(data) {
   try {
-    const homeDir = import_os.default.homedir();
-    const filePath = import_path.default.join(homeDir, FILENAME);
-    (0, import_fs.writeFileSync)(filePath, JSON.stringify(data));
+    const homeDir = import_os2.default.homedir();
+    const filePath = import_path2.default.join(homeDir, FILENAME);
+    (0, import_fs2.writeFileSync)(filePath, JSON.stringify(data, null, 2));
   } catch (error) {
     console.error("Error writing to local config file", error);
   }
 }
-function getVersion() {
-  const packageJson = (0, import_fs.readFileSync)(
-    import_path.default.join(__dirname, "..", "package.json"),
-    "utf-8"
-  );
-  const { version: version2 } = JSON.parse(packageJson);
-  return version2;
-}
-var program2 = new Command();
 var nanoid = (0, import_nanoid.customAlphabet)("123456789QAZWSXEDCRFVTGBYHNUJMIKOLP", 8);
-var version = getVersion();
-program2.name("envincible-cli").description("Example CLI application with envincible auth").version(version);
-program2.command("login").description("Authenticate with your service via the CLI").action(async (...args) => {
-  if (args.length !== 2) {
-    console.error("Usage: `envincible-cli login`.");
-    process.exit(1);
-  }
+async function login() {
   const oraModule = await import("ora");
   const ora = oraModule.default;
   const server = import_http.default.createServer();
@@ -2903,17 +2933,14 @@ program2.command("login").description("Authenticate with your service via the CL
         res.end();
       } else if (req.method === "GET") {
         const parsedUrl = import_url.default.parse(req.url, true);
-        const queryParams = parsedUrl.query;
-        if (queryParams.cancelled) {
+        if (parsedUrl.query.cancelled) {
           res.writeHead(200);
           res.end();
-          reject(
-            new UserCancellationError("Login process cancelled by user.")
-          );
+          reject(new UserCancellationError("Login process cancelled by user."));
         } else {
           res.writeHead(200);
           res.end();
-          resolve(queryParams);
+          resolve(parsedUrl.query);
         }
       } else {
         res.writeHead(405);
@@ -2926,45 +2953,211 @@ program2.command("login").description("Authenticate with your service via the CL
   const confirmationUrl = new URL(`${process.env.CLIENT_URL}/auth/devices`);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
-  console.log(`Confirmation code: ${import_picocolors.default.bold(code)}
+  console.log(`Confirmation code: ${import_picocolors2.default.bold(code)}
 `);
   console.log(
-    `If something goes wrong, copy and paste this URL into your browser: ${import_picocolors.default.bold(
-      confirmationUrl.toString()
-    )}
+    `If something goes wrong, copy and paste this URL into your browser:
+${import_picocolors2.default.bold(confirmationUrl.toString())}
 `
   );
   (0, import_child_process.spawn)("open", [confirmationUrl.toString()]);
-  const spinner = ora("Waiting for authentication...\n\n");
+  const spinner = ora("Waiting for authentication...\n").start();
   try {
-    spinner.start();
     const authData = await authPromise;
     spinner.stop();
     writeToConfigFile(authData);
-    console.log(
-      `Authentication successful: wrote key to config file. To view it, type 'cat ~/${FILENAME}'.
-`
-    );
+    console.log(import_picocolors2.default.green("Authentication successful!"));
+    console.log(`Config saved at: ~/ ${FILENAME}
+`);
     server.close();
     process.exit(0);
   } catch (error) {
+    spinner.stop();
     if (error instanceof UserCancellationError) {
-      console.log("Authentication cancelled.\n");
-      server.close();
-      process.exit(0);
+      console.log(import_picocolors2.default.yellow("Authentication cancelled.\n"));
     } else {
-      console.error("Authentication failed:", error);
-      console.log("\n");
-      server.close();
+      console.error(import_picocolors2.default.red("Authentication failed:"), error);
+    }
+    server.close();
+    process.exit(1);
+  }
+}
+
+// src/commands/link.ts
+var ENV_FILE = ".envi";
+var DOT_ENV_FILE = ".env";
+async function linkProject() {
+  try {
+    if (!isLogedIn()) {
+      console.log(import_picocolors3.default.red("You must be logged in to link a project."));
+      await login();
+      return;
+    }
+    const userConfig = await readConfigFile();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors3.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const projects = await import_database.prisma.project.findMany({
+      where: { userId: userConfig.userId },
+      select: { id: true, name: true, content: true }
+    });
+    if (!projects.length) {
+      console.log(import_picocolors3.default.yellow("No projects found for this user."));
+      return;
+    }
+    const { selectedProjectId } = await import_inquirer.default.prompt([
+      {
+        type: "list",
+        name: "selectedProjectId",
+        message: "Select a project to link:",
+        choices: projects.map((proj) => ({
+          name: proj.name,
+          value: proj.id
+        }))
+      }
+    ]);
+    const selectedProject = projects.find(
+      (proj) => proj.id === selectedProjectId
+    );
+    if (!selectedProject) {
+      console.log(import_picocolors3.default.red("Selected project not found."));
+      return;
+    }
+    const currentDir = process.cwd();
+    const enviFilePath = import_path3.default.join(currentDir, ENV_FILE);
+    await import_fs3.promises.writeFile(
+      enviFilePath,
+      JSON.stringify({ projectId: selectedProject.id }, null, 2)
+    );
+    console.log(import_picocolors3.default.green(`Project linked successfully!`));
+    if (!selectedProject.content) {
+      return;
+    }
+    const { createEnvFile } = await import_inquirer.default.prompt([
+      {
+        type: "confirm",
+        name: "createEnvFile",
+        message: "This project contains a .env file. Do you want to populate its values?",
+        default: false
+      }
+    ]);
+    if (!createEnvFile) {
+      console.log(import_picocolors3.default.yellow("Skipping .env file creation."));
+      return;
+    }
+    const envFilePath = import_path3.default.join(currentDir, DOT_ENV_FILE);
+    let existingEnv = await readEnvFile();
+    const finalEnv = { ...existingEnv };
+    let commentedLines = "";
+    for (const [key, value] of Object.entries(selectedProject.content)) {
+      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
+      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
+      console.log({ normalizedNew, normalizedExisting });
+      if (existingEnv[key] !== void 0 && normalizedExisting === normalizedNew) {
+        const { overwrite } = await import_inquirer.default.prompt([
+          {
+            type: "confirm",
+            name: "overwrite",
+            message: `Conflict: ${key} exists. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
+            default: false
+          }
+        ]);
+        if (overwrite) {
+          finalEnv[key] = value;
+        } else {
+          commentedLines += `# ${key}=${value}
+`;
+        }
+      } else {
+        finalEnv[key] = value;
+      }
+    }
+    const finalEnvContent = Object.entries(finalEnv).map(([key, value]) => `${key}=${value}`).join("\n") + "\n" + commentedLines;
+    await import_fs3.promises.writeFile(envFilePath, finalEnvContent);
+    console.log(import_picocolors3.default.green(".env file updated successfully!"));
+  } catch (error) {
+    console.error(import_picocolors3.default.red("Error linking project:"), error);
+  }
+}
+
+// src/commands/new.ts
+var import_database2 = require("@repo/database");
+var import_fs4 = require("fs");
+var import_path4 = __toESM(require("path"));
+var import_picocolors4 = __toESM(require("picocolors"));
+var import_readline = __toESM(require("readline"));
+var ENV_FILE2 = ".envi";
+async function promptUser(question) {
+  return new Promise((resolve) => {
+    const rl = import_readline.default.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    rl.question(import_picocolors4.default.cyan(question), (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
+async function createProject() {
+  try {
+    if (!isLogedIn()) {
+      console.log(import_picocolors4.default.red("You must be logged in to create a new project."));
+      await login();
+    }
+    const projectName = await promptUser("Enter your project name: ");
+    if (!projectName) {
+      console.error(import_picocolors4.default.red("\u274C Project name cannot be empty."));
       process.exit(1);
     }
-  } finally {
-    server.close();
-    process.exit(0);
+    const userConfig = await readConfigFile();
+    if (!userConfig?.userId || !userConfig?.deviceId) {
+      console.error(
+        import_picocolors4.default.red("\u274C Invalid user credentials. Please log in again.")
+      );
+      await login();
+      return;
+    }
+    const currentDir = process.cwd();
+    const filePath = import_path4.default.join(currentDir, ENV_FILE2);
+    const envVars = await readEnvFile();
+    const project = await import_database2.prisma.project.create({
+      data: {
+        userId: userConfig.userId,
+        deviceId: userConfig.deviceId,
+        name: projectName,
+        content: envVars
+      }
+    });
+    const projectData = {
+      projectId: project.id
+    };
+    await import_fs4.promises.writeFile(filePath, JSON.stringify(projectData, null, 2));
+    console.log(import_picocolors4.default.green(`\u2705 Project created successfully!`));
+    console.log(import_picocolors4.default.blue(`\u{1F194} Project ID: ${import_picocolors4.default.bold(project.id)}`));
+    console.log(import_picocolors4.default.dim(`\u{1F4C4} .envi file saved at: ${filePath}`));
+    console.log(import_picocolors4.default.magenta("\u{1F50D} Stored .env variables:"), envVars);
+  } catch (error) {
+    console.error(import_picocolors4.default.red("\u274C Error creating project:"), error);
+  }
+}
+
+// src/index.ts
+var program2 = new Command();
+var version = getVersion();
+program2.name("envincible-cli").description("Example CLI application with envincible auth").version(version);
+program2.command("login").description("Authenticate with your service via the CLI").action(login);
+program2.command("show-config").description("Show configuration file").action(async () => {
+  try {
+    const file = await readConfigFile();
+    console.log(file);
+  } catch (error) {
+    console.error("Error reading config:", error);
   }
 });
-program2.parse();
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  FILENAME
+program2.command("new").description("Create a new project").action(() => {
+  createProject();
 });
+program2.command("link").description("Link an existing project to the current directory").action(linkProject);
+program2.parse(process.argv);
