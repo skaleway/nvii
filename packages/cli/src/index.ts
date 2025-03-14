@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
+import { linkProject } from "./commands/link";
 import { login } from "./commands/login";
 import { createProject } from "./commands/new";
 import { getVersion, readConfigFile } from "./helpers";
@@ -36,5 +37,10 @@ program
   .action(() => {
     createProject();
   });
+
+program
+  .command("link")
+  .description("Link an existing project to the current directory")
+  .action(linkProject);
 
 program.parse(process.argv);

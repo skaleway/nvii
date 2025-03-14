@@ -56,19 +56,6 @@ async function readEnvFile(): Promise<Record<string, string>> {
 }
 
 /**
- * Converts a parsed `.env` JSON object back to its original string format.
- * @param envObject - The parsed environment variables as a JSON object.
- * @returns A string representation in `.env` format.
- */
-export function convertEnvJsonToString(
-  envObject: Record<string, string>,
-): string {
-  return Object.entries(envObject)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("\n");
-}
-
-/**
  * Creates a new project after verifying user authentication.
  */
 export async function createProject() {

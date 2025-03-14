@@ -30,6 +30,7 @@
     "@repo/database": "workspace:*",
     "async-listen": "^3.0.1",
     "dotenv": "^16.4.7",
+    "inquirer": "^12.4.3",
     "nanoid": "^3.3.7",
     "ora": "^7.0.1",
     "picocolors": "^1.0.0"
