@@ -87,17 +87,22 @@ export async function linkProject() {
     let commentedLines = "";
 
     for (const [key, value] of Object.entries(selectedProject.content)) {
-      console.log({ key, value });
-      if (existingEnv[key] !== undefined && existingEnv[key] !== value) {
+      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
+      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
+
+      console.log({ normalizedNew, normalizedExisting });
+      if (
+        existingEnv[key] !== undefined &&
+        normalizedExisting !== normalizedNew
+      ) {
         const { overwrite } = await inquirer.prompt([
           {
             type: "confirm",
             name: "overwrite",
-            message: `Conflict: ${key} exists. Overwrite?`,
+            message: `Conflict: ${key} exists. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
             default: false,
           },
         ]);
-
         if (overwrite) {
           finalEnv[key] = value;
         } else {
