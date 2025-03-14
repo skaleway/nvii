@@ -47,3 +47,31 @@ export function convertEnvJsonToString(
     .map(([key, value]) => `${key}=${value}`)
     .join("\n");
 }
+
+/**
+ * Reads and parses the root `.env` file into a JSON object.
+ * @returns A parsed object containing key-value pairs from the `.env` file.
+ */
+export async function readEnvFile(): Promise<Record<string, string>> {
+  try {
+    const envPath = path.join(process.cwd(), ".env");
+    const envContent = await fs.readFile(envPath, "utf-8");
+
+    return envContent
+      .split("\n")
+      .filter((line) => line.trim() && !line.startsWith("#")) // Ignore empty lines and comments
+      .reduce(
+        (acc, line) => {
+          const [key, value] = line.split("=");
+          if (key && value) {
+            acc[key.trim()] = value.trim();
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+  } catch (error) {
+    console.error(pc.yellow("⚠️ No .env file found or unable to read it."));
+    return {}; // Return an empty object if the file doesn't exist
+  }
+}

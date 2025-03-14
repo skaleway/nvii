@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import pc from "picocolors";
-import { isLogedIn, readConfigFile } from "../helpers";
+import { isLogedIn, readConfigFile, readEnvFile } from "../helpers";
 import { login } from "./login";
 
 const ENV_FILE = ".envi";
@@ -81,27 +81,13 @@ export async function linkProject() {
     }
 
     const envFilePath = path.join(currentDir, DOT_ENV_FILE);
-    let existingEnv: Record<string, string> = {};
-
-    try {
-      const envContent = await fs.readFile(envFilePath, "utf-8");
-      existingEnv = Object.fromEntries(
-        envContent
-          .split("\n")
-          .filter((line) => line && !line.startsWith("#"))
-          .map((line) => {
-            const [key, value] = line.split("=");
-            return [key.trim(), value?.trim() ?? ""];
-          }),
-      );
-    } catch (error: any) {
-      if (error.code !== "ENOENT") throw error;
-    }
+    let existingEnv = await readEnvFile();
 
     const finalEnv: Record<string, string> = { ...existingEnv };
     let commentedLines = "";
 
     for (const [key, value] of Object.entries(selectedProject.content)) {
+      console.log({ key, value });
       if (existingEnv[key] !== undefined && existingEnv[key] !== value) {
         const { overwrite } = await inquirer.prompt([
           {
