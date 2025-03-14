@@ -93,7 +93,7 @@ export async function linkProject() {
       console.log({ normalizedNew, normalizedExisting });
       if (
         existingEnv[key] !== undefined &&
-        normalizedExisting !== normalizedNew
+        normalizedExisting === normalizedNew
       ) {
         const { overwrite } = await inquirer.prompt([
           {
