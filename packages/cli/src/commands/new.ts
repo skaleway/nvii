@@ -1,30 +1,27 @@
 import { prisma } from "@repo/database";
 import { promises as fs } from "fs";
+import inquirer from "inquirer";
 import path from "path";
 import pc from "picocolors";
-import readline from "readline";
 import { isLogedIn, readConfigFile, readEnvFile } from "../helpers";
 import { login } from "./login";
 
 const ENV_FILE = ".envi";
 
 /**
- * Prompts the user with a question and returns the input.
- * @param question - The question to ask the user.
+ * Prompts the user with a question using inquirer.
+ * @param message - The message to display to the user.
  * @returns A promise resolving to the user input.
  */
-async function promptUser(question: string): Promise<string> {
-  return new Promise((resolve) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    rl.question(pc.cyan(question), (answer) => {
-      rl.close();
-      resolve(answer.trim());
-    });
-  });
+async function promptUser(message: string): Promise<string> {
+  const response = await inquirer.prompt([
+    {
+      type: "input",
+      name: "answer",
+      message: pc.cyan(message),
+    },
+  ]);
+  return response.answer.trim();
 }
 
 /**
@@ -38,7 +35,7 @@ export async function createProject() {
       await login();
     }
 
-    const projectName = await promptUser("Enter your project name: ");
+    const projectName = await promptUser("Enter your project name:");
     if (!projectName) {
       console.error(pc.red("❌ Project name cannot be empty."));
       process.exit(1);
@@ -59,27 +56,47 @@ export async function createProject() {
     // Read and parse the .env file
     const envVars = await readEnvFile();
 
-    // Create project in database
+    // Create project in database without .env content initially
     const project = await prisma.project.create({
       data: {
         userId: userConfig.userId,
         deviceId: userConfig.deviceId,
         name: projectName,
-        content: envVars,
+        content: "", // Initially set to empty
       },
     });
 
-    // Save project data along with .env variables
+    console.log(pc.green(`✅ Project created successfully!`));
+    console.log(pc.blue(`🆔 Project ID: ${pc.bold(project.id)}`));
+
+    // Ask user if they want to save the .env content
+    const { saveEnv } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "saveEnv",
+        message:
+          "This root project contains a .env file. Do you want to save it?",
+        default: false,
+      },
+    ]);
+
+    if (saveEnv) {
+      await prisma.project.update({
+        where: { id: project.id },
+        data: { content: envVars },
+      });
+      console.log(pc.magenta("🔍 Stored .env variables:"), envVars);
+    } else {
+      console.log(pc.yellow("⚠️ Skipped saving .env variables."));
+    }
+
+    // Save project data to .envi file
     const projectData = {
       projectId: project.id,
     };
 
     await fs.writeFile(filePath, JSON.stringify(projectData, null, 2));
-
-    console.log(pc.green(`✅ Project created successfully!`));
-    console.log(pc.blue(`🆔 Project ID: ${pc.bold(project.id)}`));
     console.log(pc.dim(`📄 .envi file saved at: ${filePath}`));
-    console.log(pc.magenta("🔍 Stored .env variables:"), envVars);
   } catch (error) {
     console.error(pc.red("❌ Error creating project:"), error);
   }
