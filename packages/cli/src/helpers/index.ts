@@ -1,11 +1,13 @@
+import crypto from "crypto";
 import { existsSync, promises as fs, readFileSync } from "fs";
 import os from "os";
 import path from "path";
 import pc from "picocolors";
+import { ConfigData } from "../types";
 
 export const FILENAME = process.env.FILENAME || ".envincible";
-
-import { ConfigData } from "../types";
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY ?? "";
+const IV_LENGTH = 16;
 
 export async function readConfigFile(): Promise<ConfigData | null> {
   try {
@@ -74,4 +76,29 @@ export async function readEnvFile(): Promise<Record<string, string>> {
     console.error(pc.yellow("⚠️ No .env file found or unable to read it."));
     return {}; // Return an empty object if the file doesn't exist
   }
+}
+
+export function encrypt(text: string): string {
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv(
+    "aes-256-cbc",
+    Buffer.from(ENCRYPTION_KEY),
+    iv,
+  );
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return iv.toString("hex") + ":" + encrypted;
+}
+
+function decrypt(text: string): string {
+  const textParts = text.split(":");
+  const iv = Buffer.from(textParts[0], "hex");
+  const encryptedText = Buffer.from(textParts[1], "hex");
+  const key = Buffer.from(ENCRYPTION_KEY, "utf-8");
+
+  const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+  let decrypted = decipher.update(encryptedText, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+
+  return decrypted;
 }
