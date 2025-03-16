@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
+import { testencryption } from "./commands/crypt";
 import { linkProject } from "./commands/link";
 import { login } from "./commands/login";
 import { createProject } from "./commands/new";
@@ -42,5 +43,10 @@ program
   .command("link")
   .description("Link an existing project to the current directory")
   .action(linkProject);
+
+program
+  .command("test")
+  .description("Test to see if the encryption and decryption works")
+  .action(testencryption);
 
 program.parse(process.argv);

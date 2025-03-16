@@ -101,3 +101,33 @@ export function decrypt(text: string): string {
   decrypted += decipher.final("utf8");
   return decrypted;
 }
+
+/**
+ * Encrypts all values in an environment object.
+ * @param envObject - The parsed .env object.
+ * @returns A new object with encrypted values.
+ */
+export function encryptEnvValues(
+  envObject: Record<string, string>,
+): Record<string, string> {
+  const encryptedEnv: Record<string, string> = {};
+  for (const key in envObject) {
+    encryptedEnv[key] = encrypt(envObject[key]);
+  }
+  return encryptedEnv;
+}
+
+/**
+ * Decrypts all values in an environment object.
+ * @param encryptedEnv - The encrypted .env object.
+ * @returns A new object with decrypted values.
+ */
+export function decryptEnvValues(
+  encryptedEnv: Record<string, string>,
+): Record<string, string> {
+  const decryptedEnv: Record<string, string> = {};
+  for (const key in encryptedEnv) {
+    decryptedEnv[key] = decrypt(encryptedEnv[key]);
+  }
+  return decryptedEnv;
+}
