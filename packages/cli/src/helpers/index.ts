@@ -83,7 +83,7 @@ export async function readEnvFile(): Promise<Record<string, string>> {
   }
 }
 
-export function encrypt(text: string): string {
+function encrypt(text: string): string {
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv("aes-256-cbc", ENCRYPTION_KEY, iv);
   let encrypted = cipher.update(text, "utf8", "hex");
@@ -91,7 +91,7 @@ export function encrypt(text: string): string {
   return iv.toString("hex") + ":" + encrypted;
 }
 
-export function decrypt(text: string): string {
+function decrypt(text: string): string {
   const textParts = text.split(":");
   const iv = Buffer.from(textParts[0], "hex");
   const encryptedText = Buffer.from(textParts[1], "hex");

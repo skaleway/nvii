@@ -3,7 +3,12 @@ import { promises as fs } from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import pc from "picocolors";
-import { isLogedIn, readConfigFile, readEnvFile } from "../helpers";
+import {
+  encryptEnvValues,
+  isLogedIn,
+  readConfigFile,
+  readEnvFile,
+} from "../helpers";
 import { login } from "./login";
 
 const ENV_FILE = ".envi";
@@ -52,9 +57,9 @@ export async function createProject() {
 
     const currentDir = process.cwd();
     const filePath = path.join(currentDir, ENV_FILE);
+    const envs = await readEnvFile();
 
-    // Read and parse the .env file
-    const envVars = await readEnvFile();
+    const encryptedEnvs = encryptEnvValues(envs);
 
     // Create project in database without .env content initially
     const project = await prisma.project.create({
@@ -83,9 +88,9 @@ export async function createProject() {
     if (saveEnv) {
       await prisma.project.update({
         where: { id: project.id },
-        data: { content: envVars },
+        data: { content: encryptedEnvs },
       });
-      console.log(pc.magenta("🔍 Stored .env variables:"), envVars);
+      console.log(pc.magenta("🔍 Stored .env variables:"));
     } else {
       console.log(pc.yellow("⚠️ Skipped saving .env variables."));
     }

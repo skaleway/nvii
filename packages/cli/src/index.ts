@@ -5,6 +5,7 @@ import { testencryption } from "./commands/crypt";
 import { linkProject } from "./commands/link";
 import { login } from "./commands/login";
 import { createProject } from "./commands/new";
+import { updateProject } from "./commands/update";
 import { getVersion, readConfigFile } from "./helpers";
 
 const program = new Command();
@@ -48,5 +49,10 @@ program
   .command("test")
   .description("Test to see if the encryption and decryption works")
   .action(testencryption);
+
+program
+  .command("update")
+  .description("Update the existing env file")
+  .action(updateProject);
 
 program.parse(process.argv);
