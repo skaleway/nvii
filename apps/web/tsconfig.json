@@ -1,12 +1,25 @@
 {
-  "extends": "@repo/typescript-config/nextjs.json",
-  "compilerOptions": { "plugins": [{ "name": "next" }] },
+  "extends": "@workspace/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "notpadd-data": ["./.notpadd/"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
   "include": [
     "next-env.d.ts",
-    "next.config.js",
+    "next.config.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "notpadd.config.js"
   ],
   "exclude": ["node_modules"]
 }

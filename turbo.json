@@ -1,32 +1,44 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
   "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    "db:generate": {
+      "cache": false
     },
-    "db:migrate:dev": {
+    "db:migrate": {
       "cache": false,
       "persistent": true
     },
-    "db:migrate:deploy": {
+    "db:deploy": {
       "cache": false
     },
-    "db:push": {
-      "cache": false
+    "build": {
+      "dependsOn": ["^build", "^db:generate"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"],
+      "env": [
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "DATABASE_URL",
+        "CLERK_WH_SECRET",
+        "CLERK_DEV_WH_SECRET",
+        "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_URL"
+      ]
     },
-    "db:seed": {
-      "cache": false
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
     },
     "dev": {
+      "dependsOn": ["^db:generate"],
       "cache": false,
       "persistent": true
-    },
-    "generate": {
-      "dependsOn": ["^generate"],
-      "cache": false
-    },
-    "lint": {}
+    }
   }
 }
