@@ -9,6 +9,8 @@ node_modules
 # testing
 coverage
 
+!packages/database/generated
+
 # next.js
 .next/
 out/
