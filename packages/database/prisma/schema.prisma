@@ -12,12 +12,16 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  Device        Device[]
-  Project       Project[]
+  id               String          @id @default(cuid())
+  name             String?
+  email            String?         @unique
+  emailVerified    DateTime?
+  Device           Device[]
+  ownedProjects    Project[]       @relation("ProjectOwner")
+  projectAccess    ProjectAccess[]
+  accessToProjects Project[]       @relation("ProjectAccess")
+
+  @@map("users")
 }
 
 model Device {
@@ -28,6 +32,8 @@ model Device {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   code      String
   Project   Project[]
+
+  @@map("devices")
 }
 
 model Project {
@@ -35,10 +41,28 @@ model Project {
   name      String
   userId    String
   key       String   @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("ProjectOwner", fields: [userId], references: [id], onDelete: Cascade)
   deviceId  String
   device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   content   Json?
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+
+  havingAccess  User[]          @relation("ProjectAccess")
+  ProjectAccess ProjectAccess[]
+
+  @@unique([userId, name])
+  @@map("projects")
+}
+
+// Join table for project access
+model ProjectAccess {
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  assignedAt DateTime @default(now())
+
+  @@id([projectId, userId])
+  @@map("project_access")
 }

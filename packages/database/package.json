@@ -8,6 +8,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev --skip-generate",
     "db:seed": "tsx src/seed.ts",
     "dev": "tsup src/* --watch",
     "format": "prisma format",
