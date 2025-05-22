@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { db } from "@workspace/db";
 import { promises as fs } from "fs";
 import inquirer from "inquirer";
 import path from "path";
@@ -23,7 +23,7 @@ export async function linkProject() {
       return;
     }
 
-    const projects = await prisma.project.findMany({
+    const projects = await db.project.findMany({
       where: { userId: userConfig.userId },
       select: { id: true, name: true, content: true },
     });
@@ -46,7 +46,7 @@ export async function linkProject() {
     ]);
 
     const selectedProject = projects.find(
-      (proj) => proj.id === selectedProjectId,
+      (proj) => proj.id === selectedProjectId
     );
     if (!selectedProject) {
       console.log(pc.red("Selected project not found."));
@@ -57,7 +57,7 @@ export async function linkProject() {
     const enviFilePath = path.join(currentDir, ENV_FILE);
     await fs.writeFile(
       enviFilePath,
-      JSON.stringify({ projectId: selectedProject.id }, null, 2),
+      JSON.stringify({ projectId: selectedProject.id }, null, 2)
     );
     console.log(pc.green(`Project linked successfully!`));
 

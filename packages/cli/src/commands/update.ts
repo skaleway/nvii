@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { db } from "@workspace/db";
 import fs from "fs";
 import path from "path";
 import pc from "picocolors";
@@ -45,7 +45,7 @@ export async function updateProject() {
     const envVars = await readEnvFile();
     const encryptedEnv = encryptEnvValues(envVars);
 
-    const project = await prisma.project.update({
+    const project = await db.project.update({
       where: { id: projectId, userId: userData!.userId },
       data: { content: encryptedEnv },
     });
@@ -53,7 +53,7 @@ export async function updateProject() {
     console.log(project.content);
 
     console.log(
-      pc.green("✅ Project updated successfully with new .env variables."),
+      pc.green("✅ Project updated successfully with new .env variables.")
     );
   } catch (error) {
     console.error(pc.red("❌ Error updating project:"), error);

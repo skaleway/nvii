@@ -29,6 +29,7 @@
   "dependencies": {
     "@workspace/db": "workspace:*",
     "async-listen": "^3.0.1",
+    "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "inquirer": "^12.4.3",
     "nanoid": "^3.3.7",
