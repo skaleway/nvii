@@ -11,10 +11,13 @@ import {
 } from "@workspace/ui/components/select";
 import { AddProjectDialog } from "@/components/add-project-dialog";
 import { useProjects } from "@/components/projects-provider";
+import { RefreshCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const { projects, filteredProjects, filterValue, setFilterValue } =
     useProjects();
+  const router = useRouter();
 
   // Calculate status counts
   const validCount = projects.filter((p) => p.status === "valid").length;
@@ -40,6 +43,15 @@ export default function Dashboard() {
               <SelectItem value="invalid">Invalid Variables</SelectItem>
             </SelectContent>
           </Select>
+          <Button
+            variant="outline"
+            onClick={() => {
+              router.refresh();
+            }}
+          >
+            <RefreshCcw />
+            <span>Refresh</span>
+          </Button>
           <AddProjectDialog>
             <Button>Add Project</Button>
           </AddProjectDialog>

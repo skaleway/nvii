@@ -1,27 +1,29 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
 type Project = {
-  id: string
-  name: string
-  description: string
-  updatedAt: string
-  envCount: number
-  status: "valid" | "missing" | "invalid"
-  slug: string
-}
+  id: string;
+  name: string;
+  description: string;
+  updatedAt: string;
+  envCount: number;
+  status: "valid" | "missing" | "invalid";
+  slug: string;
+};
 
 type ProjectsContextType = {
-  projects: Project[]
-  addProject: (project: Project) => void
-  removeProject: (id: string) => void
-  filteredProjects: (filter: string) => Project[]
-  filterValue: string
-  setFilterValue: (filter: string) => void
-}
+  projects: Project[];
+  addProject: (project: Project) => void;
+  removeProject: (id: string) => void;
+  filteredProjects: (filter: string) => Project[];
+  filterValue: string;
+  setFilterValue: (filter: string) => void;
+};
 
-const ProjectsContext = React.createContext<ProjectsContextType | undefined>(undefined)
+const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
+  undefined
+);
 
 // Initial projects data
 const initialProjects: Project[] = [
@@ -79,61 +81,57 @@ const initialProjects: Project[] = [
     status: "valid",
     slug: "analytics",
   },
-]
+];
 
 // Helper function to safely access localStorage
 const getLocalStorage = <T,>(key: string, fallback: T): T => {
-  if (typeof window === "undefined") return fallback
+  if (typeof window === "undefined") return fallback;
   try {
-    const item = window.localStorage.getItem(key)
-    return item ? (JSON.parse(item) as T) : fallback
+    const item = window.localStorage.getItem(key);
+    return item ? (JSON.parse(item) as T) : fallback;
   } catch (error) {
-    console.error(`Error reading localStorage key "${key}":`, error)
-    return fallback
+    console.error(`Error reading localStorage key "${key}":`, error);
+    return fallback;
   }
-}
+};
 
 // Helper function to safely set localStorage
 const setLocalStorage = <T,>(key: string, value: T): void => {
-  if (typeof window === "undefined") return
+  if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(key, JSON.stringify(value))
+    window.localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
-    console.error(`Error setting localStorage key "${key}":`, error)
+    console.error(`Error setting localStorage key "${key}":`, error);
   }
-}
+};
 
-export function ProjectsProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   // Initialize projects from localStorage or use initialProjects if not available
   const [projects, setProjects] = React.useState<Project[]>(() => {
-    return getLocalStorage<Project[]>("envsync-projects", initialProjects)
-  })
-  const [filterValue, setFilterValue] = React.useState("all")
+    return getLocalStorage<Project[]>("envsync-projects", initialProjects);
+  });
+  const [filterValue, setFilterValue] = React.useState("all");
 
   // Save projects to localStorage whenever they change
   React.useEffect(() => {
-    setLocalStorage("envsync-projects", projects)
-  }, [projects])
+    setLocalStorage("envsync-projects", projects);
+  }, [projects]);
 
   const addProject = React.useCallback((project: Project) => {
-    setProjects((prev) => [project, ...prev])
-  }, [])
+    setProjects((prev) => [project, ...prev]);
+  }, []);
 
   const removeProject = React.useCallback((id: string) => {
-    setProjects((prev) => prev.filter((project) => project.id !== id))
-  }, [])
+    setProjects((prev) => prev.filter((project) => project.id !== id));
+  }, []);
 
   const filteredProjects = React.useCallback(
     (filter: string) => {
-      if (filter === "all") return projects
-      return projects.filter((project) => project.status === filter)
+      if (filter === "all") return projects;
+      return projects.filter((project) => project.status === filter);
     },
-    [projects],
-  )
+    [projects]
+  );
 
   return (
     <ProjectsContext.Provider
@@ -148,13 +146,13 @@ export function ProjectsProvider({
     >
       {children}
     </ProjectsContext.Provider>
-  )
+  );
 }
 
 export function useProjects() {
-  const context = React.useContext(ProjectsContext)
+  const context = React.useContext(ProjectsContext);
   if (context === undefined) {
-    throw new Error("useProjects must be used within a ProjectsProvider")
+    throw new Error("useProjects must be used within a ProjectsProvider");
   }
-  return context
+  return context;
 }
