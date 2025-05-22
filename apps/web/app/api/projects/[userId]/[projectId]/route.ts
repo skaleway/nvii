@@ -42,10 +42,8 @@ export const PATCH = async (
 
   const projectExists = await db.project.findUnique({
     where: {
-      userId_name: {
-        userId,
-        name: projectId,
-      },
+      id: projectId,
+      userId,
     },
   });
 

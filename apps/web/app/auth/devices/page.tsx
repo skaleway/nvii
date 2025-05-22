@@ -4,16 +4,16 @@ import { notFound, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import {
-    CheckCircle,
-    Fingerprint,
-    Loader2,
-    PartyPopper,
-    XCircle,
+  CheckCircle,
+  Fingerprint,
+  Loader2,
+  PartyPopper,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 
 function CodeCharacter({ char }: { char: string }) {
   return (
@@ -96,7 +96,6 @@ export default function Page() {
         redirectUrl.searchParams.append("userId", res.userId);
         redirectUrl.searchParams.append("deviceId", res.id);
 
-
         const redirectUrlString = redirectUrl.toString();
 
         await fetch(redirectUrlString);
@@ -107,7 +106,7 @@ export default function Page() {
         console.error(_error);
         setLoading(false);
         toast.error(
-          "Error redirecting back to local CLI. Is your CLI running?",
+          "Error redirecting back to local CLI. Is your CLI running?"
         );
       }
     } catch (_error) {

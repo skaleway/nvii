@@ -8,7 +8,7 @@ const publicRoutes = createRouteMatcher([
   "/settings/(.*)",
   "/sync",
   "/sync/(.*)",
-  "/api/webhooks/(.*)",
+  "/api/(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

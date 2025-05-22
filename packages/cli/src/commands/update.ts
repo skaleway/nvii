@@ -7,11 +7,10 @@ import {
   isLogedIn,
   readConfigFile,
   readEnvFile,
+  readProjectConfig,
 } from "../helpers";
 import { login } from "./login";
-
-const ENV_FILE = ".envi";
-
+import { getConfiguredClient } from "../helpers/api-client";
 export async function updateProject() {
   try {
     const userData = await readConfigFile();
@@ -26,36 +25,37 @@ export async function updateProject() {
       await login();
     }
 
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, ENV_FILE);
-
-    if (!fs.existsSync(filePath)) {
-      console.error(pc.red("❌ No .envi file found in the project root."));
-      process.exit(1);
-    }
-
-    const projectData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    const projectId = projectData.projectId;
-
-    if (!projectId) {
-      console.error(pc.red("❌ Invalid .envi file format."));
+    // Check for project configuration
+    const projectConfig = await readProjectConfig();
+    if (!projectConfig) {
+      console.error(
+        pc.red(
+          "❌ Project not linked. Please run 'envi link' to link your project first."
+        )
+      );
       process.exit(1);
     }
 
     const envVars = await readEnvFile();
     const encryptedEnv = encryptEnvValues(envVars);
 
-    const project = await db.project.update({
-      where: { id: projectId, userId: userData!.userId },
-      data: { content: encryptedEnv },
-    });
+    const client = await getConfiguredClient();
 
-    console.log(project.content);
+    const project = await client.patch(
+      `/projects/${userData!.userId}/${projectConfig.projectId}`,
+      {
+        content: encryptedEnv,
+      }
+    );
+
+    console.log(pc.cyan("Updated environment variables:"));
+    console.log(project.data.data.content);
 
     console.log(
       pc.green("✅ Project updated successfully with new .env variables.")
     );
   } catch (error) {
     console.error(pc.red("❌ Error updating project:"), error);
+    process.exit(1);
   }
 }
