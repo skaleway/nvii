@@ -1,5 +1,5 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { prisma } from "@repo/database";
+import { db } from "@workspace/db";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -14,10 +14,10 @@ export async function POST(request: Request) {
     if (!id || !redirect || !code)
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
 
-    let user = await prisma.user.findUnique({
+    let user = await db.user.findUnique({
       where: {
         id: userId,
       },
@@ -25,14 +25,14 @@ export async function POST(request: Request) {
 
     if (!user && userId) {
       const response = await clerkClient().then((client) =>
-        client.users.getUser(userId),
+        client.users.getUser(userId)
       );
 
       if (!response) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
-      user = await prisma.user.create({
+      user = await db.user.create({
         data: {
           id: response.id,
           email: response?.emailAddresses[0]?.emailAddress || "",
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    const deviceExist = await prisma.device.findFirst({
+    const deviceExist = await db.device.findFirst({
       where: {
         userId,
       },
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ...deviceExist, redirect }, { status: 200 });
     }
 
-    const device = await prisma.device.create({
+    const device = await db.device.create({
       data: {
         userId,
         code: code as string,

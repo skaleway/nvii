@@ -1,10 +1,17 @@
-import { prisma } from "@repo/database";
+import { db, Project } from "@workspace/db";
 import { promises as fs } from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import pc from "picocolors";
-import { isLogedIn, readConfigFile, readEnvFile } from "../helpers";
+import {
+  decryptEnvValues,
+  isLogedIn,
+  readConfigFile,
+  readEnvFile,
+  writeProjectConfig,
+} from "../helpers";
 import { login } from "./login";
+import { getConfiguredClient } from "../helpers/api-client";
 
 const ENV_FILE = ".envi";
 const DOT_ENV_FILE = ".env";
@@ -23,10 +30,9 @@ export async function linkProject() {
       return;
     }
 
-    const projects = await prisma.project.findMany({
-      where: { userId: userConfig.userId },
-      select: { id: true, name: true, content: true },
-    });
+    const client = await getConfiguredClient();
+    const response = await client.get(`/projects/${userConfig.userId}`);
+    const projects = response.data.data as Project[];
 
     if (!projects.length) {
       console.log(pc.yellow("No projects found for this user."));
@@ -46,20 +52,15 @@ export async function linkProject() {
     ]);
 
     const selectedProject = projects.find(
-      (proj) => proj.id === selectedProjectId,
+      (proj) => proj.id === selectedProjectId
     );
+
     if (!selectedProject) {
       console.log(pc.red("Selected project not found."));
       return;
     }
 
     const currentDir = process.cwd();
-    const enviFilePath = path.join(currentDir, ENV_FILE);
-    await fs.writeFile(
-      enviFilePath,
-      JSON.stringify({ projectId: selectedProject.id }, null, 2),
-    );
-    console.log(pc.green(`Project linked successfully!`));
 
     if (!selectedProject.content) {
       return;
@@ -113,14 +114,17 @@ export async function linkProject() {
       }
     }
 
+    const decryptedEnv = decryptEnvValues(finalEnv);
+
     const finalEnvContent =
-      Object.entries(finalEnv)
+      Object.entries(decryptedEnv)
         .map(([key, value]) => `${key}=${value}`)
         .join("\n") +
       "\n" +
       commentedLines;
 
     await fs.writeFile(envFilePath, finalEnvContent);
+    await writeProjectConfig(selectedProject.id);
     console.log(pc.green(".env file updated successfully!"));
   } catch (error) {
     console.error(pc.red("Error linking project:"), error);

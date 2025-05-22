@@ -937,8 +937,8 @@ var require_command = __commonJS({
     "use strict";
     var EventEmitter = require("events").EventEmitter;
     var childProcess = require("child_process");
-    var path5 = require("path");
-    var fs4 = require("fs");
+    var path6 = require("path");
+    var fs5 = require("fs");
     var process2 = require("process");
     var { Argument: Argument2, humanReadableArgName } = require_argument();
     var { CommanderError: CommanderError2 } = require_error();
@@ -1770,12 +1770,12 @@ Expecting one of '${allowedValues.join("', '")}'`);
         let launchWithNode = false;
         const sourceExt = [".js", ".ts", ".tsx", ".mjs", ".cjs"];
         function findFile(baseDir, baseName) {
-          const localBin = path5.resolve(baseDir, baseName);
-          if (fs4.existsSync(localBin))
+          const localBin = path6.resolve(baseDir, baseName);
+          if (fs5.existsSync(localBin))
             return localBin;
-          if (sourceExt.includes(path5.extname(baseName)))
+          if (sourceExt.includes(path6.extname(baseName)))
             return void 0;
-          const foundExt = sourceExt.find((ext) => fs4.existsSync(`${localBin}${ext}`));
+          const foundExt = sourceExt.find((ext) => fs5.existsSync(`${localBin}${ext}`));
           if (foundExt)
             return `${localBin}${foundExt}`;
           return void 0;
@@ -1787,23 +1787,23 @@ Expecting one of '${allowedValues.join("', '")}'`);
         if (this._scriptPath) {
           let resolvedScriptPath;
           try {
-            resolvedScriptPath = fs4.realpathSync(this._scriptPath);
+            resolvedScriptPath = fs5.realpathSync(this._scriptPath);
           } catch (err) {
             resolvedScriptPath = this._scriptPath;
           }
-          executableDir = path5.resolve(path5.dirname(resolvedScriptPath), executableDir);
+          executableDir = path6.resolve(path6.dirname(resolvedScriptPath), executableDir);
         }
         if (executableDir) {
           let localFile = findFile(executableDir, executableFile);
           if (!localFile && !subcommand._executableFile && this._scriptPath) {
-            const legacyName = path5.basename(this._scriptPath, path5.extname(this._scriptPath));
+            const legacyName = path6.basename(this._scriptPath, path6.extname(this._scriptPath));
             if (legacyName !== this._name) {
               localFile = findFile(executableDir, `${legacyName}-${subcommand._name}`);
             }
           }
           executableFile = localFile || executableFile;
         }
-        launchWithNode = sourceExt.includes(path5.extname(executableFile));
+        launchWithNode = sourceExt.includes(path6.extname(executableFile));
         let proc;
         if (process2.platform !== "win32") {
           if (launchWithNode) {
@@ -2605,7 +2605,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @return {Command}
        */
       nameFromFilename(filename) {
-        this._name = path5.basename(filename, path5.extname(filename));
+        this._name = path6.basename(filename, path6.extname(filename));
         return this;
       }
       /**
@@ -2619,10 +2619,10 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [path]
        * @return {string|null|Command}
        */
-      executableDir(path6) {
-        if (path6 === void 0)
+      executableDir(path7) {
+        if (path7 === void 0)
           return this._executableDir;
-        this._executableDir = path6;
+        this._executableDir = path7;
         return this;
       }
       /**
@@ -2830,19 +2830,17 @@ var {
   Help
 } = import_index.default;
 
-// src/commands/link.ts
-var import_database = require("@repo/database");
-var import_fs3 = require("fs");
-var import_inquirer = __toESM(require("inquirer"));
-var import_path3 = __toESM(require("path"));
-var import_picocolors3 = __toESM(require("picocolors"));
-
 // src/helpers/index.ts
+var import_crypto = __toESM(require("crypto"));
 var import_fs = require("fs");
 var import_os = __toESM(require("os"));
 var import_path = __toESM(require("path"));
 var import_picocolors = __toESM(require("picocolors"));
 var FILENAME = process.env.FILENAME || ".envincible";
+var ENCRYPTION_KEY = import_crypto.default.createHash("sha256").update(
+  String(process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD")
+).digest();
+var IV_LENGTH = 16;
 async function readConfigFile() {
   try {
     const homeDir = import_os.default.homedir();
@@ -2887,6 +2885,52 @@ async function readEnvFile() {
     return {};
   }
 }
+function encrypt(text) {
+  const iv = import_crypto.default.randomBytes(IV_LENGTH);
+  const cipher = import_crypto.default.createCipheriv("aes-256-cbc", ENCRYPTION_KEY, iv);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return iv.toString("hex") + ":" + encrypted;
+}
+function decrypt(text) {
+  const textParts = text.split(":");
+  const iv = Buffer.from(textParts[0], "hex");
+  const encryptedText = Buffer.from(textParts[1], "hex");
+  const decipher = import_crypto.default.createDecipheriv("aes-256-cbc", ENCRYPTION_KEY, iv);
+  let decrypted = decipher.update(encryptedText.toString("hex"), "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+}
+function encryptEnvValues(envObject) {
+  const encryptedEnv = {};
+  for (const key in envObject) {
+    encryptedEnv[key] = encrypt(envObject[key]);
+  }
+  return encryptedEnv;
+}
+function decryptEnvValues(encryptedEnv) {
+  const decryptedEnv = {};
+  for (const key in encryptedEnv) {
+    decryptedEnv[key] = decrypt(encryptedEnv[key]);
+  }
+  return decryptedEnv;
+}
+
+// src/commands/crypt.ts
+async function testencryption() {
+  const envs = await readEnvFile();
+  const encryptedEnv = encryptEnvValues(envs);
+  const decryptedEnv = decryptEnvValues(encryptedEnv);
+  console.log("Encrypted Env:", encryptedEnv);
+  console.log("Decrypted Env:", decryptedEnv);
+}
+
+// src/commands/link.ts
+var import_db = require("@workspace/db");
+var import_fs3 = require("fs");
+var import_inquirer = __toESM(require("inquirer"));
+var import_path3 = __toESM(require("path"));
+var import_picocolors3 = __toESM(require("picocolors"));
 
 // src/commands/login.ts
 var import_async_listen = require("async-listen");
@@ -2998,7 +3042,7 @@ async function linkProject() {
       console.log(import_picocolors3.default.red("No user ID found. Please log in again."));
       return;
     }
-    const projects = await import_database.prisma.project.findMany({
+    const projects = await import_db.db.project.findMany({
       where: { userId: userConfig.userId },
       select: { id: true, name: true, content: true }
     });
@@ -3082,23 +3126,21 @@ async function linkProject() {
 }
 
 // src/commands/new.ts
-var import_database2 = require("@repo/database");
+var import_db2 = require("@workspace/db");
 var import_fs4 = require("fs");
+var import_inquirer2 = __toESM(require("inquirer"));
 var import_path4 = __toESM(require("path"));
 var import_picocolors4 = __toESM(require("picocolors"));
-var import_readline = __toESM(require("readline"));
 var ENV_FILE2 = ".envi";
-async function promptUser(question) {
-  return new Promise((resolve) => {
-    const rl = import_readline.default.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    rl.question(import_picocolors4.default.cyan(question), (answer) => {
-      rl.close();
-      resolve(answer.trim());
-    });
-  });
+async function promptUser(message) {
+  const response = await import_inquirer2.default.prompt([
+    {
+      type: "input",
+      name: "answer",
+      message: import_picocolors4.default.cyan(message)
+    }
+  ]);
+  return response.answer.trim();
 }
 async function createProject() {
   try {
@@ -3106,7 +3148,7 @@ async function createProject() {
       console.log(import_picocolors4.default.red("You must be logged in to create a new project."));
       await login();
     }
-    const projectName = await promptUser("Enter your project name: ");
+    const projectName = await promptUser("Enter your project name:");
     if (!projectName) {
       console.error(import_picocolors4.default.red("\u274C Project name cannot be empty."));
       process.exit(1);
@@ -3121,25 +3163,86 @@ async function createProject() {
     }
     const currentDir = process.cwd();
     const filePath = import_path4.default.join(currentDir, ENV_FILE2);
-    const envVars = await readEnvFile();
-    const project = await import_database2.prisma.project.create({
+    const envs = await readEnvFile();
+    const encryptedEnvs = encryptEnvValues(envs);
+    const project = await import_db2.db.project.create({
       data: {
         userId: userConfig.userId,
         deviceId: userConfig.deviceId,
         name: projectName,
-        content: envVars
+        content: encryptedEnvs
       }
     });
+    console.log(import_picocolors4.default.green(`\u2705 Project created successfully!`));
+    console.log(import_picocolors4.default.blue(`\u{1F194} Project ID: ${import_picocolors4.default.bold(project.id)}`));
+    const { saveEnv } = await import_inquirer2.default.prompt([
+      {
+        type: "confirm",
+        name: "saveEnv",
+        message: "This root project contains a .env file. Do you want to save it?",
+        default: false
+      }
+    ]);
+    if (saveEnv) {
+      await import_db2.db.project.update({
+        where: { id: project.id },
+        data: { content: encryptedEnvs }
+      });
+      console.log(import_picocolors4.default.magenta("\u{1F50D} Stored .env variables:"));
+    } else {
+      console.log(import_picocolors4.default.yellow("\u26A0\uFE0F Skipped saving .env variables."));
+    }
     const projectData = {
       projectId: project.id
     };
     await import_fs4.promises.writeFile(filePath, JSON.stringify(projectData, null, 2));
-    console.log(import_picocolors4.default.green(`\u2705 Project created successfully!`));
-    console.log(import_picocolors4.default.blue(`\u{1F194} Project ID: ${import_picocolors4.default.bold(project.id)}`));
     console.log(import_picocolors4.default.dim(`\u{1F4C4} .envi file saved at: ${filePath}`));
-    console.log(import_picocolors4.default.magenta("\u{1F50D} Stored .env variables:"), envVars);
   } catch (error) {
     console.error(import_picocolors4.default.red("\u274C Error creating project:"), error);
+  }
+}
+
+// src/commands/update.ts
+var import_db3 = require("@workspace/db");
+var import_fs5 = __toESM(require("fs"));
+var import_path5 = __toESM(require("path"));
+var import_picocolors5 = __toESM(require("picocolors"));
+var ENV_FILE3 = ".envi";
+async function updateProject() {
+  try {
+    const userData = await readConfigFile();
+    if (!isLogedIn()) {
+      console.log(import_picocolors5.default.red("You must be logged in to update a project."));
+      await login();
+    }
+    if (!userData) {
+      console.log(import_picocolors5.default.red("You must be logged in to update a project."));
+      await login();
+    }
+    const currentDir = process.cwd();
+    const filePath = import_path5.default.join(currentDir, ENV_FILE3);
+    if (!import_fs5.default.existsSync(filePath)) {
+      console.error(import_picocolors5.default.red("\u274C No .envi file found in the project root."));
+      process.exit(1);
+    }
+    const projectData = JSON.parse(import_fs5.default.readFileSync(filePath, "utf-8"));
+    const projectId = projectData.projectId;
+    if (!projectId) {
+      console.error(import_picocolors5.default.red("\u274C Invalid .envi file format."));
+      process.exit(1);
+    }
+    const envVars = await readEnvFile();
+    const encryptedEnv = encryptEnvValues(envVars);
+    const project = await import_db3.db.project.update({
+      where: { id: projectId, userId: userData.userId },
+      data: { content: encryptedEnv }
+    });
+    console.log(project.content);
+    console.log(
+      import_picocolors5.default.green("\u2705 Project updated successfully with new .env variables.")
+    );
+  } catch (error) {
+    console.error(import_picocolors5.default.red("\u274C Error updating project:"), error);
   }
 }
 
@@ -3160,4 +3263,6 @@ program2.command("new").description("Create a new project").action(() => {
   createProject();
 });
 program2.command("link").description("Link an existing project to the current directory").action(linkProject);
+program2.command("test").description("Test to see if the encryption and decryption works").action(testencryption);
+program2.command("update").description("Update the existing env file").action(updateProject);
 program2.parse(process.argv);

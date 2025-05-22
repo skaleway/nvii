@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { db } from "@workspace/db";
 import { promises as fs } from "fs";
 import inquirer from "inquirer";
 import path from "path";
@@ -8,8 +8,10 @@ import {
   isLogedIn,
   readConfigFile,
   readEnvFile,
+  writeProjectConfig,
 } from "../helpers";
 import { login } from "./login";
+import { getConfiguredClient } from "../helpers/api-client";
 
 const ENV_FILE = ".envi";
 
@@ -49,59 +51,26 @@ export async function createProject() {
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
-        pc.red("❌ Invalid user credentials. Please log in again."),
+        pc.red("❌ Invalid user credentials. Please log in again.")
       );
       await login();
       return;
     }
 
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, ENV_FILE);
     const envs = await readEnvFile();
 
     const encryptedEnvs = encryptEnvValues(envs);
 
-    // Create project in database without .env content initially
-    const project = await prisma.project.create({
-      data: {
-        userId: userConfig.userId,
-        deviceId: userConfig.deviceId,
-        name: projectName,
-        content: "", // Initially set to empty
-      },
+    const client = await getConfiguredClient();
+
+    const response = await client.post(`/projects/${userConfig.userId}`, {
+      name: projectName,
+      content: encryptedEnvs,
+      deviceId: userConfig.deviceId,
     });
 
-    console.log(pc.green(`✅ Project created successfully!`));
-    console.log(pc.blue(`🆔 Project ID: ${pc.bold(project.id)}`));
-
-    // Ask user if they want to save the .env content
-    const { saveEnv } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "saveEnv",
-        message:
-          "This root project contains a .env file. Do you want to save it?",
-        default: false,
-      },
-    ]);
-
-    if (saveEnv) {
-      await prisma.project.update({
-        where: { id: project.id },
-        data: { content: encryptedEnvs },
-      });
-      console.log(pc.magenta("🔍 Stored .env variables:"));
-    } else {
-      console.log(pc.yellow("⚠️ Skipped saving .env variables."));
-    }
-
-    // Save project data to .envi file
-    const projectData = {
-      projectId: project.id,
-    };
-
-    await fs.writeFile(filePath, JSON.stringify(projectData, null, 2));
-    console.log(pc.dim(`📄 .envi file saved at: ${filePath}`));
+    const projectId = response.data.data.id;
+    await writeProjectConfig(projectId);
   } catch (error) {
     console.error(pc.red("❌ Error creating project:"), error);
   }
