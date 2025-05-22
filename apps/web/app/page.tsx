@@ -13,9 +13,13 @@ import { AddProjectDialog } from "@/components/add-project-dialog";
 import { useProjects } from "@/components/projects-provider";
 import { RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  ProjectCardSkeleton,
+  StatusCardSkeleton,
+} from "@/components/skeletons";
 
 export default function Dashboard() {
-  const { projects, filteredProjects, filterValue, setFilterValue } =
+  const { projects, filteredProjects, filterValue, setFilterValue, isLoading } =
     useProjects();
   const router = useRouter();
 
@@ -49,7 +53,7 @@ export default function Dashboard() {
               router.refresh();
             }}
           >
-            <RefreshCcw />
+            <RefreshCcw className="h-4 w-4 mr-2" />
             <span>Refresh</span>
           </Button>
           <AddProjectDialog>
@@ -59,41 +63,52 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <StatusCard
-          title="Valid Projects"
-          value={validCount.toString()}
-          description="All environment variables are valid"
-          status="valid"
-        />
-        <StatusCard
-          title="Missing Variables"
-          value={missingCount.toString()}
-          description="Projects with missing environment variables"
-          status="missing"
-        />
-        <StatusCard
-          title="Invalid Variables"
-          value={invalidCount.toString()}
-          description="Projects with invalid environment variables"
-          status="invalid"
-        />
+        {isLoading ? (
+          <>
+            <StatusCardSkeleton />
+            <StatusCardSkeleton />
+            <StatusCardSkeleton />
+          </>
+        ) : (
+          <>
+            <StatusCard
+              title="Valid Projects"
+              value={validCount.toString()}
+              description="All environment variables are valid"
+              status="valid"
+            />
+            <StatusCard
+              title="Missing Variables"
+              value={missingCount.toString()}
+              description="Projects with missing environment variables"
+              status="missing"
+            />
+            <StatusCard
+              title="Invalid Variables"
+              value={invalidCount.toString()}
+              description="Projects with invalid environment variables"
+              status="invalid"
+            />
+          </>
+        )}
       </div>
 
       <h2 className="text-xl font-semibold mt-8 mb-4">Recent Projects</h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {displayedProjects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            id={project.id}
-            name={project.name}
-            description={project.description}
-            updatedAt={project.updatedAt}
-            envCount={project.envCount}
-            status={project.status}
-          />
-        ))}
-
-        {displayedProjects.length === 0 && (
+        {isLoading ? (
+          <>
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+          </>
+        ) : displayedProjects.length > 0 ? (
+          displayedProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))
+        ) : (
           <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
             <p className="text-muted-foreground mb-4">
               No projects match the current filter.

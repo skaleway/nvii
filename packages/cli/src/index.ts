@@ -6,15 +6,9 @@ import { linkProject } from "./commands/link";
 import { login } from "./commands/login";
 import { createProject } from "./commands/new";
 import { updateProject } from "./commands/update";
-import { getVersion, readConfigFile } from "./helpers";
+import { readConfigFile } from "./helpers";
 
 const program = new Command();
-const version = getVersion();
-
-program
-  .name("envincible-cli")
-  .description("Example CLI application with envincible auth")
-  .version(version);
 
 program
   .command("login")
@@ -22,8 +16,8 @@ program
   .action(login);
 
 program
-  .command("show-config")
-  .description("Show configuration file")
+  .command("whoami")
+  .description("Show the current user")
   .action(async () => {
     try {
       const file = await readConfigFile();

@@ -1,10 +1,10 @@
 {
-  "name": "@envincible/cli",
-  "version": "1.2.4",
+  "name": "envi",
+  "version": "0.0.1",
   "description": "Evincible CLI",
   "main": "./dist/index.js",
   "bin": {
-    "@envincible/cli": "./dist/index.js"
+    "envi": "./dist/index.js"
   },
   "types": "./dist/index.d.ts",
   "module": "./dist/index.mjs",

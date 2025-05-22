@@ -1,21 +1,23 @@
 "use client";
 
 import * as React from "react";
-
-type Project = {
-  id: string;
-  name: string;
-  description: string;
-  updatedAt: string;
-  envCount: number;
-  status: "valid" | "missing" | "invalid";
-  slug: string;
-};
+import {
+  QueryClient,
+  QueryClientProvider,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { projectsApi, CreateProjectInput } from "../lib/api-client";
+import { Project } from "../types/project";
 
 type ProjectsContextType = {
   projects: Project[];
-  addProject: (project: Project) => void;
-  removeProject: (id: string) => void;
+  isLoading: boolean;
+  error: Error | null;
+  addProject: (project: CreateProjectInput) => Promise<void>;
+  removeProject: (id: string) => Promise<void>;
   filteredProjects: (filter: string) => Project[];
   filterValue: string;
   setFilterValue: (filter: string) => void;
@@ -25,105 +27,82 @@ const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
   undefined
 );
 
-// Initial projects data
-const initialProjects: Project[] = [
-  {
-    id: "1",
-    name: "Web App",
-    description: "Frontend application",
-    updatedAt: "Updated 2 hours ago",
-    envCount: 12,
-    status: "valid",
-    slug: "web-app",
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
   },
-  {
-    id: "2",
-    name: "API Service",
-    description: "Backend API",
-    updatedAt: "Updated 1 day ago",
-    envCount: 24,
-    status: "valid",
-    slug: "api-service",
-  },
-  {
-    id: "3",
-    name: "Admin Dashboard",
-    description: "Internal admin tools",
-    updatedAt: "Updated 3 days ago",
-    envCount: 18,
-    status: "missing",
-    slug: "admin-dashboard",
-  },
-  {
-    id: "4",
-    name: "Marketing Site",
-    description: "Public website",
-    updatedAt: "Updated 5 days ago",
-    envCount: 8,
-    status: "valid",
-    slug: "marketing-site",
-  },
-  {
-    id: "5",
-    name: "Authentication Service",
-    description: "User authentication",
-    updatedAt: "Updated 1 week ago",
-    envCount: 15,
-    status: "invalid",
-    slug: "authentication-service",
-  },
-  {
-    id: "6",
-    name: "Analytics",
-    description: "Data processing",
-    updatedAt: "Updated 2 weeks ago",
-    envCount: 21,
-    status: "valid",
-    slug: "analytics",
-  },
-];
-
-// Helper function to safely access localStorage
-const getLocalStorage = <T,>(key: string, fallback: T): T => {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? (JSON.parse(item) as T) : fallback;
-  } catch (error) {
-    console.error(`Error reading localStorage key "${key}":`, error);
-    return fallback;
-  }
-};
-
-// Helper function to safely set localStorage
-const setLocalStorage = <T,>(key: string, value: T): void => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    console.error(`Error setting localStorage key "${key}":`, error);
-  }
-};
+});
 
 export function ProjectsProvider({ children }: { children: React.ReactNode }) {
-  // Initialize projects from localStorage or use initialProjects if not available
-  const [projects, setProjects] = React.useState<Project[]>(() => {
-    return getLocalStorage<Project[]>("envsync-projects", initialProjects);
-  });
   const [filterValue, setFilterValue] = React.useState("all");
 
-  // Save projects to localStorage whenever they change
-  React.useEffect(() => {
-    setLocalStorage("envsync-projects", projects);
-  }, [projects]);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ProjectsProviderInner
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
+      >
+        {children}
+      </ProjectsProviderInner>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}
 
-  const addProject = React.useCallback((project: Project) => {
-    setProjects((prev) => [project, ...prev]);
-  }, []);
+function ProjectsProviderInner({
+  children,
+  filterValue,
+  setFilterValue,
+}: {
+  children: React.ReactNode;
+  filterValue: string;
+  setFilterValue: (filter: string) => void;
+}) {
+  const queryClient = useQueryClient();
 
-  const removeProject = React.useCallback((id: string) => {
-    setProjects((prev) => prev.filter((project) => project.id !== id));
-  }, []);
+  // Fetch projects
+  const {
+    data: projects = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["projects"],
+    queryFn: projectsApi.list,
+  });
+
+  // Add project mutation
+  const addProjectMutation = useMutation({
+    mutationFn: projectsApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  // Remove project mutation
+  const removeProjectMutation = useMutation({
+    mutationFn: projectsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  const addProject = React.useCallback(
+    async (project: CreateProjectInput) => {
+      await addProjectMutation.mutateAsync(project);
+    },
+    [addProjectMutation]
+  );
+
+  const removeProject = React.useCallback(
+    async (id: string) => {
+      await removeProjectMutation.mutateAsync(id);
+    },
+    [removeProjectMutation]
+  );
 
   const filteredProjects = React.useCallback(
     (filter: string) => {
@@ -137,6 +116,8 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
     <ProjectsContext.Provider
       value={{
         projects,
+        isLoading,
+        error: error as Error | null,
         addProject,
         removeProject,
         filteredProjects,

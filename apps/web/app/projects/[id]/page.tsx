@@ -1,27 +1,37 @@
-import { Button } from "@workspace/ui/components/button"
-import { EnvVariableTable } from "@/components/env-variable-table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
-import { Badge } from "@workspace/ui/components/badge"
+import { EnvVariableTable } from "@/components/env-variable-table";
+import { db } from "@workspace/db";
+import { Badge } from "@workspace/ui/components/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@workspace/ui/components/breadcrumb"
-import { ChevronRight, Plus, RefreshCw } from "lucide-react"
+} from "@workspace/ui/components/breadcrumb";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
+import { ChevronRight, Plus, RefreshCw } from "lucide-react";
+import { notFound } from "next/navigation";
 
 interface ProjectPageProps {
-  params: {
-    id: string
-  }
+  params: Promise<{ id: string }>;
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
-  const projectName = params.id
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { id } = await params;
+
+  const project = await db.project.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!project) notFound();
 
   return (
     <div className="container py-6 space-y-6">
@@ -40,7 +50,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             <ChevronRight className="h-4 w-4" />
           </BreadcrumbSeparator>
           <BreadcrumbItem>
-            <BreadcrumbLink>{projectName}</BreadcrumbLink>
+            <BreadcrumbLink className="capitalize">
+              {project.name}
+            </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -48,12 +60,16 @@ export default function ProjectPage({ params }: ProjectPageProps) {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">{projectName}</h1>
+            <h1 className="text-3xl font-bold tracking-tight capitalize">
+              {project.name}
+            </h1>
             <Badge variant="outline" className="ml-2">
               Development
             </Badge>
           </div>
-          <p className="text-muted-foreground">Manage environment variables for this project</p>
+          <p className="text-muted-foreground">
+            Manage environment variables for this project
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" className="gap-1">
@@ -74,15 +90,21 @@ export default function ProjectPage({ params }: ProjectPageProps) {
           <TabsTrigger value="production">Production</TabsTrigger>
         </TabsList>
         <TabsContent value="development" className="mt-4">
-          <EnvVariableTable environment="development" />
+          <EnvVariableTable
+            environment={project.content as Record<string, string>}
+          />
         </TabsContent>
         <TabsContent value="staging" className="mt-4">
-          <EnvVariableTable environment="staging" />
+          <EnvVariableTable
+            environment={project.content as Record<string, string>}
+          />
         </TabsContent>
         <TabsContent value="production" className="mt-4">
-          <EnvVariableTable environment="production" />
+          <EnvVariableTable
+            environment={project.content as Record<string, string>}
+          />
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
