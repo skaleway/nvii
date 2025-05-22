@@ -1,21 +1,28 @@
-"use client"
-import { ProjectCard } from "@/components/project-card"
-import { StatusCard } from "@/components/status-card"
-import { Button } from "@workspace/ui/components/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
-import { AddProjectDialog } from "@/components/add-project-dialog"
-import { useProjects } from "@/components/projects-provider"
+"use client";
+import { ProjectCard } from "@/components/project-card";
+import { StatusCard } from "@/components/status-card";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import { AddProjectDialog } from "@/components/add-project-dialog";
+import { useProjects } from "@/components/projects-provider";
 
 export default function Dashboard() {
-  const { projects, filteredProjects, filterValue, setFilterValue } = useProjects()
+  const { projects, filteredProjects, filterValue, setFilterValue } =
+    useProjects();
 
   // Calculate status counts
-  const validCount = projects.filter((p) => p.status === "valid").length
-  const missingCount = projects.filter((p) => p.status === "missing").length
-  const invalidCount = projects.filter((p) => p.status === "invalid").length
+  const validCount = projects.filter((p) => p.status === "valid").length;
+  const missingCount = projects.filter((p) => p.status === "missing").length;
+  const invalidCount = projects.filter((p) => p.status === "invalid").length;
 
   // Get filtered projects based on current filter
-  const displayedProjects = filteredProjects(filterValue)
+  const displayedProjects = filteredProjects(filterValue);
 
   return (
     <div className="container py-6 space-y-8">
@@ -76,7 +83,9 @@ export default function Dashboard() {
 
         {displayedProjects.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-muted-foreground mb-4">No projects match the current filter.</p>
+            <p className="text-muted-foreground mb-4">
+              No projects match the current filter.
+            </p>
             <AddProjectDialog>
               <Button>Create a New Project</Button>
             </AddProjectDialog>
@@ -84,5 +93,5 @@ export default function Dashboard() {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -3,9 +3,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@workspace/ui/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider } from "@/components/sidebar-provider";
+import {
+  SidebarProvider,
+  SidebarInset,
+} from "@workspace/ui/components/sidebar";
 import { ProjectsProvider } from "@/components/projects-provider";
-import { Sidebar } from "@/components/sidebar";
+import { AppSidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { Toaster } from "@workspace/ui/components/toaster";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -13,8 +16,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "EnvSync - Environment Variable Manager",
-  description: "Modern environment variable manager for monorepos",
+  title: "Envi - Environment Variable Manager",
+  description: "Modern environment variable manager for your projects",
 };
 
 export default function RootLayout({
@@ -34,15 +37,11 @@ export default function RootLayout({
           >
             <ProjectsProvider>
               <SidebarProvider>
-                <div className="flex h-screen overflow-hidden">
-                  <Sidebar />
-                  <div className="flex flex-col flex-1 overflow-hidden">
-                    <Header />
-                    <main className="flex-1 overflow-auto bg-muted/40">
-                      {children}
-                    </main>
-                  </div>
-                </div>
+                <AppSidebar variant="inset" collapsible="icon" />
+                <SidebarInset>
+                  <Header />
+                  <main className="flex-1 overflow-auto">{children}</main>
+                </SidebarInset>
               </SidebarProvider>
             </ProjectsProvider>
             <Toaster />

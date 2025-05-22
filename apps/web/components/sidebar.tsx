@@ -1,116 +1,198 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import * as React from "react";
 import {
-  BarChart,
-  Settings,
-  Layers,
-  RefreshCw,
-  ChevronLeft,
-  PanelLeft,
-  Plus,
+  ArrowUpCircleIcon,
+  BarChartIcon,
+  CameraIcon,
+  ClipboardListIcon,
+  DatabaseIcon,
+  FileCodeIcon,
+  FileIcon,
+  FileTextIcon,
+  FolderIcon,
+  HelpCircleIcon,
+  LayoutDashboardIcon,
+  ListIcon,
+  SearchIcon,
+  SettingsIcon,
+  UsersIcon,
 } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
-import { Button } from "@workspace/ui/components/button";
-import { useSidebar } from "@/components/sidebar-provider";
-import { AddProjectDialog } from "@/components/add-project-dialog";
 
-export function Sidebar() {
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@workspace/ui/components/sidebar";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  navMain: [
+    {
+      title: "Dashboard",
+      url: "#",
+      icon: LayoutDashboardIcon,
+    },
+    {
+      title: "Lifecycle",
+      url: "#",
+      icon: ListIcon,
+    },
+    {
+      title: "Analytics",
+      url: "#",
+      icon: BarChartIcon,
+    },
+    {
+      title: "Projects",
+      url: "#",
+      icon: FolderIcon,
+    },
+    {
+      title: "Team",
+      url: "#",
+      icon: UsersIcon,
+    },
+  ],
+  navClouds: [
+    {
+      title: "Capture",
+      icon: CameraIcon,
+      isActive: true,
+      url: "#",
+      items: [
+        {
+          title: "Active Proposals",
+          url: "#",
+        },
+        {
+          title: "Archived",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Proposal",
+      icon: FileTextIcon,
+      url: "#",
+      items: [
+        {
+          title: "Active Proposals",
+          url: "#",
+        },
+        {
+          title: "Archived",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Prompts",
+      icon: FileCodeIcon,
+      url: "#",
+      items: [
+        {
+          title: "Active Proposals",
+          url: "#",
+        },
+        {
+          title: "Archived",
+          url: "#",
+        },
+      ],
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Settings",
+      url: "#",
+      icon: SettingsIcon,
+    },
+    {
+      title: "Get Help",
+      url: "#",
+      icon: HelpCircleIcon,
+    },
+    {
+      title: "Search",
+      url: "#",
+      icon: SearchIcon,
+    },
+  ],
+  documents: [
+    {
+      name: "Data Library",
+      url: "#",
+      icon: DatabaseIcon,
+    },
+    {
+      name: "Reports",
+      url: "#",
+      icon: ClipboardListIcon,
+    },
+    {
+      name: "Word Assistant",
+      url: "#",
+      icon: FileIcon,
+    },
+  ],
+};
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const { expanded, toggleSidebar } = useSidebar();
-
-  const routes = [
-    {
-      label: "Dashboard",
-      icon: BarChart,
-      href: "/",
-      active: pathname === "/",
-    },
-    {
-      label: "Projects",
-      icon: Layers,
-      href: "/projects",
-      active: pathname === "/projects" || pathname.startsWith("/projects/"),
-    },
-    {
-      label: "Sync",
-      icon: RefreshCw,
-      href: "/sync",
-      active: pathname === "/sync",
-    },
-    {
-      label: "Settings",
-      icon: Settings,
-      href: "/settings",
-      active: pathname === "/settings",
-    },
-  ];
-
   return (
-    <div
-      className={cn(
-        "group relative h-screen border-r bg-background transition-all duration-300",
-        expanded ? "w-64" : "w-[70px]"
-      )}
-    >
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        <div
-          className={cn(
-            "flex items-center gap-x-2",
-            expanded ? "justify-start" : "justify-center w-full"
-          )}
-        >
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10">
-            .
-          </div>
-          {expanded && <span className="font-semibold text-xl">Envi</span>}
-        </div>
-        <Button
-          onClick={toggleSidebar}
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "h-7 w-7",
-            !expanded &&
-              "absolute right-[-12px] top-5 bg-primary text-primary-foreground rounded-full border border-border shadow-md"
-          )}
-        >
-          <ChevronLeft
-            className={cn("h-4 w-4 transition-all", !expanded && "rotate-180")}
-          />
-        </Button>
-      </div>
-      <div className="flex flex-col gap-y-2 p-2">
-        {routes.map((route) => (
-          <Link
-            key={route.href}
-            href={route.href}
-            className={cn(
-              "flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-primary/10",
-              route.active
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground"
-            )}
-          >
-            <route.icon className={cn("h-5 w-5")} />
-            {expanded && <span>{route.label}</span>}
-          </Link>
-        ))}
-      </div>
-      <div className="absolute bottom-5 w-full px-3">
-        <AddProjectDialog>
-          <Button
-            className={cn(
-              "w-full justify-start gap-x-2",
-              !expanded && "justify-center"
-            )}
-          >
-            <Plus className="h-4 w-4" />
-            {expanded && <span>New Project</span>}
-          </Button>
-        </AddProjectDialog>
-      </div>
-    </div>
+    <Sidebar collapsible="offcanvas" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem className="relative  px-2">
+            <SidebarMenuButton size="lg">
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">Envi</span>
+                <span className="truncate text-xs">Free</span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent className="flex flex-col gap-2 items-center justify-center">
+            <SidebarMenu className="mt-10">
+              {data.navMain.map((item) => {
+                const active =
+                  pathname === item.url || pathname.includes(item.url);
+                return (
+                  <SidebarMenuItem key={item.title} className="w-full">
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      asChild
+                      className="group-data-[collapsible=icon]:!min-h-10 group-data-[collapsible=icon]:!min-w-10 min-h-10 ml-1"
+                      isActive={active}
+                    >
+                      <Link href={item.url}>
+                        {item.icon && <item.icon className="!size-6" />}
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 }
