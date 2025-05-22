@@ -180,6 +180,41 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
 }
 
 /**
+ * Updates or creates .gitignore to include the .envi folder
+ */
+async function updateGitignore(): Promise<void> {
+  try {
+    const currentDir = process.cwd();
+    const gitignorePath = path.join(currentDir, ".gitignore");
+    const enviEntry = ".envi/";
+
+    let content = "";
+    if (existsSync(gitignorePath)) {
+      // Read existing .gitignore
+      content = await fs.readFile(gitignorePath, "utf-8");
+
+      // Check if .envi is already in .gitignore
+      if (content.split("\n").some((line) => line.trim() === enviEntry)) {
+        return; // Already exists, no need to update
+      }
+
+      // Add a newline if the file doesn't end with one
+      if (content.length > 0 && !content.endsWith("\n")) {
+        content += "\n";
+      }
+    }
+
+    // Append .envi/ to .gitignore
+    content += `${enviEntry}\n`;
+    await fs.writeFile(gitignorePath, content, "utf-8");
+    console.log(pc.green("✅ Updated .gitignore to exclude .envi folder"));
+  } catch (error) {
+    console.error(pc.red("Error updating .gitignore:"), error);
+    // Don't throw error as this is not critical
+  }
+}
+
+/**
  * Writes project configuration to .envi/envi.json file
  * @param projectId - The project ID to save
  */
@@ -210,6 +245,9 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
       // Create .envi directory if it doesn't exist
       await fs.mkdir(enviDirPath, { recursive: true });
     }
+
+    // Update .gitignore before writing the config
+    await updateGitignore();
 
     // Merge new projectId with existing config
     const updatedConfig = {

@@ -57,8 +57,6 @@ export async function createProject() {
       return;
     }
 
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, ENV_FILE);
     const envs = await readEnvFile();
 
     const encryptedEnvs = encryptEnvValues(envs);
@@ -70,8 +68,6 @@ export async function createProject() {
       content: encryptedEnvs,
       deviceId: userConfig.deviceId,
     });
-
-    console.log(response.data);
 
     const projectId = response.data.data.id;
     await writeProjectConfig(projectId);
