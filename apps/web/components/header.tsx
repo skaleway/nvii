@@ -1,14 +1,19 @@
-"use client"
+"use client";
 
-import { Search, Bell, Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
+import { Search, Bell, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
+import Profile from "@workspace/ui/components/user-profile";
 
 export function Header() {
-  const { setTheme } = useTheme()
+  const { setTheme } = useTheme();
 
   return (
     <header className="flex h-16 items-center justify-between border-b px-6">
@@ -30,19 +35,22 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("light")}>
+              Light
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")}>
+              Dark
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("system")}>
+              System
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Bell className="h-5 w-5" />
         </Button>
-        <Avatar>
-          <AvatarImage src="/placeholder.svg?height=32&width=32" />
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
+        <Profile name="John Doe" />
       </div>
     </header>
-  )
+  );
 }
