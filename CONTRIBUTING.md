@@ -1,6 +1,6 @@
-# Contributing to Notpadd
+# Contributing to Envincible
 
-Thank you for your interest in contributing to Notpadd! Please follow the steps below to set up your development environment.
+Thank you for your interest in contributing to Envincible! Please follow the steps below to set up your development environment.
 
 ## Prerequisites
 
@@ -15,8 +15,8 @@ Thank you for your interest in contributing to Notpadd! Please follow the steps 
 1. **Fork and Clone the Repository**
 
    ```bash
-   git clone https://github.com/[your-github-login]/notpadd.git
-   cd notpadd
+   git clone https://github.com/[your-github-login]/envincible.git
+   cd envincible
    ```
 
 2. **Create a New Branch**
@@ -32,7 +32,7 @@ Thank you for your interest in contributing to Notpadd! Please follow the steps 
      ```env
      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
      CLERK_SECRET_KEY=
-     DATABASE_URL="postgresql://postgres:nothing@localhost:5431/notpadd"
+     DATABASE_URL="postgresql://postgres:nothing@localhost:5431/envincible"
      CLERK_WH_SECRET=
      CLERK_DEV_WH_SECRET=
      NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/t/"
@@ -45,7 +45,7 @@ Thank you for your interest in contributing to Notpadd! Please follow the steps 
    - In `/packages/database`, create a `.env` file with:
 
      ```env
-     DATABASE_URL="postgresql://postgres:nothing@localhost:5431/notpadd"
+     DATABASE_URL="postgresql://postgres:nothing@localhost:5431/envincible"
      ```
 
    > **Note:** The `DATABASE_URL` in both `/apps/web` and `/packages/database` should be the same.
