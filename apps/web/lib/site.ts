@@ -1,11 +1,11 @@
 export const siteConfig = {
-  name: "Notpadd",
+  name: "Envi",
   description: "Write the content not the code",
-  ogImage: "https://notpadd.com/og.png",
-  url: "https://notpadd.com",
+  ogImage: "https://Envi.com/og.png",
+  url: "https://Envi.com",
   links: {
-    twitter: "https://twitter.com/notpadd",
-    github: "https://github.com/skaleway/notpadd",
+    twitter: "https://twitter.com/Envi",
+    github: "https://github.com/skaleway/Envi",
     author: "Skaleway",
     authorSite: "https://skaleway.com",
     tailark: "https://tailark.com",

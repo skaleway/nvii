@@ -5,7 +5,7 @@
     "paths": {
       "@/*": ["./*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"],
-      "notpadd-data": ["./.notpadd/"]
+      "Envi-data": ["./.Envi/"]
     },
     "plugins": [
       {
@@ -19,7 +19,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "notpadd.config.js"
+    "Envi.config.js"
   ],
   "exclude": ["node_modules"]
 }
