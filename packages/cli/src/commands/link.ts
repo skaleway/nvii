@@ -13,7 +13,6 @@ import path from "path";
 import pc from "picocolors";
 import { login } from "./login";
 
-const ENV_FILE = ".envi";
 const DOT_ENV_FILE = ".env";
 
 export async function linkProject() {

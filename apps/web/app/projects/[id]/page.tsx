@@ -1,5 +1,6 @@
 import { EnvVariableTable } from "@/components/env-variable-table";
 import { db } from "@workspace/db";
+import { decryptEnvValues } from "@workspace/env-helpers";
 import { Badge } from "@workspace/ui/components/badge";
 import {
   Breadcrumb,
@@ -17,6 +18,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { ChevronRight, Plus, RefreshCw } from "lucide-react";
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
@@ -24,6 +26,11 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { id } = await params;
+  const { userId } = await auth();
+
+  if (!userId) {
+    return notFound();
+  }
 
   const project = await db.project.findUnique({
     where: {
@@ -32,6 +39,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   });
 
   if (!project) notFound();
+
+  // Decrypt the environment variables
+  const decryptedContent =
+    project.content && typeof project.content === "object"
+      ? decryptEnvValues(project.content as Record<string, string>, userId)
+      : {};
 
   return (
     <div className="container py-6 space-y-6">
@@ -90,19 +103,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <TabsTrigger value="production">Production</TabsTrigger>
         </TabsList>
         <TabsContent value="development" className="mt-4">
-          <EnvVariableTable
-            environment={project.content as Record<string, string>}
-          />
+          <EnvVariableTable environment={decryptedContent} />
         </TabsContent>
         <TabsContent value="staging" className="mt-4">
-          <EnvVariableTable
-            environment={project.content as Record<string, string>}
-          />
+          <EnvVariableTable environment={decryptedContent} />
         </TabsContent>
         <TabsContent value="production" className="mt-4">
-          <EnvVariableTable
-            environment={project.content as Record<string, string>}
-          />
+          <EnvVariableTable environment={decryptedContent} />
         </TabsContent>
       </Tabs>
     </div>

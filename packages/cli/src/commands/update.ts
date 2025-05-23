@@ -8,6 +8,7 @@ import {
   getConfiguredClient,
 } from "@workspace/env-helpers";
 import { login } from "./login";
+
 export async function updateProject() {
   try {
     const userData = await readConfigFile();

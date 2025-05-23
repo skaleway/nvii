@@ -168,7 +168,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/bkm/projects/skaleway/envincible/packages/database/generated/client",
+      "value": "/home/bkm/projects/skaleway/envi/packages/database/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -182,12 +182,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/bkm/projects/skaleway/envincible/packages/database/prisma/schema.prisma",
+    "sourceFilePath": "/home/bkm/projects/skaleway/envi/packages/database/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
     "rootEnvPath": null,
-    "schemaEnvPath": "../../../../.env"
+    "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../prisma",
   "clientVersion": "6.8.2",
@@ -196,7 +196,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": true,
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

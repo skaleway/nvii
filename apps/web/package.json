@@ -60,6 +60,7 @@
     "@types/react-dom": "18.3.1",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@workspace/typescript-config": "workspace:*",
+    "@workspace/env-helpers": "workspace:*",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "postcss": "^8",

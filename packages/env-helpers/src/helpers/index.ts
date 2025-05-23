@@ -6,13 +6,14 @@ import pc from "picocolors";
 import { ConfigData } from "../types";
 
 export * from "./api-client";
+
 export const FILENAME = process.env.FILENAME || ".envincible";
-const ENCRYPTION_KEY = crypto
-  .createHash("sha256")
-  .update(
-    String(process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD")
-  )
-  .digest();
+
+const ENCRYPTION_KEY = Buffer.from(
+  process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD",
+  "utf8"
+).slice(0, 32);
+
 const IV_LENGTH = 16;
 
 export async function readConfigFile(): Promise<ConfigData | null> {
@@ -80,33 +81,37 @@ export async function readEnvFile(): Promise<Record<string, string>> {
       );
   } catch (error) {
     console.error(pc.yellow("⚠️ No .env file found or unable to read it."));
-    return {}; // Return an empty object if the file doesn't exist
+    return {};
   }
 }
 
+function deriveKey(userId: string): Buffer {
+  // Simplify key derivation to reduce potential inconsistencies
+  return crypto
+    .createHash("sha256")
+    .update(ENCRYPTION_KEY)
+    .update(userId)
+    .digest()
+    .slice(0, 32); // Ensure exactly 32 bytes
+}
+
 function encrypt(text: string, userId: string): string {
+  const key = deriveKey(userId);
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv(
-    "aes-256-cbc",
-    ENCRYPTION_KEY + userId,
-    iv
-  );
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
   let encrypted = cipher.update(text, "utf8", "hex");
   encrypted += cipher.final("hex");
   return iv.toString("hex") + ":" + encrypted;
 }
 
 function decrypt(text: string, userId: string): string {
+  const key = deriveKey(userId);
   const textParts = text.split(":");
   const iv = Buffer.from(textParts[0], "hex");
   const encryptedText = Buffer.from(textParts[1], "hex");
 
-  const decipher = crypto.createDecipheriv(
-    "aes-256-cbc",
-    ENCRYPTION_KEY + userId,
-    iv
-  );
-  let decrypted = decipher.update(encryptedText.toString("hex"), "hex", "utf8");
+  const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+  let decrypted = decipher.update(encryptedText, undefined, "utf8");
   decrypted += decipher.final("utf8");
   return decrypted;
 }
