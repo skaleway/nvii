@@ -43,7 +43,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
     Object.entries(environment).map(([key, value], index) => ({
       id: `${index}-${key}`,
       key,
-      value,
+      value: value.replace(/^"|"$/g, ""),
       isPublic: false,
       isVisible: false,
       isEditing: false,
