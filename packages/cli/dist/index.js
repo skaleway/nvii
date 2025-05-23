@@ -3009,22 +3009,72 @@ async function testencryption() {
   console.log("Decrypted Env:", decryptedEnv);
 }
 
+// src/commands/generate.ts
+var import_fs2 = require("fs");
+var import_path2 = require("path");
+var import_picocolors2 = __toESM(require("picocolors"));
+async function generateExample() {
+  try {
+    const cwd = process.cwd();
+    const envPath = (0, import_path2.join)(cwd, ".env");
+    const envLocalPath = (0, import_path2.join)(cwd, ".env.local");
+    const examplePath = (0, import_path2.join)(cwd, ".env.example");
+    let envContent;
+    let sourceFile;
+    if ((0, import_fs2.existsSync)(envPath)) {
+      envContent = (0, import_fs2.readFileSync)(envPath, "utf-8");
+      sourceFile = ".env";
+    } else if ((0, import_fs2.existsSync)(envLocalPath)) {
+      envContent = (0, import_fs2.readFileSync)(envLocalPath, "utf-8");
+      sourceFile = ".env.local";
+    } else {
+      throw new Error(
+        "No .env or .env.local file found in the current directory"
+      );
+    }
+    const exampleContent = envContent.split("\n").filter((line) => line.trim() !== "").map((line) => {
+      if (line.startsWith("#")) {
+        return line;
+      }
+      const key = line.split("=")[0];
+      if (!key)
+        return null;
+      return `${key}=""`;
+    }).filter(Boolean).join("\n");
+    (0, import_fs2.writeFileSync)(examplePath, exampleContent);
+    console.log(import_picocolors2.default.green("\u2713"), "Generated .env.example file successfully!");
+    console.log(import_picocolors2.default.dim("Source:"), sourceFile);
+    console.log(import_picocolors2.default.dim("Location:"), examplePath);
+  } catch (error) {
+    const fileError = error;
+    if (fileError.code === "ENOENT") {
+      console.error(import_picocolors2.default.red("\u2717"), fileError.message);
+      return;
+    }
+    console.error(
+      import_picocolors2.default.red("\u2717"),
+      "Failed to generate .env.example file:",
+      fileError.message
+    );
+  }
+}
+
 // src/commands/link.ts
-var import_fs3 = require("fs");
+var import_fs4 = require("fs");
 var import_inquirer = __toESM(require("inquirer"));
-var import_path3 = __toESM(require("path"));
-var import_picocolors3 = __toESM(require("picocolors"));
+var import_path4 = __toESM(require("path"));
+var import_picocolors4 = __toESM(require("picocolors"));
 
 // src/commands/login.ts
 var import_async_listen = require("async-listen");
 var import_child_process = require("child_process");
 var import_config = require("dotenv/config");
-var import_fs2 = require("fs");
+var import_fs3 = require("fs");
 var import_http = __toESM(require("http"));
 var import_nanoid = require("nanoid");
 var import_os2 = __toESM(require("os"));
-var import_path2 = __toESM(require("path"));
-var import_picocolors2 = __toESM(require("picocolors"));
+var import_path3 = __toESM(require("path"));
+var import_picocolors3 = __toESM(require("picocolors"));
 var import_url = __toESM(require("url"));
 var UserCancellationError = class extends Error {
   constructor(message) {
@@ -3035,8 +3085,8 @@ var UserCancellationError = class extends Error {
 async function writeToConfigFile(data) {
   try {
     const homeDir = import_os2.default.homedir();
-    const filePath = import_path2.default.join(homeDir, FILENAME);
-    (0, import_fs2.writeFileSync)(filePath, JSON.stringify(data, null, 2));
+    const filePath = import_path3.default.join(homeDir, FILENAME);
+    (0, import_fs3.writeFileSync)(filePath, JSON.stringify(data, null, 2));
   } catch (error) {
     console.error("Error writing to local config file", error);
   }
@@ -3080,11 +3130,11 @@ async function login() {
   const confirmationUrl = new URL(`${process.env.CLIENT_URL}/auth/devices`);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
-  console.log(`Confirmation code: ${import_picocolors2.default.bold(code)}
+  console.log(`Confirmation code: ${import_picocolors3.default.bold(code)}
 `);
   console.log(
     `If something goes wrong, copy and paste this URL into your browser:
-${import_picocolors2.default.bold(confirmationUrl.toString())}
+${import_picocolors3.default.bold(confirmationUrl.toString())}
 `
   );
   (0, import_child_process.spawn)("open", [confirmationUrl.toString()]);
@@ -3093,7 +3143,7 @@ ${import_picocolors2.default.bold(confirmationUrl.toString())}
     const authData = await authPromise;
     spinner.stop();
     writeToConfigFile(authData);
-    console.log(import_picocolors2.default.green("Authentication successful!"));
+    console.log(import_picocolors3.default.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${FILENAME}
 `);
     server.close();
@@ -3101,9 +3151,9 @@ ${import_picocolors2.default.bold(confirmationUrl.toString())}
   } catch (error) {
     spinner.stop();
     if (error instanceof UserCancellationError) {
-      console.log(import_picocolors2.default.yellow("Authentication cancelled.\n"));
+      console.log(import_picocolors3.default.yellow("Authentication cancelled.\n"));
     } else {
-      console.error(import_picocolors2.default.red("Authentication failed:"), error);
+      console.error(import_picocolors3.default.red("Authentication failed:"), error);
     }
     server.close();
     process.exit(1);
@@ -3137,20 +3187,20 @@ var DOT_ENV_FILE = ".env";
 async function linkProject() {
   try {
     if (!isLogedIn()) {
-      console.log(import_picocolors3.default.red("You must be logged in to link a project."));
+      console.log(import_picocolors4.default.red("You must be logged in to link a project."));
       await login();
       return;
     }
     const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors3.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors4.default.red("No user ID found. Please log in again."));
       return;
     }
     const client = await getConfiguredClient();
     const response = await client.get(`/projects/${userConfig.userId}`);
     const projects = response.data.data;
     if (!projects.length) {
-      console.log(import_picocolors3.default.yellow("No projects found for this user."));
+      console.log(import_picocolors4.default.yellow("No projects found for this user."));
       return;
     }
     const { selectedProjectId } = await import_inquirer.default.prompt([
@@ -3168,7 +3218,7 @@ async function linkProject() {
       (proj) => proj.id === selectedProjectId
     );
     if (!selectedProject) {
-      console.log(import_picocolors3.default.red("Selected project not found."));
+      console.log(import_picocolors4.default.red("Selected project not found."));
       return;
     }
     const currentDir = process.cwd();
@@ -3184,10 +3234,10 @@ async function linkProject() {
       }
     ]);
     if (!createEnvFile) {
-      console.log(import_picocolors3.default.yellow("Skipping .env file creation."));
+      console.log(import_picocolors4.default.yellow("Skipping .env file creation."));
       return;
     }
-    const envFilePath = import_path3.default.join(currentDir, DOT_ENV_FILE);
+    const envFilePath = import_path4.default.join(currentDir, DOT_ENV_FILE);
     let existingEnv = await readEnvFile();
     const finalEnv = { ...existingEnv };
     let commentedLines = "";
@@ -3216,23 +3266,23 @@ async function linkProject() {
     }
     const decryptedEnv = decryptEnvValues(finalEnv);
     const finalEnvContent = Object.entries(decryptedEnv).map(([key, value]) => `${key}=${value}`).join("\n") + "\n" + commentedLines;
-    await import_fs3.promises.writeFile(envFilePath, finalEnvContent);
+    await import_fs4.promises.writeFile(envFilePath, finalEnvContent);
     await writeProjectConfig(selectedProject.id);
-    console.log(import_picocolors3.default.green(".env file updated successfully!"));
+    console.log(import_picocolors4.default.green(".env file updated successfully!"));
   } catch (error) {
-    console.error(import_picocolors3.default.red("Error linking project:"), error);
+    console.error(import_picocolors4.default.red("Error linking project:"), error);
   }
 }
 
 // src/commands/new.ts
 var import_inquirer2 = __toESM(require("inquirer"));
-var import_picocolors4 = __toESM(require("picocolors"));
+var import_picocolors5 = __toESM(require("picocolors"));
 async function promptUser(message) {
   const response = await import_inquirer2.default.prompt([
     {
       type: "input",
       name: "answer",
-      message: import_picocolors4.default.cyan(message)
+      message: import_picocolors5.default.cyan(message)
     }
   ]);
   return response.answer.trim();
@@ -3240,18 +3290,18 @@ async function promptUser(message) {
 async function createProject() {
   try {
     if (!isLogedIn()) {
-      console.log(import_picocolors4.default.red("You must be logged in to create a new project."));
+      console.log(import_picocolors5.default.red("You must be logged in to create a new project."));
       await login();
     }
     const projectName = await promptUser("Enter your project name:");
     if (!projectName) {
-      console.error(import_picocolors4.default.red("\u274C Project name cannot be empty."));
+      console.error(import_picocolors5.default.red("\u274C Project name cannot be empty."));
       process.exit(1);
     }
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
-        import_picocolors4.default.red("\u274C Invalid user credentials. Please log in again.")
+        import_picocolors5.default.red("\u274C Invalid user credentials. Please log in again.")
       );
       await login();
       return;
@@ -3267,27 +3317,27 @@ async function createProject() {
     const projectId = response.data.data.id;
     await writeProjectConfig(projectId);
   } catch (error) {
-    console.error(import_picocolors4.default.red("\u274C Error creating project:"), error);
+    console.error(import_picocolors5.default.red("\u274C Error creating project:"), error);
   }
 }
 
 // src/commands/update.ts
-var import_picocolors5 = __toESM(require("picocolors"));
+var import_picocolors6 = __toESM(require("picocolors"));
 async function updateProject() {
   try {
     const userData = await readConfigFile();
     if (!isLogedIn()) {
-      console.log(import_picocolors5.default.red("You must be logged in to update a project."));
+      console.log(import_picocolors6.default.red("You must be logged in to update a project."));
       await login();
     }
     if (!userData) {
-      console.log(import_picocolors5.default.red("You must be logged in to update a project."));
+      console.log(import_picocolors6.default.red("You must be logged in to update a project."));
       await login();
     }
     const projectConfig = await readProjectConfig();
     if (!projectConfig) {
       console.error(
-        import_picocolors5.default.red(
+        import_picocolors6.default.red(
           "\u274C Project not linked. Please run 'envi link' to link your project first."
         )
       );
@@ -3302,13 +3352,13 @@ async function updateProject() {
         content: encryptedEnv
       }
     );
-    console.log(import_picocolors5.default.cyan("Updated environment variables:"));
+    console.log(import_picocolors6.default.cyan("Updated environment variables:"));
     console.log(project.data.data.content);
     console.log(
-      import_picocolors5.default.green("\u2705 Project updated successfully with new .env variables.")
+      import_picocolors6.default.green("\u2705 Project updated successfully with new .env variables.")
     );
   } catch (error) {
-    console.error(import_picocolors5.default.red("\u274C Error updating project:"), error);
+    console.error(import_picocolors6.default.red("\u274C Error updating project:"), error);
     process.exit(1);
   }
 }
@@ -3330,4 +3380,5 @@ program2.command("new").description("Create a new project").action(() => {
 program2.command("link").description("Link an existing project to the current directory").action(linkProject);
 program2.command("test").description("Test to see if the encryption and decryption works").action(testencryption);
 program2.command("update").description("Update the existing env file").action(updateProject);
+program2.command("generate").description("Generate a .env.example file from your .env file").action(generateExample);
 program2.parse(process.argv);

@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { testencryption } from "./commands/crypt";
-import { linkProject } from "./commands/link";
-import { login } from "./commands/login";
-import { createProject } from "./commands/new";
-import { updateProject } from "./commands/update";
-import { readConfigFile } from "./helpers";
+import {
+  testencryption,
+  generateExample,
+  linkProject,
+  login,
+  createProject,
+  updateProject,
+} from "./commands";
+import { readConfigFile } from "@workspace/env-helpers";
 
 const program = new Command();
 
@@ -48,5 +51,10 @@ program
   .command("update")
   .description("Update the existing env file")
   .action(updateProject);
+
+program
+  .command("generate")
+  .description("Generate a .env.example file from your .env file")
+  .action(generateExample);
 
 program.parse(process.argv);

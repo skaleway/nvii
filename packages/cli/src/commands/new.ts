@@ -1,17 +1,14 @@
-import { db } from "@workspace/db";
-import { promises as fs } from "fs";
-import inquirer from "inquirer";
-import path from "path";
-import pc from "picocolors";
 import {
   encryptEnvValues,
+  getConfiguredClient,
   isLogedIn,
   readConfigFile,
   readEnvFile,
   writeProjectConfig,
-} from "../helpers";
+} from "@workspace/env-helpers";
+import inquirer from "inquirer";
+import pc from "picocolors";
 import { login } from "./login";
-import { getConfiguredClient } from "../helpers/api-client";
 
 const ENV_FILE = ".envi";
 
@@ -59,7 +56,7 @@ export async function createProject() {
 
     const envs = await readEnvFile();
 
-    const encryptedEnvs = encryptEnvValues(envs);
+    const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
 
     const client = await getConfiguredClient();
 

@@ -1,4 +1,8 @@
-import { decryptEnvValues, encryptEnvValues, readEnvFile } from "../helpers";
+import {
+  decryptEnvValues,
+  encryptEnvValues,
+  readEnvFile,
+} from "@workspace/env-helpers";
 
 export async function testencryption() {
   const envs = await readEnvFile();

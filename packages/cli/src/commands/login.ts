@@ -1,3 +1,4 @@
+import { FILENAME } from "@workspace/env-helpers";
 import { listen } from "async-listen";
 import { spawn } from "child_process";
 import "dotenv/config";
@@ -8,7 +9,6 @@ import os from "os";
 import path from "path";
 import pc from "picocolors";
 import url from "url";
-import { FILENAME } from "../helpers";
 
 class UserCancellationError extends Error {
   constructor(message: string) {
@@ -42,7 +42,7 @@ export async function login() {
       res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
       res.setHeader(
         "Access-Control-Allow-Headers",
-        "Content-Type, Authorization",
+        "Content-Type, Authorization"
       );
 
       if (req.method === "OPTIONS") {
@@ -74,7 +74,7 @@ export async function login() {
 
   console.log(`Confirmation code: ${pc.bold(code)}\n`);
   console.log(
-    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`,
+    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`
   );
 
   spawn("open", [confirmationUrl.toString()]);
