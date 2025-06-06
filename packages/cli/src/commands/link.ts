@@ -11,7 +11,7 @@ import { promises as fs } from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import pc from "picocolors";
-import { login } from "./login";
+import { login } from "./auth/login";
 
 const DOT_ENV_FILE = ".env";
 

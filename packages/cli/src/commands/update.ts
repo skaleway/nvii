@@ -7,7 +7,7 @@ import {
   readProjectConfig,
   getConfiguredClient,
 } from "@workspace/env-helpers";
-import { login } from "./login";
+import { login } from "./auth/login";
 
 export async function updateProject() {
   try {

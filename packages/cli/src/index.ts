@@ -8,6 +8,7 @@ import {
   login,
   createProject,
   updateProject,
+  logout,
 } from "./commands";
 import { readConfigFile } from "@workspace/env-helpers";
 
@@ -17,6 +18,11 @@ program
   .command("login")
   .description("Authenticate with your service via the CLI")
   .action(login);
+
+program
+  .command("logout")
+  .description("Logout from your service via the CLI")
+  .action(logout);
 
 program
   .command("whoami")

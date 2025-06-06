@@ -8,7 +8,7 @@ import {
 } from "@workspace/env-helpers";
 import inquirer from "inquirer";
 import pc from "picocolors";
-import { login } from "./login";
+import { login } from "./auth/login";
 
 const ENV_FILE = ".envi";
 
