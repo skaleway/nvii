@@ -14,19 +14,17 @@ export async function logout() {
       return;
     }
 
-    console.log({ config });
-
     // Ask for user ID confirmation
     const { userId } = await inquirer.prompt([
       {
         type: "input",
         name: "userId",
-        message: "Please enter your User ID to confirm logout:",
+        message: `Please enter your username to confirm logout ("${config.username}"): `,
         validate: (input) => {
-          if (input === config.userId) {
+          if (input === config.username) {
             return true;
           }
-          return "User ID does not match. Please try again.";
+          return "Username does not match. Please try again.";
         },
       },
     ]);

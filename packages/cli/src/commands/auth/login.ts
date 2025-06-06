@@ -83,6 +83,7 @@ export async function login() {
 
   try {
     const authData = await authPromise;
+    console.log({ authData });
     spinner.stop();
     writeToConfigFile(authData);
     console.log(pc.green("Authentication successful!"));

@@ -11,6 +11,7 @@ import {
   logout,
 } from "./commands";
 import { readConfigFile } from "@workspace/env-helpers";
+import pc from "picocolors";
 
 const program = new Command();
 
@@ -30,7 +31,9 @@ program
   .action(async () => {
     try {
       const file = await readConfigFile();
-      console.log(file);
+      if (!file) return;
+
+      console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
     } catch (error) {
       console.error("Error reading config:", error);
     }
