@@ -2,9 +2,21 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   ignorePatterns: ["apps/**", "packages/**"],
-  extends: ["@workspace/eslint-config/library.js"],
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: true,
+  extends: ["eslint:recommended"],
+  plugins: ["only-warn", "turbo"],
+  rules: {
+    "turbo/no-undeclared-env-vars": "warn",
   },
-}
+  env: {
+    node: true,
+  },
+  overrides: [
+    {
+      files: ["*.ts", "*.tsx"],
+      parser: "@typescript-eslint/parser",
+      parserOptions: {
+        project: true,
+      },
+    },
+  ],
+};

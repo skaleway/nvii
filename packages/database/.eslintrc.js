@@ -1,6 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
-  extends: ["@repo/eslint-config/library.js"],
+  extends: ["eslint:recommended"],
+  plugins: ["only-warn", "turbo"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: true,
