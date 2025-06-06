@@ -61,7 +61,16 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ ...device, redirect, code }, { status: 201 });
+    return NextResponse.json(
+      {
+        ...device,
+        redirect,
+        code,
+        username: user.name,
+        email: user.email,
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.log(error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });

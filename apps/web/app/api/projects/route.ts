@@ -21,7 +21,23 @@ export async function GET(): Promise<NextResponse> {
 
   const projects = await db.project.findMany({
     where: {
-      userId: user.id,
+      OR: [
+        { userId: user.id }, // Projects owned by the user
+        { ProjectAccess: { some: { userId: user.id } } }, // Projects shared with the user
+      ],
+    },
+    include: {
+      ProjectAccess: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

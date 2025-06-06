@@ -7,21 +7,26 @@ export const GET = async (
   request: Request,
   { params }: { params: Promise<{ userId: string }> }
 ): Promise<NextResponse> => {
-  const { userId } = await params;
+  try {
+    const { userId } = await params;
 
-  const user = await getClerkUser(userId);
+    const user = await getClerkUser(userId);
 
-  if (!user) {
-    return ErrorResponse("Unauthorized", 401);
+    if (!user) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    const projects = await db.project.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return Response(projects);
+  } catch (error) {
+    console.error(error);
+    return ErrorResponse("Internal Server Error", 500);
   }
-
-  const projects = await db.project.findMany({
-    where: {
-      userId,
-    },
-  });
-
-  return Response(projects);
 };
 
 export const POST = async (

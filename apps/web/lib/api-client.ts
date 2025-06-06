@@ -23,8 +23,11 @@ export const projectsApi = {
     }));
   },
 
-  create: async (project: CreateProjectInput): Promise<Project> => {
-    const response = await fetch(`${API_BASE}/projects`, {
+  create: async (
+    project: CreateProjectInput,
+    userId: string
+  ): Promise<Project> => {
+    const response = await fetch(`${API_BASE}/projects/${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,5 +68,54 @@ export const projectsApi = {
       status: data.content.totalEmpty > 0 ? "missing" : "valid",
       envCount: data.content.totalElem,
     };
+  },
+};
+
+export type ProjectAccessUser = {
+  id: string;
+  name: string | null;
+  email: string | null;
+};
+
+export type ProjectAccess = {
+  projectId: string;
+  userId: string;
+  assignedAt: string;
+  user: ProjectAccessUser;
+};
+
+export const projectAccessApi = {
+  list: async (projectId: string): Promise<ProjectAccess[]> => {
+    const response = await fetch(`/api/projects/access?projectId=${projectId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch project access list");
+    }
+    return response.json();
+  },
+
+  add: async (projectId: string, userEmail: string): Promise<ProjectAccess> => {
+    const response = await fetch("/api/projects/access", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ projectId, userEmail }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to add project access");
+    }
+    return response.json();
+  },
+
+  remove: async (projectId: string, userIdToRemove: string): Promise<void> => {
+    const response = await fetch(
+      `/api/projects/access?projectId=${projectId}&userIdToRemove=${userIdToRemove}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to remove project access");
+    }
   },
 };

@@ -1,14 +1,11 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
+import { useProjects } from "@/components/projects-provider";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -17,78 +14,82 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
-import { Textarea } from "@workspace/ui/components/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { useProjects } from "@/components/projects-provider"
+} from "@workspace/ui/components/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form";
+import { Input } from "@workspace/ui/components/input";
+import { Loader2, Plus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const projectSchema = z.object({
   name: z.string().min(2, {
     message: "Project name must be at least 2 characters.",
   }),
   description: z.string().optional(),
-  repoUrl: z.string().optional(),
-})
+  envVariables: z.record(z.string(), z.string()).optional(),
+});
 
-type ProjectFormValues = z.infer<typeof projectSchema>
+type ProjectFormValues = z.infer<typeof projectSchema>;
+
+type EnvVariable = {
+  key: string;
+  value: string;
+};
 
 export function AddProjectDialog({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
-  const router = useRouter()
-  const { addProject } = useProjects()
+  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
+  const { addProject, isLoading } = useProjects();
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
       name: "",
-      description: "",
-      repoUrl: "",
     },
-  })
+  });
 
   async function onSubmit(data: ProjectFormValues) {
-    setIsLoading(true)
-
     try {
-      // Create a short artificial delay to simulate processing
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const newProject = {
-        id: crypto.randomUUID(),
+      const projectData = {
         name: data.name,
-        description: data.description || "",
-        updatedAt: "Just now",
-        envCount: 0,
+        description: "",
         status: "valid" as const,
+        key: crypto.randomUUID(),
+        deviceId: crypto.randomUUID(),
+        envCount: 0,
         slug: data.name.toLowerCase().replace(/\s+/g, "-"),
-      }
+      };
 
-      // Add the project to our context (which will save to localStorage)
-      addProject(newProject)
+      await addProject(projectData);
 
       toast({
         title: "Project created",
-        description: `${data.name} has been created successfully and saved to localStorage.`,
-      })
+        description: `${data.name} has been created successfully.`,
+      });
 
-      setOpen(false)
-      form.reset()
+      setOpen(false);
+      form.reset();
 
       // Navigate to the new project
-      router.push(`/projects/${newProject.slug}`)
+      router.push(`/projects/${projectData.slug}`);
     } catch (error) {
       toast({
         title: "Something went wrong",
         description: "Your project could not be created. Please try again.",
         variant: "destructive",
-      })
-      console.error("Error creating project:", error)
-    } finally {
-      setIsLoading(false)
+      });
+      console.error("Error creating project:", error);
     }
   }
 
@@ -98,11 +99,15 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create a new project</DialogTitle>
-          <DialogDescription>Add a new project to manage its environment variables.</DialogDescription>
+          <DialogDescription>
+            Add a new project to manage its environment variables.
+          </DialogDescription>
         </DialogHeader>
+        {/* @ts-expect-error - react-hook-form types are not compatible with react 19 */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
+              // @ts-expect-error - react-hook-form types are not compatible with react 19
               control={form.control}
               name="name"
               render={({ field }) => (
@@ -111,39 +116,21 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
                   <FormControl>
                     <Input placeholder="My Awesome Project" {...field} />
                   </FormControl>
-                  <FormDescription>This is the name that will be displayed in the dashboard.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="A brief description of your project" className="resize-none" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="repoUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Repository URL (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://github.com/username/repo" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
+            <p className="text-sm text-muted-foreground">
+              You can add environment variables after creating the project.
+            </p>
+
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
@@ -155,5 +142,5 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -9,8 +9,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { projectsApi, CreateProjectInput } from "../lib/api-client";
+import {
+  projectsApi,
+  CreateProjectInput,
+  projectAccessApi,
+  ProjectAccess,
+} from "../lib/api-client";
 import { Project } from "../types/project";
+import { useUser } from "@clerk/nextjs";
 
 type ProjectsContextType = {
   projects: Project[];
@@ -21,6 +27,9 @@ type ProjectsContextType = {
   filteredProjects: (filter: string) => Project[];
   filterValue: string;
   setFilterValue: (filter: string) => void;
+  getProjectAccess: (projectId: string) => Promise<ProjectAccess[]>;
+  addProjectAccess: (projectId: string, userEmail: string) => Promise<void>;
+  removeProjectAccess: (projectId: string, userId: string) => Promise<void>;
 };
 
 const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
@@ -63,6 +72,7 @@ function ProjectsProviderInner({
   setFilterValue: (filter: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   // Fetch projects
   const {
@@ -76,7 +86,8 @@ function ProjectsProviderInner({
 
   // Add project mutation
   const addProjectMutation = useMutation({
-    mutationFn: projectsApi.create,
+    mutationFn: (project: CreateProjectInput) =>
+      projectsApi.create(project, user?.id ?? ""),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
@@ -112,6 +123,51 @@ function ProjectsProviderInner({
     [projects]
   );
 
+  // Project access mutations
+  const addProjectAccessMutation = useMutation({
+    mutationFn: ({
+      projectId,
+      userEmail,
+    }: {
+      projectId: string;
+      userEmail: string;
+    }) => projectAccessApi.add(projectId, userEmail),
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: ["projectAccess", projectId] });
+    },
+  });
+
+  const removeProjectAccessMutation = useMutation({
+    mutationFn: ({
+      projectId,
+      userId,
+    }: {
+      projectId: string;
+      userId: string;
+    }) => projectAccessApi.remove(projectId, userId),
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: ["projectAccess", projectId] });
+    },
+  });
+
+  const getProjectAccess = React.useCallback(async (projectId: string) => {
+    return projectAccessApi.list(projectId);
+  }, []);
+
+  const addProjectAccess = React.useCallback(
+    async (projectId: string, userEmail: string) => {
+      await addProjectAccessMutation.mutateAsync({ projectId, userEmail });
+    },
+    [addProjectAccessMutation]
+  );
+
+  const removeProjectAccess = React.useCallback(
+    async (projectId: string, userId: string) => {
+      await removeProjectAccessMutation.mutateAsync({ projectId, userId });
+    },
+    [removeProjectAccessMutation]
+  );
+
   return (
     <ProjectsContext.Provider
       value={{
@@ -123,6 +179,9 @@ function ProjectsProviderInner({
         filteredProjects,
         filterValue,
         setFilterValue,
+        getProjectAccess,
+        addProjectAccess,
+        removeProjectAccess,
       }}
     >
       {children}

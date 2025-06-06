@@ -36,13 +36,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <ProjectsProvider>
-              <SidebarProvider>
-                <AppSidebar variant="inset" collapsible="icon" />
-                <SidebarInset>
-                  <Header />
-                  <main className="flex-1 overflow-auto">{children}</main>
-                </SidebarInset>
-              </SidebarProvider>
+              <Header />
+              <main className="flex-1 bg-muted/30 w-full min-h-[calc(100vh-64px)]">
+                {children}
+              </main>
             </ProjectsProvider>
             <Toaster />
           </ThemeProvider>

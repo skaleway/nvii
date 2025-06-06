@@ -32,7 +32,7 @@ export default function Dashboard() {
   const displayedProjects = filteredProjects(filterValue);
 
   return (
-    <div className="container py-6 space-y-8">
+    <div className="container py-6 space-y-8 max-w-7xl">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <div className="flex items-center gap-4">

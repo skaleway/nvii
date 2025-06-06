@@ -95,6 +95,8 @@ export default function Page() {
         redirectUrl.searchParams.append("key", res.key);
         redirectUrl.searchParams.append("userId", res.userId);
         redirectUrl.searchParams.append("deviceId", res.id);
+        redirectUrl.searchParams.append("username", res.username);
+        redirectUrl.searchParams.append("email", res.email);
 
         const redirectUrlString = redirectUrl.toString();
 
