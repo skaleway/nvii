@@ -31,9 +31,12 @@ export async function GET(request: Request) {
       });
     }
 
-    // Get all users with access
+    // Get all users with access except the current user
     const projectAccess = await db.projectAccess.findMany({
-      where: { projectId },
+      where: {
+        projectId,
+        userId: { not: userId }, // Exclude current user
+      },
       include: {
         user: {
           select: {

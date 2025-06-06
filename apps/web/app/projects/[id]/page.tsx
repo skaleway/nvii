@@ -33,18 +33,32 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     return notFound();
   }
 
-  const project = await db.project.findUnique({
+  const project = await db.project.findFirst({
     where: {
       id,
+      OR: [
+        { userId }, // Project owner
+        { ProjectAccess: { some: { userId } } }, // Has access through sharing
+      ],
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
 
   if (!project) notFound();
 
-  // Decrypt the environment variables
+  // Decrypt the environment variables using the project owner's ID
   const decryptedContent =
     project.content && typeof project.content === "object"
-      ? decryptEnvValues(project.content as Record<string, string>, userId)
+      ? decryptEnvValues(
+          project.content as Record<string, string>,
+          project.user.id
+        )
       : {};
 
   return (

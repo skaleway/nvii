@@ -16,6 +16,19 @@ export interface Variable {
   requiredBy: string[];
 }
 
+export interface ProjectAccessUser {
+  id: string;
+  name: string | null;
+  email: string | null;
+}
+
+export interface ProjectAccess {
+  projectId: string;
+  userId: string;
+  assignedAt: string;
+  user: ProjectAccessUser;
+}
+
 export interface Project
   extends Omit<DbProject, "updatedAt" | "createdAt" | "content"> {
   updatedAt: string;
@@ -25,4 +38,5 @@ export interface Project
   description: string;
   slug: string;
   content: AnalyzedContent;
+  ProjectAccess?: ProjectAccess[];
 }

@@ -38,6 +38,11 @@ export async function GET(): Promise<NextResponse> {
           },
         },
       },
+      user: {
+        select: {
+          id: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -48,9 +53,10 @@ export async function GET(): Promise<NextResponse> {
     // First decrypt the content if it exists
     let decryptedContent = {};
     if (project.content && typeof project.content === "object") {
+      // Use the project owner's ID for decryption
       decryptedContent = decryptEnvValues(
         project.content as Record<string, string>,
-        user.id
+        project.user.id // This is the project owner's ID
       );
     }
 

@@ -24,7 +24,9 @@ import {
 import { useProjects } from "@/components/projects-provider";
 import { useToast } from "@/hooks/use-toast";
 import { parseISO, format } from "date-fns";
-import { AnalyzedContent, Project } from "@/types/project";
+import { AnalyzedContent, Project, ProjectAccess } from "@/types/project";
+import { useUser } from "@clerk/nextjs";
+
 interface ProjectCardProps {
   project: Project;
 }
@@ -33,6 +35,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const slug = project.name.toLowerCase().replace(/\s+/g, "-");
   const { removeProject } = useProjects();
   const { toast } = useToast();
+  const { user } = useUser();
+
+  const isSharedProject = project.userId !== user?.id;
+  const sharedBy = project.ProjectAccess?.find(
+    (access: ProjectAccess) => access.user.id === project.userId
+  )?.user;
 
   const handleDelete = () => {
     if (!project.id) return;
@@ -51,6 +59,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <Link href={`/projects/${project.id}`}>
             <h3 className="font-semibold leading-none tracking-tight hover:text-primary">
               {project.name}
+              {isSharedProject && (
+                <span className="ml-2 text-xs text-muted-foreground">
+                  Shared by {sharedBy?.name || sharedBy?.email || "Unknown"}
+                </span>
+              )}
             </h3>
           </Link>
           <p className="text-sm text-muted-foreground">{project.description}</p>
@@ -64,20 +77,22 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/projects/${slug}`}>View Details</Link>
+              <Link href={`/projects/${project.id}`}>View Details</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/projects/${slug}`}>Edit Variables</Link>
+              <Link href={`/projects/${project.id}`}>Edit Variables</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/sync">Sync Variables</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={handleDelete}
-            >
-              Delete Project
-            </DropdownMenuItem>
+            {!isSharedProject && (
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={handleDelete}
+              >
+                Delete Project
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
