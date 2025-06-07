@@ -62,6 +62,9 @@ importers:
       "@better-auth/cli":
         specifier: ^1.2.8
         version: 1.2.8(@babel/core@7.27.4)(@types/react@18.3.0)(kysely@0.28.2)(react@19.1.0)
+      "@better-fetch/fetch":
+        specifier: ^1.1.18
+        version: 1.1.18
       "@blocknote/core":
         specifier: ^0.26.0
         version: 0.26.0(@types/hast@3.0.4)
@@ -92,6 +95,9 @@ importers:
       "@radix-ui/react-toast":
         specifier: ^1.2.14
         version: 1.2.14(@types/react-dom@18.3.1)(@types/react@18.3.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      "@sendgrid/mail":
+        specifier: ^8.1.5
+        version: 8.1.5
       "@tanstack/react-query":
         specifier: ^5.69.0
         version: 5.69.0(react@19.1.0)
@@ -3768,6 +3774,27 @@ packages:
         integrity: sha512-zxnHvoMQVqewTJr/W4pKjF0bMGiKJv1WX7bSrkl46Hg0QjESbzBROWK0Wg4RphzSOS5Jiy7eFimmM3UgMrMZbQ==,
       }
 
+  "@sendgrid/client@8.1.5":
+    resolution:
+      {
+        integrity: sha512-Jqt8aAuGIpWGa15ZorTWI46q9gbaIdQFA21HIPQQl60rCjzAko75l3D1z7EyjFrNr4MfQ0StusivWh8Rjh10Cg==,
+      }
+    engines: { node: ">=12.*" }
+
+  "@sendgrid/helpers@8.0.0":
+    resolution:
+      {
+        integrity: sha512-Ze7WuW2Xzy5GT5WRx+yEv89fsg/pgy3T1E3FS0QEx0/VvRmigMZ5qyVGhJz4SxomegDkzXv/i0aFPpHKN8qdAA==,
+      }
+    engines: { node: ">= 12.0.0" }
+
+  "@sendgrid/mail@8.1.5":
+    resolution:
+      {
+        integrity: sha512-W+YuMnkVs4+HA/bgfto4VHKcPKLc7NiZ50/NH2pzO6UHCCFuq8/GNB98YJlLEr/ESDyzAaDr7lVE7hoBwFTT3Q==,
+      }
+    engines: { node: ">=12.*" }
+
   "@shikijs/core@1.29.2":
     resolution:
       {
@@ -5067,6 +5094,12 @@ packages:
         integrity: sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==,
       }
 
+  axios@1.9.0:
+    resolution:
+      {
+        integrity: sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==,
+      }
+
   axobject-query@4.1.0:
     resolution:
       {
@@ -5884,6 +5917,13 @@ packages:
       {
         integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==,
       }
+
+  deepmerge@4.3.1:
+    resolution:
+      {
+        integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==,
+      }
+    engines: { node: ">=0.10.0" }
 
   defaults@1.0.4:
     resolution:
@@ -14789,6 +14829,24 @@ snapshots:
 
   "@rushstack/eslint-patch@1.11.0": {}
 
+  "@sendgrid/client@8.1.5":
+    dependencies:
+      "@sendgrid/helpers": 8.0.0
+      axios: 1.9.0
+    transitivePeerDependencies:
+      - debug
+
+  "@sendgrid/helpers@8.0.0":
+    dependencies:
+      deepmerge: 4.3.1
+
+  "@sendgrid/mail@8.1.5":
+    dependencies:
+      "@sendgrid/client": 8.1.5
+      "@sendgrid/helpers": 8.0.0
+    transitivePeerDependencies:
+      - debug
+
   "@shikijs/core@1.29.2":
     dependencies:
       "@shikijs/engine-javascript": 1.29.2
@@ -15710,6 +15768,14 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  axios@1.9.0:
+    dependencies:
+      follow-redirects: 1.15.9
+      form-data: 4.0.2
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
   axobject-query@4.1.0: {}
 
   bail@2.0.2: {}
@@ -16183,6 +16249,8 @@ snapshots:
   deep-extend@0.6.0: {}
 
   deep-is@0.1.4: {}
+
+  deepmerge@4.3.1: {}
 
   defaults@1.0.4:
     dependencies:

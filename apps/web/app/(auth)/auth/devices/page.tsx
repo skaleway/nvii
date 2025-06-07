@@ -108,7 +108,7 @@ export default function Page() {
         console.error(_error);
         setLoading(false);
         toast.error(
-          "Error redirecting back to local CLI. Is your CLI running?"
+          "Error redirecting back to local CLI. Is your CLI running?",
         );
       }
     } catch (_error) {
