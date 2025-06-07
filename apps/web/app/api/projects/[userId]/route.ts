@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@workspace/db";

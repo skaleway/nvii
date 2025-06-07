@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { useProjects } from "./projects-provider";
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
@@ -13,19 +12,17 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 import { Input } from "@workspace/ui/components/input";
-import { Users, Plus, Loader2, X } from "lucide-react";
-import { toast } from "sonner";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@workspace/ui/components/avatar";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
+import UserProfile from "@workspace/ui/components/user-profile";
+import { Loader2, Plus, Users, X } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
+import { useProjects } from "./projects-provider";
 
 function UserAvatar({
   user,
@@ -48,9 +45,10 @@ function UserAvatar({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Avatar className="h-8 w-8 border-2 border-background">
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
+          <UserProfile
+            name={user.name ?? "user"}
+            className="rounded-full cursor-pointer"
+          />
         </TooltipTrigger>
         <TooltipContent>
           <p>{user.name || user.email}</p>
@@ -140,7 +138,7 @@ export function ProjectAccessManager({ projectId }: { projectId: string }) {
             <Button
               variant="ghost"
               size="icon"
-              className="ml-1 h-8 w-8 rounded-full"
+              className="ml-1 h-8 w-8 rounded-full border border-dashed"
             >
               <Plus className="h-4 w-4" />
             </Button>

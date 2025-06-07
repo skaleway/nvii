@@ -60,23 +60,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     project.content && typeof project.content === "object"
       ? decryptEnvValues(
           project.content as Record<string, string>,
-          session.user.id,
+          project.user.id,
         )
       : {};
 
   return (
-    <div className="container py-6 space-y-6">
+    <div className="max-w-7xl mx-auto container py-6 space-y-6">
       <div className="flex items-center justify-between">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>
-              <ChevronRight className="h-4 w-4" />
-            </BreadcrumbSeparator>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Projects</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator>
               <ChevronRight className="h-4 w-4" />
@@ -117,22 +111,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </div>
       </div>
 
-      <Tabs defaultValue="development" className="w-full">
-        <TabsList>
-          <TabsTrigger value="development">Development</TabsTrigger>
-          <TabsTrigger value="staging">Staging</TabsTrigger>
-          <TabsTrigger value="production">Production</TabsTrigger>
-        </TabsList>
-        <TabsContent value="development" className="mt-4">
-          <EnvVariableTable environment={decryptedContent} />
-        </TabsContent>
-        <TabsContent value="staging" className="mt-4">
-          <EnvVariableTable environment={decryptedContent} />
-        </TabsContent>
-        <TabsContent value="production" className="mt-4">
-          <EnvVariableTable environment={decryptedContent} />
-        </TabsContent>
-      </Tabs>
+      <EnvVariableTable environment={decryptedContent} />
     </div>
   );
 }
