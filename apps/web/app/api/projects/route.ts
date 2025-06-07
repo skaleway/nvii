@@ -2,28 +2,29 @@ import { getClerkUser } from "@/lib/current-user";
 import { decryptEnvValues } from "@/lib/encryption";
 import { analyzeContent } from "@/lib/objects";
 import { ErrorResponse } from "@/lib/response";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { db } from "@workspace/db";
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 
 export async function GET(): Promise<NextResponse> {
-  const { userId } = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!userId) {
+  if (!session) {
     return ErrorResponse("Unauthorized", 401);
   }
 
-  const user = await getClerkUser(userId);
-
-  if (!user) {
+  if (!session) {
     return ErrorResponse("Unauthorized", 401);
   }
 
   const projects = await db.project.findMany({
     where: {
       OR: [
-        { userId: user.id }, // Projects owned by the user
-        { ProjectAccess: { some: { userId: user.id } } }, // Projects shared with the user
+        { userId: session.user.id }, // Projects owned by the user
+        { ProjectAccess: { some: { userId: session.user.id } } }, // Projects shared with the user
       ],
     },
     include: {
@@ -56,7 +57,7 @@ export async function GET(): Promise<NextResponse> {
       // Use the project owner's ID for decryption
       decryptedContent = decryptEnvValues(
         project.content as Record<string, string>,
-        project.user.id // This is the project owner's ID
+        session.user.id, // This is the project owner's ID
       );
     }
 

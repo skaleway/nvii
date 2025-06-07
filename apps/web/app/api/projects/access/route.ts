@@ -1,15 +1,18 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { db } from "@workspace/db";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 // Get all users with access to a project
 export async function GET(request: Request) {
   try {
-    const { userId } = await auth();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId");
 
-    if (!userId) {
+    if (!session) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -21,7 +24,10 @@ export async function GET(request: Request) {
     const project = await db.project.findFirst({
       where: {
         id: projectId,
-        OR: [{ userId }, { ProjectAccess: { some: { userId } } }],
+        OR: [
+          { userId: session.user.id },
+          { ProjectAccess: { some: { userId: session.user.id } } },
+        ],
       },
     });
 
@@ -35,7 +41,7 @@ export async function GET(request: Request) {
     const projectAccess = await db.projectAccess.findMany({
       where: {
         projectId,
-        userId: { not: userId }, // Exclude current user
+        userId: { not: session.user.id }, // Exclude current user
       },
       include: {
         user: {
@@ -58,11 +64,13 @@ export async function GET(request: Request) {
 // Add user access to a project
 export async function POST(request: Request) {
   try {
-    const { userId } = await auth();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     const body = await request.json();
     const { projectId, userEmail } = body;
 
-    if (!userId) {
+    if (!session) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -76,7 +84,7 @@ export async function POST(request: Request) {
     const project = await db.project.findFirst({
       where: {
         id: projectId,
-        userId,
+        userId: session.user.id,
       },
     });
 
@@ -122,12 +130,14 @@ export async function POST(request: Request) {
 // Remove user access from a project
 export async function DELETE(request: Request) {
   try {
-    const { userId } = await auth();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId");
     const userIdToRemove = searchParams.get("userIdToRemove");
 
-    if (!userId) {
+    if (!session) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -141,7 +151,7 @@ export async function DELETE(request: Request) {
     const project = await db.project.findFirst({
       where: {
         id: projectId,
-        userId,
+        userId: session.user.id,
       },
     });
 

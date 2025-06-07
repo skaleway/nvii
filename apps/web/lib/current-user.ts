@@ -1,27 +1,29 @@
-// import { auth } from "@clerk/nextjs";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { db } from "@workspace/db";
+import { headers } from "next/headers";
 
-export async function getCurrentUser() {
-  const { userId } = await auth();
+export async function getCurrentUserFromDb() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!userId) return null;
+  if (!session) return null;
 
   const user = await db.user.findUnique({
     where: {
-      id: userId,
+      id: session.user.id,
     },
   });
 
   return user;
 }
 
-export async function getClerkUser(userId: string) {
-  const user = await clerkClient().then((client) =>
-    client.users.getUser(userId),
-  );
+export async function getCurrentUserFromSession() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!user) return null;
+  if (!session) return null;
 
-  return user;
+  return session.user;
 }

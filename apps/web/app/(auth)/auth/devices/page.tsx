@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/provider/session";
 import { Button } from "@workspace/ui/components/button";
 
 function CodeCharacter({ char }: { char: string }) {
@@ -133,7 +133,7 @@ export default function Page() {
     }
   }
 
-  const { user } = useUser();
+  const { user } = useSession();
 
   if (!code || !_redirect) {
     return notFound();

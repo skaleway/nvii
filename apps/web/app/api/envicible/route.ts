@@ -1,52 +1,34 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { db } from "@workspace/db";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const { id, redirect, code } = await request.json();
 
   try {
-    const { userId } = await auth();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId)
+    if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     if (!id || !redirect || !code)
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
 
     let user = await db.user.findUnique({
       where: {
-        id: userId,
+        id: session.user.id,
       },
     });
 
-    if (!user && userId) {
-      const response = await clerkClient().then((client) =>
-        client.users.getUser(userId)
-      );
-
-      if (!response) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-
-      user = await db.user.create({
-        data: {
-          id: response.id,
-          email: response?.emailAddresses[0]?.emailAddress || "",
-          name: response.firstName,
-        },
-      });
-    }
-
-    if (!user)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-
     const deviceExist = await db.device.findFirst({
       where: {
-        userId,
+        userId: session.user.id,
       },
     });
 
@@ -56,7 +38,7 @@ export async function POST(request: Request) {
 
     const device = await db.device.create({
       data: {
-        userId,
+        userId: session.user.id,
         code: code as string,
       },
     });
@@ -66,10 +48,10 @@ export async function POST(request: Request) {
         ...device,
         redirect,
         code,
-        username: user.name,
-        email: user.email,
+        username: session.user.name,
+        email: session.user.email,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.log(error.message);

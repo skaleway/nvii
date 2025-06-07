@@ -16,7 +16,7 @@ import {
   ProjectAccess,
 } from "../lib/api-client";
 import { Project } from "../types/project";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/provider/session";
 
 type ProjectsContextType = {
   projects: Project[];
@@ -33,7 +33,7 @@ type ProjectsContextType = {
 };
 
 const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
-  undefined
+  undefined,
 );
 
 // Create a client
@@ -72,7 +72,7 @@ function ProjectsProviderInner({
   setFilterValue: (filter: string) => void;
 }) {
   const queryClient = useQueryClient();
-  const { user } = useUser();
+  const { user } = useSession();
 
   // Fetch projects
   const {
@@ -105,14 +105,14 @@ function ProjectsProviderInner({
     async (project: CreateProjectInput) => {
       await addProjectMutation.mutateAsync(project);
     },
-    [addProjectMutation]
+    [addProjectMutation],
   );
 
   const removeProject = React.useCallback(
     async (id: string) => {
       await removeProjectMutation.mutateAsync(id);
     },
-    [removeProjectMutation]
+    [removeProjectMutation],
   );
 
   const filteredProjects = React.useCallback(
@@ -120,7 +120,7 @@ function ProjectsProviderInner({
       if (filter === "all") return projects;
       return projects.filter((project) => project.status === filter);
     },
-    [projects]
+    [projects],
   );
 
   // Project access mutations
@@ -158,14 +158,14 @@ function ProjectsProviderInner({
     async (projectId: string, userEmail: string) => {
       await addProjectAccessMutation.mutateAsync({ projectId, userEmail });
     },
-    [addProjectAccessMutation]
+    [addProjectAccessMutation],
   );
 
   const removeProjectAccess = React.useCallback(
     async (projectId: string, userId: string) => {
       await removeProjectAccessMutation.mutateAsync({ projectId, userId });
     },
-    [removeProjectAccessMutation]
+    [removeProjectAccessMutation],
   );
 
   return (

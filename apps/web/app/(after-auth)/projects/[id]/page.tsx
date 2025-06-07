@@ -1,5 +1,6 @@
 import { EnvVariableTable } from "@/components/env-variable-table";
 import { ProjectAccessManager } from "@/components/project-access-manager";
+import { auth } from "@/lib/auth";
 import { db } from "@workspace/db";
 import { decryptEnvValues } from "@workspace/env-helpers";
 import { Badge } from "@workspace/ui/components/badge";
@@ -19,7 +20,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { ChevronRight, Plus, RefreshCw } from "lucide-react";
 import { notFound } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
 
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
@@ -27,9 +28,11 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { id } = await params;
-  const { userId } = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!userId) {
+  if (!session) {
     return notFound();
   }
 
@@ -37,8 +40,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     where: {
       id,
       OR: [
-        { userId }, // Project owner
-        { ProjectAccess: { some: { userId } } }, // Has access through sharing
+        { userId: session.user.id }, // Project owner
+        { ProjectAccess: { some: { userId: session.user.id } } }, // Has access through sharing
       ],
     },
     include: {
@@ -57,7 +60,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     project.content && typeof project.content === "object"
       ? decryptEnvValues(
           project.content as Record<string, string>,
-          project.user.id
+          session.user.id,
         )
       : {};
 

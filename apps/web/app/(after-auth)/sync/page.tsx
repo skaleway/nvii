@@ -1,8 +1,19 @@
-import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
-import { SyncTable } from "@/components/sync-table"
-import { ArrowDownToLine, ArrowUpFromLine, RefreshCw } from "lucide-react"
+import { Button } from "@workspace/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
+import { SyncTable } from "@/components/sync-table";
+import { ArrowDownToLine, ArrowUpFromLine, RefreshCw } from "lucide-react";
 
 export default function SyncPage() {
   return (
@@ -10,7 +21,9 @@ export default function SyncPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Sync</h1>
-          <p className="text-muted-foreground">Synchronize environment variables with remote storage</p>
+          <p className="text-muted-foreground">
+            Synchronize environment variables with remote storage
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="gap-2">
@@ -40,7 +53,9 @@ export default function SyncPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Remote Storage</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Remote Storage
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">Supabase</div>
@@ -75,5 +90,5 @@ export default function SyncPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

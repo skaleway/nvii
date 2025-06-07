@@ -1,5 +1,5 @@
 import { db } from "@workspace/db";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUserFromSession } from "./current-user";
 
 class TrieNode {
   children: Map<string, TrieNode>;
@@ -70,65 +70,62 @@ export class Trie {
       results.push(...filteredData);
     }
 
-    for (const [char, childNode] of node.children) {
+    for (const [, childNode] of node.children) {
       this.collectWords(childNode, results, userTeamIds);
     }
   }
 
   async buildIndex() {
+    const user = await getCurrentUserFromSession();
+
+    if (!user) {
+      return;
+    }
+
+    const userTeams = await db.projectAccess.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
     const [spaces, articles, members] = await Promise.all([
-      db.space.findMany({
+      db.project.findMany({
         select: {
           id: true,
           name: true,
-          description: true,
           createdAt: true,
-          teamId: true,
-          articles: {
+          userId: true,
+          key: true,
+          deviceId: true,
+          content: true,
+          ProjectAccess: {
             select: {
-              id: true,
-            },
-          },
-          team: {
-            select: {
-              name: true,
+              userId: true,
             },
           },
         },
       }),
-      db.article.findMany({
+      db.project.findMany({
         select: {
           id: true,
-          title: true,
-          description: true,
+          name: true,
           createdAt: true,
-          spaceId: true,
-          previewImage: true,
-          status: true,
-          space: {
-            select: {
-              name: true,
-              teamId: true,
-            },
-          },
+          userId: true,
+          key: true,
+          deviceId: true,
+          content: true,
         },
       }),
-      db.member.findMany({
+      db.projectAccess.findMany({
         select: {
-          id: true,
-          role: true,
-          teamId: true,
+          userId: true,
+          projectId: true,
+          assignedAt: true,
           user: {
             select: {
               id: true,
               name: true,
               email: true,
-              imageUrl: true,
-            },
-          },
-          team: {
-            select: {
-              name: true,
             },
           },
         },
@@ -137,40 +134,26 @@ export class Trie {
 
     // Index spaces
     for (const space of spaces) {
-      const articlesCount = space.articles.length;
+      const articlesCount = space.ProjectAccess?.length ?? 0;
       this.insert(space.name, { type: "space", ...space, articlesCount });
-      if (space.description) {
-        this.insert(space.description, {
-          type: "space",
-          ...space,
-          articlesCount,
-        });
-      }
     }
 
     // Index articles
     for (const article of articles) {
-      this.insert(article.title, {
+      this.insert(article.name, {
         type: "article",
         ...article,
-        teamId: article.space.teamId, // Include teamId from the space
       });
-      if (article.description) {
-        this.insert(article.description, {
-          type: "article",
-          ...article,
-
-          teamId: article.space.teamId, // Include teamId from the space
-        });
-      }
     }
 
     // Index members
     for (const member of members) {
-      if (member.user.name) {
+      if (member.user?.name) {
         this.insert(member.user.name, { type: "member", ...member });
       }
-      this.insert(member.user.email, { type: "member", ...member });
+      if (member.user?.email) {
+        this.insert(member.user.email, { type: "member", ...member });
+      }
     }
   }
 }
