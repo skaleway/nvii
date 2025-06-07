@@ -14,7 +14,6 @@ type AuthUser = {
   updatedAt: Date;
 };
 
-// Helper function to validate CLI auth headers
 async function validateCliAuth(headers: Headers): Promise<AuthUser | null> {
   const userId = headers.get("X-User-Id");
   const deviceId = headers.get("X-Device-Id");
@@ -58,33 +57,40 @@ export const GET = async (
   { params }: { params: Promise<{ userId: string }> },
 ): Promise<NextResponse> => {
   try {
-    const { userId } = await params;
-
-    const headersList = await headers();
-
-    let user = await validateCliAuth(headersList);
-
-    if (!user) {
-      user = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
-
+    const user = await getCurrentUserFromSession();
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (user.id !== userId) {
-      return ErrorResponse("Unauthorized - User ID mismatch", 401);
-    }
+    const { userId } = await params;
 
     const projects = await db.project.findMany({
       where: {
-        userId,
+        OR: [
+          { userId: userId },
+          {
+            ProjectAccess: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        ProjectAccess: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
-    return Response(projects);
+    return NextResponse.json(projects);
   } catch (error) {
-    console.error(error);
+    console.error("[PROJECTS_GET]", error);
     return ErrorResponse("Internal Server Error", 500);
   }
 };
@@ -127,6 +133,20 @@ export const POST = async (
         data: {
           projectId: newProject.id,
           userId: userId,
+        },
+      });
+
+      await tx.envVersion.create({
+        data: {
+          projectId: newProject.id,
+          content: body.content,
+          description: "Initial version",
+          changes: {
+            added: Object.keys(body.content || {}),
+            modified: [],
+            deleted: [],
+          },
+          createdBy: user.id,
         },
       });
 

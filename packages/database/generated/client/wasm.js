@@ -191,6 +191,16 @@ exports.Prisma.ProjectAccessScalarFieldEnum = {
   assignedAt: 'assignedAt'
 };
 
+exports.Prisma.EnvVersionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  content: 'content',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy',
+  description: 'description',
+  changes: 'changes'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -198,6 +208,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -225,7 +239,8 @@ exports.Prisma.ModelName = {
   Verification: 'Verification',
   Device: 'Device',
   Project: 'Project',
-  ProjectAccess: 'ProjectAccess'
+  ProjectAccess: 'ProjectAccess',
+  EnvVersion: 'EnvVersion'
 };
 
 /**

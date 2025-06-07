@@ -1,83 +1,198 @@
 import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
-import { db } from "@workspace/db";
+import { db, Project, ProjectAccess } from "@workspace/db";
 import { decryptEnvValues } from "@/lib/encryption";
+import { calculateChanges } from "@/lib/version-helpers";
 import { NextResponse } from "next/server";
+import { User } from "better-auth";
 
-export const GET = async (
+export async function GET(
   request: Request,
   { params }: { params: Promise<{ userId: string; projectId: string }> },
-): Promise<NextResponse> => {
-  const { userId, projectId } = await params;
+): Promise<NextResponse> {
+  try {
+    const user = await getCurrentUserFromSession();
+    if (!user) {
+      return ErrorResponse("Unauthorized", 401);
+    }
 
-  const user = await getCurrentUserFromSession();
+    const { userId, projectId } = await params;
 
-  if (!user) {
-    return ErrorResponse("Unauthorized", 401);
+    // Verify the user has access to this project
+    const project = await db.project.findUnique({
+      where: {
+        id: projectId,
+        OR: [
+          { userId: userId },
+          {
+            ProjectAccess: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        ProjectAccess: true,
+      },
+    });
+
+    if (!project) {
+      return ErrorResponse("Project not found", 404);
+    }
+
+    return NextResponse.json(project);
+  } catch (error) {
+    console.error("[PROJECT_GET]", error);
+    return ErrorResponse("Internal Server Error", 500);
   }
+}
 
-  const project = await db.project.findUnique({
-    where: {
-      id: projectId,
-    },
-  });
-
-  if (!project) {
-    return ErrorResponse("Project not found", 404);
-  }
-
-  // Decrypt the content if it exists
-  if (project.content && typeof project.content === "object") {
-    project.content = decryptEnvValues(
-      project.content as Record<string, string>,
-      user.id,
-    );
-  }
-
-  return Response(project);
-};
-
-export const PATCH = async (
+export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ userId: string; projectId: string }> },
-): Promise<NextResponse> => {
-  const { userId, projectId } = await params;
+): Promise<NextResponse> {
+  try {
+    const user = await getCurrentUserFromSession();
+    const { userId, projectId } = await params;
 
-  const user = await getCurrentUserFromSession();
+    if (!user) {
+      return ErrorResponse("Unauthorized", 401);
+    }
 
-  if (!user) {
-    return ErrorResponse("Unauthorized", 401);
-  }
+    const existingProject = await db.project.findUnique({
+      where: {
+        id: projectId,
+        OR: [
+          { userId: userId },
+          {
+            ProjectAccess: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+    });
 
-  const projectExists = await db.project.findUnique({
-    where: {
-      id: projectId,
-      userId,
-    },
-  });
+    if (!existingProject) {
+      return ErrorResponse("Project not found", 404);
+    }
 
-  if (!projectExists) {
-    return ErrorResponse("Project not found", 404);
-  }
+    const body = await request.json();
+    const { content, description } = body;
 
-  const body = await request.json();
-
-  const project = await db.project.update({
-    where: {
-      id: projectId,
-    },
-    data: {
-      content: body.content,
-    },
-  });
-
-  // Decrypt the content before sending the response
-  if (project.content && typeof project.content === "object") {
-    project.content = decryptEnvValues(
-      project.content as Record<string, string>,
-      user.id,
+    // Calculate changes between old and new content
+    const changes = calculateChanges(
+      existingProject.content as Record<string, string> | null,
+      content,
     );
-  }
 
-  return Response(project);
+    // Create new version and update project in a transaction
+    const [project, version] = await db.$transaction([
+      db.project.update({
+        where: {
+          id: projectId,
+        },
+        data: {
+          content,
+        },
+      }),
+      db.envVersion.create({
+        data: {
+          projectId,
+          content,
+          description: description || "Updated environment variables",
+          changes: JSON.parse(JSON.stringify(changes)),
+          createdBy: user.id,
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    // Decrypt the content before sending the response
+    const response = {
+      project: {
+        ...project,
+        content: project.content
+          ? decryptEnvValues(project.content as Record<string, string>, user.id)
+          : null,
+      },
+      version,
+    };
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error("[PROJECT_PATCH]", error);
+    return ErrorResponse("Internal Server Error", 500);
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { userId: string; projectId: string } },
+): Promise<NextResponse> {
+  try {
+    const user = await getCurrentUserFromSession();
+    const { userId, projectId } = params;
+
+    if (!user) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    const project = await db.project.findUnique({
+      where: {
+        id: projectId,
+        OR: [
+          { userId: userId },
+          {
+            ProjectAccess: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        ProjectAccess: true,
+      },
+    });
+
+    if (!project) {
+      return ErrorResponse("Project not found", 404);
+    }
+
+    if (!canDeleteProject(project, user)) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    await db.project.delete({
+      where: { id: projectId },
+    });
+
+    return Response("Project deleted", 200);
+  } catch (error) {
+    console.error("[PROJECT_DELETE]", error);
+    return ErrorResponse("Internal Server Error", 500);
+  }
+}
+
+const canDeleteProject = (
+  project: Project & { ProjectAccess: ProjectAccess[] },
+  user: User,
+) => {
+  return (
+    project.userId === user.id ||
+    project.ProjectAccess.some((access) => access.userId === user.id)
+  );
 };
