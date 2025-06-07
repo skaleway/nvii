@@ -35,12 +35,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ProjectsProvider>
-              <Header />
-              <main className="flex-1 bg-muted/30 w-full min-h-[calc(100vh-64px)]">
-                {children}
-              </main>
-            </ProjectsProvider>
+            <main className="flex-1 bg-muted/30 w-full min-h-[calc(100vh-64px)]">
+              {children}
+            </main>
             <Toaster />
           </ThemeProvider>
         </body>

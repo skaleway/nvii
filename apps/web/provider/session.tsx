@@ -1,20 +1,20 @@
 "use client";
 
-import { User } from "@workspace/db";
+import { Session } from "@/lib/auth";
+import { User } from "better-auth";
 import { PropsWithChildren, createContext, useContext } from "react";
 
-interface SessionProviderContext {
+interface SessionContext {
   user: User;
+  session: Session;
 }
 
-export const SessionContext = createContext<SessionProviderContext | null>(
-  null,
-);
+export const SessionContext = createContext<SessionContext | null>(null);
 
 export const SessionProvider = ({
   children,
   value,
-}: PropsWithChildren<{ value: SessionProviderContext }>) => {
+}: PropsWithChildren<{ value: SessionContext }>) => {
   return (
     <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
   );
