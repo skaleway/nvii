@@ -8,7 +8,7 @@ import { User } from "better-auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
     const user = await getCurrentUserFromSession();
@@ -16,7 +16,7 @@ export async function GET(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId, projectId } = params;
+    const { userId, projectId } = await params;
 
     // Verify the user has access to this project
     const project = await db.project.findUnique({
@@ -51,11 +51,11 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
     const user = await getCurrentUserFromSession();
-    const { userId, projectId } = params;
+    const { userId, projectId } = await params;
 
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
@@ -91,7 +91,7 @@ export async function PATCH(
     );
 
     // Create new version and update project in a transaction
-    const [project] = await db.$transaction([
+    const [project, version] = await db.$transaction([
       db.project.update({
         where: {
           id: projectId,
@@ -104,22 +104,33 @@ export async function PATCH(
         data: {
           projectId,
           content,
-          description,
+          description: description || "Updated environment variables",
           changes: JSON.parse(JSON.stringify(changes)),
           createdBy: user.id,
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
         },
       }),
     ]);
 
     // Decrypt the content before sending the response
-    if (project.content && typeof project.content === "object") {
-      project.content = decryptEnvValues(
-        project.content as Record<string, string>,
-        user.id,
-      );
-    }
+    const response = {
+      project: {
+        ...project,
+        content: project.content
+          ? decryptEnvValues(project.content as Record<string, string>, user.id)
+          : null,
+      },
+      version,
+    };
 
-    return NextResponse.json(project);
+    return NextResponse.json(response);
   } catch (error) {
     console.error("[PROJECT_PATCH]", error);
     return ErrorResponse("Internal Server Error", 500);

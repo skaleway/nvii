@@ -14,7 +14,6 @@ type AuthUser = {
   updatedAt: Date;
 };
 
-// Helper function to validate CLI auth headers
 async function validateCliAuth(headers: Headers): Promise<AuthUser | null> {
   const userId = headers.get("X-User-Id");
   const deviceId = headers.get("X-Device-Id");
@@ -55,7 +54,7 @@ async function validateCliAuth(headers: Headers): Promise<AuthUser | null> {
 
 export const GET = async (
   request: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ): Promise<NextResponse> => {
   try {
     const user = await getCurrentUserFromSession();
@@ -63,9 +62,8 @@ export const GET = async (
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId } = params;
+    const { userId } = await params;
 
-    // Get all projects where the user is either the owner or has access
     const projects = await db.project.findMany({
       where: {
         OR: [
@@ -135,6 +133,20 @@ export const POST = async (
         data: {
           projectId: newProject.id,
           userId: userId,
+        },
+      });
+
+      await tx.envVersion.create({
+        data: {
+          projectId: newProject.id,
+          content: body.content,
+          description: "Initial version",
+          changes: {
+            added: Object.keys(body.content || {}),
+            modified: [],
+            deleted: [],
+          },
+          createdBy: user.id,
         },
       });
 
