@@ -22,8 +22,8 @@ export async function GET(): Promise<NextResponse> {
   const projects = await db.project.findMany({
     where: {
       OR: [
-        { userId: session.user.id }, // Projects owned by the user
-        { ProjectAccess: { some: { userId: session.user.id } } }, // Projects shared with the user
+        { userId: session.user.id },
+        { ProjectAccess: { some: { userId: session.user.id } } },
       ],
     },
     include: {
@@ -50,17 +50,14 @@ export async function GET(): Promise<NextResponse> {
   });
 
   const formattedProjects = projects.map((project) => {
-    // First decrypt the content if it exists
     let decryptedContent = {};
     if (project.content && typeof project.content === "object") {
-      // Use the project owner's ID for decryption
       decryptedContent = decryptEnvValues(
         project.content as Record<string, string>,
-        session.user.id, // This is the project owner's ID
+        project.user.id,
       );
     }
 
-    // Then analyze the decrypted content
     return {
       ...project,
       content: analyzeContent(decryptedContent),

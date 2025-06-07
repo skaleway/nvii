@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { readConfigFile } from "./index";
 
-// Create a base client without headers
 export const apiClient = axios.create({
   baseURL: "http://localhost:3000/api",
   headers: {},
@@ -18,7 +17,6 @@ export async function getConfiguredClient(): Promise<AxiosInstance> {
     baseURL: "http://localhost:3000/api",
     headers: {
       "X-Auth-Code": config.code,
-      "X-Auth-Key": config.key,
       "X-User-Id": config.userId,
       "X-Device-Id": config.deviceId,
     },

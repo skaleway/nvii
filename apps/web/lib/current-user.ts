@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
-import { db } from "@workspace/db";
+import { auth, Session } from "@/lib/auth";
+import { betterFetch } from "@better-fetch/fetch";
 import { headers } from "next/headers";
 
 export async function getCurrentUserFromDb() {
@@ -9,19 +9,19 @@ export async function getCurrentUserFromDb() {
 
   if (!session) return null;
 
-  const user = await db.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-  });
-
-  return user;
+  return session.user;
 }
 
 export async function getCurrentUserFromSession() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { data: session } = await betterFetch<Session>(
+    "/api/auth/get-session",
+    {
+      baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+      headers: {
+        cookie: (await headers()).get("cookie") || "",
+      },
+    },
+  );
 
   if (!session) return null;
 

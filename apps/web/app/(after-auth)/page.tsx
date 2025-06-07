@@ -1,5 +1,11 @@
 "use client";
+import { AddProjectDialog } from "@/components/add-project-dialog";
 import { ProjectCard } from "@/components/project-card";
+import { useProjects } from "@/components/projects-provider";
+import {
+  ProjectCardSkeleton,
+  StatusCardSkeleton,
+} from "@/components/skeletons";
 import { StatusCard } from "@/components/status-card";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -9,21 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { AddProjectDialog } from "@/components/add-project-dialog";
-import { useProjects } from "@/components/projects-provider";
 import { RefreshCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
-import {
-  ProjectCardSkeleton,
-  StatusCardSkeleton,
-} from "@/components/skeletons";
 
 export default function Dashboard() {
   const { projects, filteredProjects, filterValue, setFilterValue, isLoading } =
     useProjects();
-  const router = useRouter();
 
-  // Calculate status counts
   const validCount = projects.filter((p) => p.status === "valid").length;
   const missingCount = projects.filter((p) => p.status === "missing").length;
   const invalidCount = projects.filter((p) => p.status === "invalid").length;
@@ -32,13 +29,18 @@ export default function Dashboard() {
   const displayedProjects = filteredProjects(filterValue);
 
   return (
-    <div className="container py-6 space-y-8 max-w-7xl">
+    <div className="flex-1 space-y-8 p-8 pt-6 max-w-7xl mx-auto container">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <div className="flex items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your environment variables across all projects
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
           <Select value={filterValue} onValueChange={setFilterValue}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by status" />
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="All Projects" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Projects</SelectItem>
@@ -49,12 +51,10 @@ export default function Dashboard() {
           </Select>
           <Button
             variant="outline"
-            onClick={() => {
-              router.refresh();
-            }}
+            size="icon"
+            onClick={() => window.location.reload()}
           >
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            <span>Refresh</span>
+            <RefreshCcw className="h-4 w-4" />
           </Button>
           <AddProjectDialog>
             <Button>Add Project</Button>
@@ -93,44 +93,31 @@ export default function Dashboard() {
         )}
       </div>
 
-      <h2 className="text-xl font-semibold mt-8 mb-4">Recent Projects</h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {isLoading ? (
-          <>
-            <ProjectCardSkeleton />
-            <ProjectCardSkeleton />
-            <ProjectCardSkeleton />
-            <ProjectCardSkeleton />
-            <ProjectCardSkeleton />
-            <ProjectCardSkeleton />
-          </>
-        ) : displayedProjects.length > 0 ? (
-          displayedProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))
-        ) : (
-          <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              No projects match the current filter.
-            </p>
-            <AddProjectDialog>
-              <Button>Create a New Project</Button>
-            </AddProjectDialog>
-          </div>
-        )}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Projects</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-7xl">
+          {isLoading ? (
+            <>
+              <ProjectCardSkeleton />
+              <ProjectCardSkeleton />
+              <ProjectCardSkeleton />
+            </>
+          ) : displayedProjects.length > 0 ? (
+            displayedProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+              <p className="text-muted-foreground mb-4">
+                No projects match the current filter.
+              </p>
+              <AddProjectDialog>
+                <Button>Create a New Project</Button>
+              </AddProjectDialog>
+            </div>
+          )}
+        </div>
       </div>
-
-      <ButtonStitchesDemo />
     </div>
   );
 }
-
-const ButtonStitchesDemo = () => {
-  return (
-    <button className="group relative rounded-lg border-2 border-sky-500 bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:shadow-lg">
-      <span className="absolute start-0 top-0 size-full rounded-md border border-dashed border-sky-50 shadow-inner shadow-white/30 group-active:shadow-white/10" />
-      <span className="absolute start-0 top-0 size-full rotate-180 rounded-md border-sky-50 shadow-inner shadow-black/30 group-active:shadow-black/10" />
-      Stitches Button
-    </button>
-  );
-};
