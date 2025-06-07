@@ -1,20 +1,19 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { testencryption } from "./commands/crypt";
-import { linkProject } from "./commands/link";
-import { login } from "./commands/login";
-import { createProject } from "./commands/new";
-import { updateProject } from "./commands/update";
-import { getVersion, readConfigFile } from "./helpers";
+import {
+  testencryption,
+  generateExample,
+  linkProject,
+  login,
+  createProject,
+  updateProject,
+  logout,
+} from "./commands";
+import { readConfigFile } from "@workspace/env-helpers";
+import pc from "picocolors";
 
 const program = new Command();
-const version = getVersion();
-
-program
-  .name("envincible-cli")
-  .description("Example CLI application with envincible auth")
-  .version(version);
 
 program
   .command("login")
@@ -22,12 +21,19 @@ program
   .action(login);
 
 program
-  .command("show-config")
-  .description("Show configuration file")
+  .command("logout")
+  .description("Logout from your service via the CLI")
+  .action(logout);
+
+program
+  .command("whoami")
+  .description("Show the current user")
   .action(async () => {
     try {
       const file = await readConfigFile();
-      console.log(file);
+      if (!file) return;
+
+      console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
     } catch (error) {
       console.error("Error reading config:", error);
     }
@@ -54,5 +60,10 @@ program
   .command("update")
   .description("Update the existing env file")
   .action(updateProject);
+
+program
+  .command("generate")
+  .description("Generate a .env.example file from your .env file")
+  .action(generateExample);
 
 program.parse(process.argv);

@@ -1,26 +1,45 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { betterFetch } from "@better-fetch/fetch";
+import { NextResponse, type NextRequest } from "next/server";
+import type { Session } from "@/lib/auth";
 
-const publicRoutes = createRouteMatcher([
-  "/projects/(.*)",
-  "/auth/sign-in",
-  "/auth/sign-up",
-  "/settings",
-  "/settings/(.*)",
-  "/sync",
-  "/sync/(.*)",
-  "/api/(.*)",
-]);
+const authRoutes = ["/auth/sign-in", "/auth/sign-up"];
+const passwordRoutes = ["/auth/reset-password", "/auth/forgot-password"];
+const adminRoutes = ["/admin"];
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!publicRoutes(req)) {
-    await auth.protect();
+export default async function authMiddleware(request: NextRequest) {
+  const pathName = request.nextUrl.pathname;
+  const isAuthRoute = authRoutes.includes(pathName);
+  const isPasswordRoute = passwordRoutes.includes(pathName);
+  const isAdminRoute = adminRoutes.includes(pathName);
+
+  const { data: session } = await betterFetch<Session>(
+    "/api/auth/get-session",
+    {
+      baseURL: process.env.BETTER_AUTH_URL,
+      headers: {
+        cookie: request.headers.get("cookie") || "",
+      },
+    },
+  );
+
+  if (!session) {
+    if (isAuthRoute || isPasswordRoute) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
-});
+
+  if (isAuthRoute || isPasswordRoute) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // if (isAdminRoute && session.user.role !== "admin") {
+  //   return NextResponse.redirect(new URL("/", request.url));
+  // }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };

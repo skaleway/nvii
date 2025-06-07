@@ -16,7 +16,7 @@ export function Header() {
   const { setTheme } = useTheme();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b px-6">
+    <header className="flex h-16 items-center justify-between border-b px-6 bg-background">
       <div className="relative w-full max-w-md">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input

@@ -23,35 +23,32 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { useProjects } from "@/components/projects-provider";
 import { useToast } from "@/hooks/use-toast";
+import { parseISO, format } from "date-fns";
+import { AnalyzedContent, Project, ProjectAccess } from "@/types/project";
+import { useSession } from "@/provider/session";
 
 interface ProjectCardProps {
-  name: string;
-  description: string;
-  updatedAt: string;
-  envCount: number;
-  status: "valid" | "missing" | "invalid";
-  id?: string;
+  project: Project;
 }
 
-export function ProjectCard({
-  id,
-  name,
-  description,
-  updatedAt,
-  envCount,
-  status,
-}: ProjectCardProps) {
-  const slug = name.toLowerCase().replace(/\s+/g, "-");
+export function ProjectCard({ project }: ProjectCardProps) {
+  const slug = project.name.toLowerCase().replace(/\s+/g, "-");
   const { removeProject } = useProjects();
   const { toast } = useToast();
+  const { user } = useSession();
+
+  const isSharedProject = project.userId !== user?.id;
+  const sharedBy = project.ProjectAccess?.find(
+    (access: ProjectAccess) => access.user.id === project.userId,
+  )?.user;
 
   const handleDelete = () => {
-    if (!id) return;
+    if (!project.id) return;
 
-    removeProject(id);
+    removeProject(project.id);
     toast({
       title: "Project deleted",
-      description: `${name} has been deleted successfully.`,
+      description: `${project.name} has been deleted successfully.`,
     });
   };
 
@@ -59,12 +56,17 @@ export function ProjectCard({
     <Card className="overflow-hidden transition-all shadow-none">
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <div className="space-y-1">
-          <Link href={`/projects/${slug}`}>
+          <Link href={`/projects/${project.id}`}>
             <h3 className="font-semibold leading-none tracking-tight hover:text-primary">
-              {name}
+              {project.name}
+              {isSharedProject && (
+                <span className="ml-2 text-xs text-muted-foreground">
+                  Shared by {sharedBy?.name || sharedBy?.email || "Unknown"}
+                </span>
+              )}
             </h3>
           </Link>
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-sm text-muted-foreground">{project.description}</p>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -75,37 +77,43 @@ export function ProjectCard({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/projects/${slug}`}>View Details</Link>
+              <Link href={`/projects/${project.id}`}>View Details</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/projects/${slug}`}>Edit Variables</Link>
+              <Link href={`/projects/${project.id}`}>Edit Variables</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/sync">Sync Variables</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={handleDelete}
-            >
-              Delete Project
-            </DropdownMenuItem>
+            {!isSharedProject && (
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={handleDelete}
+              >
+                Delete Project
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">{updatedAt}</div>
+          <div className="text-sm text-muted-foreground">
+            {format(parseISO(project.updatedAt), "MMM d, yyyy")}
+          </div>
           <div className="flex items-center gap-1">
-            <span className="text-sm font-medium">{envCount} variables</span>
+            <span className="text-sm font-medium">
+              {project.content.totalElem} variables
+            </span>
           </div>
         </div>
       </CardContent>
       <CardFooter
         className={cn(
           "border-t px-6 py-3",
-          status === "valid" && "bg-emerald-500/10",
-          status === "missing" && "bg-amber-500/10",
-          status === "invalid" && "bg-rose-500/10"
+          project.status === "valid" && "bg-emerald-500/10",
+          project.status === "missing" && "bg-amber-500/10",
+          project.status === "invalid" && "bg-rose-500/10",
         )}
       >
         <div className="flex items-center gap-2 text-sm">
@@ -122,7 +130,7 @@ export function ProjectCard({
             className={cn(
               status === "valid" && "text-emerald-500",
               status === "missing" && "text-amber-500",
-              status === "invalid" && "text-rose-500"
+              status === "invalid" && "text-rose-500",
             )}
           >
             {status === "valid" && "All variables valid"}

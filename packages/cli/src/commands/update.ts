@@ -1,6 +1,3 @@
-import { db } from "@workspace/db";
-import fs from "fs";
-import path from "path";
 import pc from "picocolors";
 import {
   encryptEnvValues,
@@ -8,9 +5,10 @@ import {
   readConfigFile,
   readEnvFile,
   readProjectConfig,
-} from "../helpers";
-import { login } from "./login";
-import { getConfiguredClient } from "../helpers/api-client";
+  getConfiguredClient,
+} from "@workspace/env-helpers";
+import { login } from "./auth/login";
+
 export async function updateProject() {
   try {
     const userData = await readConfigFile();
@@ -37,7 +35,7 @@ export async function updateProject() {
     }
 
     const envVars = await readEnvFile();
-    const encryptedEnv = encryptEnvValues(envVars);
+    const encryptedEnv = encryptEnvValues(envVars, userData!.userId);
 
     const client = await getConfiguredClient();
 

@@ -33,13 +33,13 @@ export function StatusCard({
     >
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {status === "valid" && (
-          <CheckCircle className="h-4 w-4 text-emerald-500" />
-        )}
-        {status === "missing" && (
-          <AlertTriangle className="h-4 w-4 text-amber-500" />
-        )}
-        {status === "invalid" && <XCircle className="h-4 w-4 text-rose-500" />}
+        {
+          {
+            valid: <CheckCircle className="h-4 w-4 text-emerald-500" />,
+            missing: <AlertTriangle className="h-4 w-4 text-amber-500" />,
+            invalid: <XCircle className="h-4 w-4 text-rose-500" />,
+          }[status]
+        }
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>

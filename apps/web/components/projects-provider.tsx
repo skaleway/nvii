@@ -1,160 +1,198 @@
-"use client"
+"use client";
 
-import * as React from "react"
-
-type Project = {
-  id: string
-  name: string
-  description: string
-  updatedAt: string
-  envCount: number
-  status: "valid" | "missing" | "invalid"
-  slug: string
-}
+import * as React from "react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import {
+  projectsApi,
+  CreateProjectInput,
+  projectAccessApi,
+  ProjectAccess,
+} from "../lib/api-client";
+import { Project } from "../types/project";
+import { useSession } from "@/provider/session";
 
 type ProjectsContextType = {
-  projects: Project[]
-  addProject: (project: Project) => void
-  removeProject: (id: string) => void
-  filteredProjects: (filter: string) => Project[]
-  filterValue: string
-  setFilterValue: (filter: string) => void
+  projects: Project[];
+  isLoading: boolean;
+  error: Error | null;
+  addProject: (project: CreateProjectInput) => Promise<void>;
+  removeProject: (id: string) => Promise<void>;
+  filteredProjects: (filter: string) => Project[];
+  filterValue: string;
+  setFilterValue: (filter: string) => void;
+  getProjectAccess: (projectId: string) => Promise<ProjectAccess[]>;
+  addProjectAccess: (projectId: string, userEmail: string) => Promise<void>;
+  removeProjectAccess: (projectId: string, userId: string) => Promise<void>;
+};
+
+const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
+  undefined,
+);
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+export function ProjectsProvider({ children }: { children: React.ReactNode }) {
+  const [filterValue, setFilterValue] = React.useState("all");
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ProjectsProviderInner
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
+      >
+        {children}
+      </ProjectsProviderInner>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
 }
 
-const ProjectsContext = React.createContext<ProjectsContextType | undefined>(undefined)
-
-// Initial projects data
-const initialProjects: Project[] = [
-  {
-    id: "1",
-    name: "Web App",
-    description: "Frontend application",
-    updatedAt: "Updated 2 hours ago",
-    envCount: 12,
-    status: "valid",
-    slug: "web-app",
-  },
-  {
-    id: "2",
-    name: "API Service",
-    description: "Backend API",
-    updatedAt: "Updated 1 day ago",
-    envCount: 24,
-    status: "valid",
-    slug: "api-service",
-  },
-  {
-    id: "3",
-    name: "Admin Dashboard",
-    description: "Internal admin tools",
-    updatedAt: "Updated 3 days ago",
-    envCount: 18,
-    status: "missing",
-    slug: "admin-dashboard",
-  },
-  {
-    id: "4",
-    name: "Marketing Site",
-    description: "Public website",
-    updatedAt: "Updated 5 days ago",
-    envCount: 8,
-    status: "valid",
-    slug: "marketing-site",
-  },
-  {
-    id: "5",
-    name: "Authentication Service",
-    description: "User authentication",
-    updatedAt: "Updated 1 week ago",
-    envCount: 15,
-    status: "invalid",
-    slug: "authentication-service",
-  },
-  {
-    id: "6",
-    name: "Analytics",
-    description: "Data processing",
-    updatedAt: "Updated 2 weeks ago",
-    envCount: 21,
-    status: "valid",
-    slug: "analytics",
-  },
-]
-
-// Helper function to safely access localStorage
-const getLocalStorage = <T,>(key: string, fallback: T): T => {
-  if (typeof window === "undefined") return fallback
-  try {
-    const item = window.localStorage.getItem(key)
-    return item ? (JSON.parse(item) as T) : fallback
-  } catch (error) {
-    console.error(`Error reading localStorage key "${key}":`, error)
-    return fallback
-  }
-}
-
-// Helper function to safely set localStorage
-const setLocalStorage = <T,>(key: string, value: T): void => {
-  if (typeof window === "undefined") return
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value))
-  } catch (error) {
-    console.error(`Error setting localStorage key "${key}":`, error)
-  }
-}
-
-export function ProjectsProvider({
+function ProjectsProviderInner({
   children,
+  filterValue,
+  setFilterValue,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
+  filterValue: string;
+  setFilterValue: (filter: string) => void;
 }) {
-  // Initialize projects from localStorage or use initialProjects if not available
-  const [projects, setProjects] = React.useState<Project[]>(() => {
-    return getLocalStorage<Project[]>("envsync-projects", initialProjects)
-  })
-  const [filterValue, setFilterValue] = React.useState("all")
+  const queryClient = useQueryClient();
+  const { user } = useSession();
 
-  // Save projects to localStorage whenever they change
-  React.useEffect(() => {
-    setLocalStorage("envsync-projects", projects)
-  }, [projects])
+  // Fetch projects
+  const {
+    data: projects = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["projects"],
+    queryFn: projectsApi.list,
+  });
 
-  const addProject = React.useCallback((project: Project) => {
-    setProjects((prev) => [project, ...prev])
-  }, [])
+  // Add project mutation
+  const addProjectMutation = useMutation({
+    mutationFn: (project: CreateProjectInput) =>
+      projectsApi.create(project, user?.id ?? ""),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
 
-  const removeProject = React.useCallback((id: string) => {
-    setProjects((prev) => prev.filter((project) => project.id !== id))
-  }, [])
+  // Remove project mutation
+  const removeProjectMutation = useMutation({
+    mutationFn: projectsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  const addProject = React.useCallback(
+    async (project: CreateProjectInput) => {
+      await addProjectMutation.mutateAsync(project);
+    },
+    [addProjectMutation],
+  );
+
+  const removeProject = React.useCallback(
+    async (id: string) => {
+      await removeProjectMutation.mutateAsync(id);
+    },
+    [removeProjectMutation],
+  );
 
   const filteredProjects = React.useCallback(
     (filter: string) => {
-      if (filter === "all") return projects
-      return projects.filter((project) => project.status === filter)
+      if (filter === "all") return projects;
+      return projects.filter((project) => project.status === filter);
     },
     [projects],
-  )
+  );
+
+  // Project access mutations
+  const addProjectAccessMutation = useMutation({
+    mutationFn: ({
+      projectId,
+      userEmail,
+    }: {
+      projectId: string;
+      userEmail: string;
+    }) => projectAccessApi.add(projectId, userEmail),
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: ["projectAccess", projectId] });
+    },
+  });
+
+  const removeProjectAccessMutation = useMutation({
+    mutationFn: ({
+      projectId,
+      userId,
+    }: {
+      projectId: string;
+      userId: string;
+    }) => projectAccessApi.remove(projectId, userId),
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: ["projectAccess", projectId] });
+    },
+  });
+
+  const getProjectAccess = React.useCallback(async (projectId: string) => {
+    return projectAccessApi.list(projectId);
+  }, []);
+
+  const addProjectAccess = React.useCallback(
+    async (projectId: string, userEmail: string) => {
+      await addProjectAccessMutation.mutateAsync({ projectId, userEmail });
+    },
+    [addProjectAccessMutation],
+  );
+
+  const removeProjectAccess = React.useCallback(
+    async (projectId: string, userId: string) => {
+      await removeProjectAccessMutation.mutateAsync({ projectId, userId });
+    },
+    [removeProjectAccessMutation],
+  );
 
   return (
     <ProjectsContext.Provider
       value={{
         projects,
+        isLoading,
+        error: error as Error | null,
         addProject,
         removeProject,
         filteredProjects,
         filterValue,
         setFilterValue,
+        getProjectAccess,
+        addProjectAccess,
+        removeProjectAccess,
       }}
     >
       {children}
     </ProjectsContext.Provider>
-  )
+  );
 }
 
 export function useProjects() {
-  const context = React.useContext(ProjectsContext)
+  const context = React.useContext(ProjectsContext);
   if (context === undefined) {
-    throw new Error("useProjects must be used within a ProjectsProvider")
+    throw new Error("useProjects must be used within a ProjectsProvider");
   }
-  return context
+  return context;
 }

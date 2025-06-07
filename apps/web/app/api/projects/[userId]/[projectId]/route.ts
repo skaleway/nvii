@@ -1,15 +1,16 @@
-import { getClerkUser } from "@/lib/current-user";
+import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@workspace/db";
+import { decryptEnvValues } from "@/lib/encryption";
 import { NextResponse } from "next/server";
 
 export const GET = async (
   request: Request,
-  { params }: { params: Promise<{ userId: string; projectId: string }> }
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> => {
   const { userId, projectId } = await params;
 
-  const user = await getClerkUser(userId);
+  const user = await getCurrentUserFromSession();
 
   if (!user) {
     return ErrorResponse("Unauthorized", 401);
@@ -25,16 +26,24 @@ export const GET = async (
     return ErrorResponse("Project not found", 404);
   }
 
+  // Decrypt the content if it exists
+  if (project.content && typeof project.content === "object") {
+    project.content = decryptEnvValues(
+      project.content as Record<string, string>,
+      user.id,
+    );
+  }
+
   return Response(project);
 };
 
 export const PATCH = async (
   request: Request,
-  { params }: { params: Promise<{ userId: string; projectId: string }> }
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> => {
   const { userId, projectId } = await params;
 
-  const user = await getClerkUser(userId);
+  const user = await getCurrentUserFromSession();
 
   if (!user) {
     return ErrorResponse("Unauthorized", 401);
@@ -61,6 +70,14 @@ export const PATCH = async (
       content: body.content,
     },
   });
+
+  // Decrypt the content before sending the response
+  if (project.content && typeof project.content === "object") {
+    project.content = decryptEnvValues(
+      project.content as Record<string, string>,
+      user.id,
+    );
+  }
 
   return Response(project);
 };

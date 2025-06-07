@@ -1,19 +1,18 @@
-import { db, Project } from "@workspace/db";
-import { promises as fs } from "fs";
-import inquirer from "inquirer";
-import path from "path";
-import pc from "picocolors";
+import { Project } from "@workspace/db";
 import {
   decryptEnvValues,
+  getConfiguredClient,
   isLogedIn,
   readConfigFile,
   readEnvFile,
   writeProjectConfig,
-} from "../helpers";
-import { login } from "./login";
-import { getConfiguredClient } from "../helpers/api-client";
+} from "@workspace/env-helpers";
+import { promises as fs } from "fs";
+import inquirer from "inquirer";
+import path from "path";
+import pc from "picocolors";
+import { login } from "./auth/login";
 
-const ENV_FILE = ".envi";
 const DOT_ENV_FILE = ".env";
 
 export async function linkProject() {
@@ -114,7 +113,7 @@ export async function linkProject() {
       }
     }
 
-    const decryptedEnv = decryptEnvValues(finalEnv);
+    const decryptedEnv = decryptEnvValues(finalEnv, userConfig.userId);
 
     const finalEnvContent =
       Object.entries(decryptedEnv)
