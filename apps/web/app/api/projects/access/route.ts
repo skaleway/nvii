@@ -3,6 +3,7 @@ import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@workspace/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { getCurrentUserFromSession } from "@/lib/current-user";
 
 // Get all users with access to a project
 export async function GET(request: Request) {
@@ -61,110 +62,79 @@ export async function GET(request: Request) {
 }
 
 // Add user access to a project
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    const body = await request.json();
-    const { projectId, userEmail } = body;
-
-    if (!session) {
+    const user = await getCurrentUserFromSession();
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (!projectId || !userEmail) {
-      return ErrorResponse("Project ID and user email are required", 400);
-    }
+    const body = await request.json();
+    const { projectId, userId } = body;
 
-    // Check if user owns the project
-    const project = await db.project.findFirst({
+    // Verify the user is the owner of the project
+    const project = await db.project.findUnique({
       where: {
         id: projectId,
-        userId: session.user.id,
+        userId: user.id, // Only project owner can grant access
       },
     });
 
     if (!project) {
-      return ErrorResponse("Project not found or not authorized", 404);
+      return ErrorResponse("Project not found or unauthorized", 404);
     }
 
-    // Find user by email
-    const userToAdd = await db.user.findUnique({
-      where: { email: userEmail },
-    });
-
-    if (!userToAdd) {
-      return ErrorResponse("User not found", 404);
-    }
-
-    // Add access
-    const projectAccess = await db.projectAccess.create({
+    // Create project access
+    await db.projectAccess.create({
       data: {
         projectId,
-        userId: userToAdd.id,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        userId,
       },
     });
 
-    return NextResponse.json(projectAccess);
+    return Response("Access granted", 200);
   } catch (error) {
     console.error("[PROJECT_ACCESS_POST]", error);
-    return ErrorResponse("Internal error", 500);
+    return ErrorResponse("Internal Server Error", 500);
   }
 }
 
 // Remove user access from a project
-export async function DELETE(request: Request) {
+export async function DELETE(request: Request): Promise<NextResponse> {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    const { searchParams } = new URL(request.url);
-    const projectId = searchParams.get("projectId");
-    const userIdToRemove = searchParams.get("userIdToRemove");
-
-    if (!session) {
+    const user = await getCurrentUserFromSession();
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (!projectId || !userIdToRemove) {
-      return ErrorResponse("Project ID and user ID are required", 400);
-    }
+    const body = await request.json();
+    const { projectId, userId } = body;
 
-    // Check if user owns the project
-    const project = await db.project.findFirst({
+    // Verify the user is the owner of the project
+    const project = await db.project.findUnique({
       where: {
         id: projectId,
-        userId: session.user.id,
+        userId: user.id, // Only project owner can revoke access
       },
     });
 
     if (!project) {
-      return ErrorResponse("Project not found or not authorized", 404);
+      return ErrorResponse("Project not found or unauthorized", 404);
     }
 
-    // Remove access
+    // Remove project access
     await db.projectAccess.delete({
       where: {
         projectId_userId: {
           projectId,
-          userId: userIdToRemove,
+          userId,
         },
       },
     });
 
-    return Response(null);
+    return Response("Access revoked", 200);
   } catch (error) {
     console.error("[PROJECT_ACCESS_DELETE]", error);
-    return ErrorResponse("Internal error", 500);
+    return ErrorResponse("Internal Server Error", 500);
   }
 }

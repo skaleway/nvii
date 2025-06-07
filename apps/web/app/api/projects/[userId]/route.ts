@@ -55,36 +55,44 @@ async function validateCliAuth(headers: Headers): Promise<AuthUser | null> {
 
 export const GET = async (
   request: Request,
-  { params }: { params: Promise<{ userId: string }> },
+  { params }: { params: { userId: string } },
 ): Promise<NextResponse> => {
   try {
-    const { userId } = await params;
-
-    const headersList = await headers();
-
-    let user = await validateCliAuth(headersList);
-
-    if (!user) {
-      user = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
-
+    const user = await getCurrentUserFromSession();
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (user.id !== userId) {
-      return ErrorResponse("Unauthorized - User ID mismatch", 401);
-    }
+    const { userId } = params;
 
+    // Get all projects where the user is either the owner or has access
     const projects = await db.project.findMany({
       where: {
-        userId,
+        OR: [
+          { userId: userId },
+          {
+            ProjectAccess: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        ProjectAccess: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
-    return Response(projects);
+    return NextResponse.json(projects);
   } catch (error) {
-    console.error(error);
+    console.error("[PROJECTS_GET]", error);
     return ErrorResponse("Internal Server Error", 500);
   }
 };
