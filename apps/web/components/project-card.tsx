@@ -25,7 +25,7 @@ import { useProjects } from "@/components/projects-provider";
 import { useToast } from "@/hooks/use-toast";
 import { parseISO, format } from "date-fns";
 import { AnalyzedContent, Project, ProjectAccess } from "@/types/project";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/provider/session";
 
 interface ProjectCardProps {
   project: Project;
@@ -35,11 +35,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const slug = project.name.toLowerCase().replace(/\s+/g, "-");
   const { removeProject } = useProjects();
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user } = useSession();
 
   const isSharedProject = project.userId !== user?.id;
   const sharedBy = project.ProjectAccess?.find(
-    (access: ProjectAccess) => access.user.id === project.userId
+    (access: ProjectAccess) => access.user.id === project.userId,
   )?.user;
 
   const handleDelete = () => {
@@ -113,7 +113,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           "border-t px-6 py-3",
           project.status === "valid" && "bg-emerald-500/10",
           project.status === "missing" && "bg-amber-500/10",
-          project.status === "invalid" && "bg-rose-500/10"
+          project.status === "invalid" && "bg-rose-500/10",
         )}
       >
         <div className="flex items-center gap-2 text-sm">
@@ -130,7 +130,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             className={cn(
               status === "valid" && "text-emerald-500",
               status === "missing" && "text-amber-500",
-              status === "invalid" && "text-rose-500"
+              status === "invalid" && "text-rose-500",
             )}
           >
             {status === "valid" && "All variables valid"}

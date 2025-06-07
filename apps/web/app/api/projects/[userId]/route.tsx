@@ -1,16 +1,16 @@
-import { getClerkUser, getCurrentUser } from "@/lib/current-user";
+import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@workspace/db";
 import { NextResponse } from "next/server";
 
 export const GET = async (
   request: Request,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ userId: string }> },
 ): Promise<NextResponse> => {
   try {
     const { userId } = await params;
 
-    const user = await getClerkUser(userId);
+    const user = await getCurrentUserFromSession();
 
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
@@ -31,12 +31,12 @@ export const GET = async (
 
 export const POST = async (
   request: Request,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ userId: string }> },
 ): Promise<NextResponse> => {
   try {
     const { userId } = await params;
 
-    const user = await getClerkUser(userId);
+    const user = await getCurrentUserFromSession();
 
     if (!user) {
       return ErrorResponse("Unauthorized", 401);

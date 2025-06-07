@@ -1,11 +1,10 @@
-import { getClerkUser } from "@/lib/current-user";
+import { auth } from "@/lib/auth";
 import { decryptEnvValues } from "@/lib/encryption";
 import { analyzeContent } from "@/lib/objects";
 import { ErrorResponse } from "@/lib/response";
-import { auth } from "@/lib/auth";
 import { db } from "@workspace/db";
-import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET(): Promise<NextResponse> {
   const session = await auth.api.getSession({
