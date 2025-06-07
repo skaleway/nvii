@@ -11,9 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import Profile from "@workspace/ui/components/user-profile";
+import { useSession } from "@/provider/session";
 
 export function Header() {
   const { setTheme } = useTheme();
+  const { user } = useSession();
 
   return (
     <header className="flex h-16 items-center justify-between border-b px-6 bg-background">
@@ -49,7 +51,7 @@ export function Header() {
         <Button variant="ghost" size="icon" className="rounded-full">
           <Bell className="h-5 w-5" />
         </Button>
-        <Profile name="John Doe" />
+        <Profile name={user.name} url={user?.image ?? ""} />
       </div>
     </header>
   );

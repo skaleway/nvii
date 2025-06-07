@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@workspace/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -13,11 +14,11 @@ export async function GET(request: Request) {
     const projectId = searchParams.get("projectId");
 
     if (!session) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return ErrorResponse("Unauthorized", 401);
     }
 
     if (!projectId) {
-      return new NextResponse("Project ID is required", { status: 400 });
+      return ErrorResponse("Project ID is required", 400);
     }
 
     // Check if user owns the project or has access to it
@@ -32,9 +33,7 @@ export async function GET(request: Request) {
     });
 
     if (!project) {
-      return new NextResponse("Project not found or access denied", {
-        status: 404,
-      });
+      return ErrorResponse("Project not found or access denied", 404);
     }
 
     // Get all users with access except the current user
@@ -57,7 +56,7 @@ export async function GET(request: Request) {
     return NextResponse.json(projectAccess);
   } catch (error) {
     console.error("[PROJECT_ACCESS_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return ErrorResponse("Internal error", 500);
   }
 }
 
@@ -71,13 +70,11 @@ export async function POST(request: Request) {
     const { projectId, userEmail } = body;
 
     if (!session) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return ErrorResponse("Unauthorized", 401);
     }
 
     if (!projectId || !userEmail) {
-      return new NextResponse("Project ID and user email are required", {
-        status: 400,
-      });
+      return ErrorResponse("Project ID and user email are required", 400);
     }
 
     // Check if user owns the project
@@ -89,9 +86,7 @@ export async function POST(request: Request) {
     });
 
     if (!project) {
-      return new NextResponse("Project not found or not authorized", {
-        status: 404,
-      });
+      return ErrorResponse("Project not found or not authorized", 404);
     }
 
     // Find user by email
@@ -100,7 +95,7 @@ export async function POST(request: Request) {
     });
 
     if (!userToAdd) {
-      return new NextResponse("User not found", { status: 404 });
+      return ErrorResponse("User not found", 404);
     }
 
     // Add access
@@ -123,7 +118,7 @@ export async function POST(request: Request) {
     return NextResponse.json(projectAccess);
   } catch (error) {
     console.error("[PROJECT_ACCESS_POST]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return ErrorResponse("Internal error", 500);
   }
 }
 
@@ -138,13 +133,11 @@ export async function DELETE(request: Request) {
     const userIdToRemove = searchParams.get("userIdToRemove");
 
     if (!session) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return ErrorResponse("Unauthorized", 401);
     }
 
     if (!projectId || !userIdToRemove) {
-      return new NextResponse("Project ID and user ID are required", {
-        status: 400,
-      });
+      return ErrorResponse("Project ID and user ID are required", 400);
     }
 
     // Check if user owns the project
@@ -156,9 +149,7 @@ export async function DELETE(request: Request) {
     });
 
     if (!project) {
-      return new NextResponse("Project not found or not authorized", {
-        status: 404,
-      });
+      return ErrorResponse("Project not found or not authorized", 404);
     }
 
     // Remove access
@@ -171,9 +162,9 @@ export async function DELETE(request: Request) {
       },
     });
 
-    return new NextResponse(null, { status: 204 });
+    return Response(null);
   } catch (error) {
     console.error("[PROJECT_ACCESS_DELETE]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return ErrorResponse("Internal error", 500);
   }
 }

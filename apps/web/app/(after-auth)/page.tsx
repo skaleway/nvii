@@ -1,5 +1,11 @@
 "use client";
+import { AddProjectDialog } from "@/components/add-project-dialog";
 import { ProjectCard } from "@/components/project-card";
+import { useProjects } from "@/components/projects-provider";
+import {
+  ProjectCardSkeleton,
+  StatusCardSkeleton,
+} from "@/components/skeletons";
 import { StatusCard } from "@/components/status-card";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -9,21 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { AddProjectDialog } from "@/components/add-project-dialog";
-import { useProjects } from "@/components/projects-provider";
 import { RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  ProjectCardSkeleton,
-  StatusCardSkeleton,
-} from "@/components/skeletons";
 
 export default function Dashboard() {
   const { projects, filteredProjects, filterValue, setFilterValue, isLoading } =
     useProjects();
   const router = useRouter();
 
-  // Calculate status counts
   const validCount = projects.filter((p) => p.status === "valid").length;
   const missingCount = projects.filter((p) => p.status === "missing").length;
   const invalidCount = projects.filter((p) => p.status === "invalid").length;
