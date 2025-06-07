@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { parseISO, format } from "date-fns";
 import { AnalyzedContent, Project, ProjectAccess } from "@/types/project";
 import { useSession } from "@/provider/session";
+import { VersionHistory } from "./version-history";
 
 interface ProjectCardProps {
   project: Project;
@@ -101,7 +102,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="text-sm text-muted-foreground">
             {format(parseISO(project.updatedAt), "MMM d, yyyy")}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
+            <VersionHistory projectId={project.id} />
             <span className="text-sm font-medium">
               {project.content.totalElem} variables
             </span>

@@ -25,6 +25,7 @@ model User {
   ownedProjects    Project[]       @relation("ProjectOwner")
   projectAccess    ProjectAccess[]
   accessToProjects Project[]       @relation("ProjectAccess")
+  EnvVersion       EnvVersion[]
 
   @@map("users")
 }
@@ -99,6 +100,7 @@ model Project {
 
   havingAccess  User[]          @relation("ProjectAccess")
   ProjectAccess ProjectAccess[]
+  versions      EnvVersion[]
 
   @@unique([userId, name])
   @@map("projects")
@@ -114,4 +116,19 @@ model ProjectAccess {
 
   @@id([projectId, userId])
   @@map("project_access")
+}
+
+// Model to track environment variable versions
+model EnvVersion {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  content     Json // Stores the environment variables at this version
+  createdAt   DateTime @default(now())
+  createdBy   String
+  user        User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  description String? // Optional description of what changed
+  changes     Json? // Stores what was added/modified/deleted
+
+  @@map("env_versions")
 }

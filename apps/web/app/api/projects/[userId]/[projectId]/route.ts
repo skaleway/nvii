@@ -2,6 +2,7 @@ import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@workspace/db";
 import { decryptEnvValues } from "@/lib/encryption";
+import { calculateChanges } from "@/lib/version-helpers";
 import { NextResponse } from "next/server";
 
 export const GET = async (
@@ -49,27 +50,46 @@ export const PATCH = async (
     return ErrorResponse("Unauthorized", 401);
   }
 
-  const projectExists = await db.project.findUnique({
+  const existingProject = await db.project.findUnique({
     where: {
       id: projectId,
       userId,
     },
   });
 
-  if (!projectExists) {
+  if (!existingProject) {
     return ErrorResponse("Project not found", 404);
   }
 
   const body = await request.json();
+  const { content, description } = body;
 
-  const project = await db.project.update({
-    where: {
-      id: projectId,
-    },
-    data: {
-      content: body.content,
-    },
-  });
+  // Calculate changes between old and new content
+  const changes = calculateChanges(
+    existingProject.content as Record<string, string> | null,
+    content,
+  );
+
+  // Create new version and update project in a transaction
+  const [project] = await db.$transaction([
+    db.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        content,
+      },
+    }),
+    db.envVersion.create({
+      data: {
+        projectId,
+        content,
+        description,
+        changes: JSON.parse(JSON.stringify(changes)),
+        createdBy: user.id,
+      },
+    }),
+  ]);
 
   // Decrypt the content before sending the response
   if (project.content && typeof project.content === "object") {
