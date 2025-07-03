@@ -38,3 +38,6 @@ npm-debug.log*
 .env*.local
 
 packages/database/generated
+
+# local editor files
+.vscode
