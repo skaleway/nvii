@@ -37,4 +37,5 @@ npm-debug.log*
 *.pem
 .env*.local
 
-packages/database/generated
+# Generated
+generated
