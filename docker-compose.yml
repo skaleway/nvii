@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  envi:
+    image: postgres:15-alpine
+    container_name: envi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: envi
+      POSTGRES_USER: envi
+      POSTGRES_PASSWORD: envi_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - envi_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U envi -d envi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  envi_data:

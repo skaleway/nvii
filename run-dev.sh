@@ -1,23 +1,23 @@
 echo "Installing global packages"
 pnpm install
 
-echo "[packages/core] Installing packages"
-cd packages/core && pnpm run build
+echo "Starting PostgreSQL database with Docker Compose..."
+docker-compose up -d
 
-echo "[packages/vite] Installing packages"
-cd ../vite && pnpm run build
+echo "Waiting for database to be ready..."
+sleep 5
 
 echo "Checking if .env in packages/database"
-if [ ! -f "../database/.env" ]; then
+if [ ! -f "packages/database/.env" ]; then
     echo ".env file does not exist in packages/database"
     exit 1
 fi
 
 echo "Running prisma migrate..."
-cd ../database && pnpm prisma migrate dev
+cd packages/database && pnpm prisma migrate dev
 
 echo "Removing node_modules in apps/web (not sure why but this is necessary)"
-cd ../../apps/web
+cd ../apps/web
 
 if [ ! -f ".env" ]; then
     echo ".env file does not exist in apps/web"
