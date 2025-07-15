@@ -140,6 +140,14 @@ export default function SignIn() {
                 />
               ))}
               <Button disabled={pendingCredentials}>Sign in</Button>
+              <div className="mt-4 text-center text-sm">
+                <Link
+                  href="/forgot-password"
+                  className="text-primary hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
             </form>
           </Form>
           <div className="mt-4">
@@ -147,14 +155,6 @@ export default function SignIn() {
               <GithubIcon className="w-4 h-4 mr-2" />
               Continue with GitHub
             </Button>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            <Link
-              href="/forgot-password"
-              className="text-primary hover:underline"
-            >
-              Forgot password?
-            </Link>
           </div>
         </CardContent>
       </Card>

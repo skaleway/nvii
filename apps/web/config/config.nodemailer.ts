@@ -1,10 +1,14 @@
-import nodemailer from "nodemailer";
+import { createTransport } from "nodemailer";
+
+console.log(process.env.MAIL_HOST);
 
 // Transporter setup
-export const transporter = nodemailer.createTransport({
-  service: process.env.MAIL_HOST!,
+export const transporter = createTransport({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.NODE_ENV === "production",
   auth: {
     user: process.env.MAIL_FROM!,
     pass: process.env.MAIL_PASS,
   },
-});
+} as any);

@@ -17,7 +17,7 @@ export async function sendEmail({
 
   const message = {
     to: to.toLowerCase().trim(),
-    from: process.env.MAIL_FROM,
+    from: `Tembeng Flynn at Envi <${process.env.MAIL_FROM}>`,
     subject: subject.trim(),
     text: text.trim(),
   };
@@ -30,6 +30,11 @@ export async function sendEmail({
         `Nodemailer API returned status of: ${response.response}`,
       );
     }
+
+    console.log("Email sent: ", {
+      id: response.messageId,
+      state: response.response,
+    });
 
     return {
       success: true,
