@@ -9,10 +9,10 @@ importers:
     dependencies:
       "@auth/prisma-adapter":
         specifier: ^2.9.1
-        version: 2.9.1(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.5.4))(typescript@5.5.4))
+        version: 2.9.1(@prisma/client@6.9.0(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4))
       "@prisma/client":
         specifier: ^6.9.0
-        version: 6.9.0(prisma@6.9.0(typescript@5.5.4))(typescript@5.5.4)
+        version: 6.9.0(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4)
       next-auth:
         specifier: ^4.24.11
         version: 4.24.11(next@15.3.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -104,9 +104,9 @@ importers:
       "@tanstack/react-table":
         specifier: ^8.21.2
         version: 8.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      "@types/bcryptjs":
-        specifier: ^3.0.0
-        version: 3.0.0
+      "@types/nodemailer":
+        specifier: ^6.4.17
+        version: 6.4.17
       "@uploadthing/react":
         specifier: ^7.3.0
         version: 7.3.0(next@15.3.2(@babel/core@7.27.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(uploadthing@7.6.0(next@15.3.2(@babel/core@7.27.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(tailwindcss@3.4.16(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.17.10)(typescript@5.7.2))))
@@ -285,7 +285,7 @@ importers:
     dependencies:
       "@prisma/client":
         specifier: latest
-        version: 6.9.0(prisma@6.9.0(typescript@5.5.4))(typescript@5.5.4)
+        version: 6.11.1(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4)
     devDependencies:
       "@workspace/eslint-config":
         specifier: workspace:*
@@ -298,7 +298,7 @@ importers:
         version: 8.57.1
       prisma:
         specifier: latest
-        version: 6.9.0(typescript@5.5.4)
+        version: 6.11.1(typescript@5.5.4)
       rimraf:
         specifier: ^5.0.5
         version: 5.0.10
@@ -2623,6 +2623,21 @@ packages:
       prisma:
         optional: true
 
+  "@prisma/client@6.11.1":
+    resolution:
+      {
+        integrity: sha512-5CLFh8QP6KxRm83pJ84jaVCeSVPQr8k0L2SEtOJHwdkS57/VQDcI/wQpGmdyOZi+D9gdNabdo8tj1Uk+w+upsQ==,
+      }
+    engines: { node: ">=18.18" }
+    peerDependencies:
+      prisma: "*"
+      typescript: ">=5.1.0"
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+      typescript:
+        optional: true
+
   "@prisma/client@6.9.0":
     resolution:
       {
@@ -2638,10 +2653,10 @@ packages:
       typescript:
         optional: true
 
-  "@prisma/config@6.9.0":
+  "@prisma/config@6.11.1":
     resolution:
       {
-        integrity: sha512-Wcfk8/lN3WRJd5w4jmNQkUwhUw0eksaU/+BlAJwPQKW10k0h0LC9PD/6TQFmqKVbHQL0vG2z266r0S1MPzzhbA==,
+        integrity: sha512-z6rCTQN741wxDq82cpdzx2uVykpnQIXalLhrWQSR0jlBVOxCIkz3HZnd8ern3uYTcWKfB3IpVAF7K2FU8t/8AQ==,
       }
 
   "@prisma/debug@5.22.0":
@@ -2650,10 +2665,10 @@ packages:
         integrity: sha512-AUt44v3YJeggO2ZU5BkXI7M4hu9BF2zzH2iF2V5pyXT/lRTyWiElZ7It+bRH1EshoMRxHgpYg4VB6rCM+mG5jQ==,
       }
 
-  "@prisma/debug@6.9.0":
+  "@prisma/debug@6.11.1":
     resolution:
       {
-        integrity: sha512-bFeur/qi/Q+Mqk4JdQ3R38upSYPebv5aOyD1RKywVD+rAMLtRkmTFn28ZuTtVOnZHEdtxnNOCH+bPIeSGz1+Fg==,
+        integrity: sha512-lWRb/YSWu8l4Yum1UXfGLtqFzZkVS2ygkWYpgkbgMHn9XJlMITIgeMvJyX5GepChzhmxuSuiq/MY/kGFweOpGw==,
       }
 
   "@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2":
@@ -2662,10 +2677,10 @@ packages:
         integrity: sha512-2PTmxFR2yHW/eB3uqWtcgRcgAbG1rwG9ZriSvQw+nnb7c4uCr3RAcGMb6/zfE88SKlC1Nj2ziUvc96Z379mHgQ==,
       }
 
-  "@prisma/engines-version@6.9.0-10.81e4af48011447c3cc503a190e86995b66d2a28e":
+  "@prisma/engines-version@6.11.1-1.f40f79ec31188888a2e33acda0ecc8fd10a853a9":
     resolution:
       {
-        integrity: sha512-Qp9gMoBHgqhKlrvumZWujmuD7q4DV/gooEyPCLtbkc13EZdSz2RsGUJ5mHb3RJgAbk+dm6XenqG7obJEhXcJ6Q==,
+        integrity: sha512-swFJTOOg4tHyOM1zB/pHb3MeH0i6t7jFKn5l+ZsB23d9AQACuIRo9MouvuKGvnDogzkcjbWnXi/NvOZ0+n5Jfw==,
       }
 
   "@prisma/engines@5.22.0":
@@ -2674,10 +2689,10 @@ packages:
         integrity: sha512-UNjfslWhAt06kVL3CjkuYpHAWSO6L4kDCVPegV6itt7nD1kSJavd3vhgAEhjglLJJKEdJ7oIqDJ+yHk6qO8gPA==,
       }
 
-  "@prisma/engines@6.9.0":
+  "@prisma/engines@6.11.1":
     resolution:
       {
-        integrity: sha512-im0X0bwDLA0244CDf8fuvnLuCQcBBdAGgr+ByvGfQY9wWl6EA+kRGwVk8ZIpG65rnlOwtaWIr/ZcEU5pNVvq9g==,
+        integrity: sha512-6eKEcV6V8W2eZAUwX2xTktxqPM4vnx3sxz3SDtpZwjHKpC6lhOtc4vtAtFUuf5+eEqBk+dbJ9Dcaj6uQU+FNNg==,
       }
 
   "@prisma/fetch-engine@5.22.0":
@@ -2686,10 +2701,10 @@ packages:
         integrity: sha512-bkrD/Mc2fSvkQBV5EpoFcZ87AvOgDxbG99488a5cexp5Ccny+UM6MAe/UFkUC0wLYD9+9befNOqGiIJhhq+HbA==,
       }
 
-  "@prisma/fetch-engine@6.9.0":
+  "@prisma/fetch-engine@6.11.1":
     resolution:
       {
-        integrity: sha512-PMKhJdl4fOdeE3J3NkcWZ+tf3W6rx3ht/rLU8w4SXFRcLhd5+3VcqY4Kslpdm8osca4ej3gTfB3+cSk5pGxgFg==,
+        integrity: sha512-NBYzmkXTkj9+LxNPRSndaAeALOL1Gr3tjvgRYNqruIPlZ6/ixLeuE/5boYOewant58tnaYFZ5Ne0jFBPfGXHpQ==,
       }
 
   "@prisma/get-platform@5.22.0":
@@ -2698,10 +2713,10 @@ packages:
         integrity: sha512-pHhpQdr1UPFpt+zFfnPazhulaZYCUqeIcPpJViYoq9R+D/yw4fjE+CtnsnKzPYm0ddUbeXUzjGVGIRVgPDCk4Q==,
       }
 
-  "@prisma/get-platform@6.9.0":
+  "@prisma/get-platform@6.11.1":
     resolution:
       {
-        integrity: sha512-/B4n+5V1LI/1JQcHp+sUpyRT1bBgZVPHbsC4lt4/19Xp4jvNIVcq5KYNtQDk5e/ukTSjo9PZVAxxy9ieFtlpTQ==,
+        integrity: sha512-b2Z8oV2gwvdCkFemBTFd0x4lsL4O2jLSx8lB7D+XqoFALOQZPa7eAPE1NU0Mj1V8gPHRxIsHnyUNtw2i92psUw==,
       }
 
   "@prisma/nextjs-monorepo-workaround-plugin@6.5.0":
@@ -4278,13 +4293,6 @@ packages:
         integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==,
       }
 
-  "@types/bcryptjs@3.0.0":
-    resolution:
-      {
-        integrity: sha512-WRZOuCuaz8UcZZE4R5HXTco2goQSI2XxjGY3hbM/xDvwmqFWd4ivooImsMx65OKM6CtNKbnZ5YL+YwAwK7c1dg==,
-      }
-    deprecated: This is a stub types definition. bcryptjs provides its own type definitions, so you do not need this installed.
-
   "@types/better-sqlite3@7.6.13":
     resolution:
       {
@@ -4415,6 +4423,12 @@ packages:
     resolution:
       {
         integrity: sha512-ywP2X0DYtX3y08eFVx5fNIw7/uIv8hYUKgXoK8oayJlLnKcRfEYCxWMVE1XagUdVtCJlZT1AU4LXEABW+L1Peg==,
+      }
+
+  "@types/nodemailer@6.4.17":
+    resolution:
+      {
+        integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==,
       }
 
   "@types/parse5@6.0.3":
@@ -9806,10 +9820,10 @@ packages:
     engines: { node: ">=16.13" }
     hasBin: true
 
-  prisma@6.9.0:
+  prisma@6.11.1:
     resolution:
       {
-        integrity: sha512-resJAwMyZREC/I40LF6FZ6rZTnlrlrYrb63oW37Gq+U+9xHwbyMSPJjKtM7VZf3gTO86t/Oyz+YeSXr3CmAY1Q==,
+        integrity: sha512-VzJToRlV0s9Vu2bfqHiRJw73hZNCG/AyJeX+kopbu4GATTjTUdEWUteO3p4BLYoHpMS4o8pD3v6tF44BHNZI1w==,
       }
     engines: { node: ">=18.18" }
     hasBin: true
@@ -12255,10 +12269,10 @@ snapshots:
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
 
-  "@auth/prisma-adapter@2.9.1(@prisma/client@6.9.0(prisma@6.9.0(typescript@5.5.4))(typescript@5.5.4))":
+  "@auth/prisma-adapter@2.9.1(@prisma/client@6.9.0(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4))":
     dependencies:
       "@auth/core": 0.39.1
-      "@prisma/client": 6.9.0(prisma@6.9.0(typescript@5.5.4))(typescript@5.5.4)
+      "@prisma/client": 6.9.0(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4)
     transitivePeerDependencies:
       - "@simplewebauthn/browser"
       - "@simplewebauthn/server"
@@ -13679,23 +13693,28 @@ snapshots:
     optionalDependencies:
       prisma: 5.22.0
 
-  "@prisma/client@6.9.0(prisma@6.9.0(typescript@5.5.4))(typescript@5.5.4)":
+  "@prisma/client@6.11.1(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4)":
     optionalDependencies:
-      prisma: 6.9.0(typescript@5.5.4)
+      prisma: 6.11.1(typescript@5.5.4)
       typescript: 5.5.4
 
-  "@prisma/config@6.9.0":
+  "@prisma/client@6.9.0(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4)":
+    optionalDependencies:
+      prisma: 6.11.1(typescript@5.5.4)
+      typescript: 5.5.4
+
+  "@prisma/config@6.11.1":
     dependencies:
       jiti: 2.4.2
 
   "@prisma/debug@5.22.0": {}
 
-  "@prisma/debug@6.9.0": {}
+  "@prisma/debug@6.11.1": {}
 
   "@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2":
     {}
 
-  "@prisma/engines-version@6.9.0-10.81e4af48011447c3cc503a190e86995b66d2a28e":
+  "@prisma/engines-version@6.11.1-1.f40f79ec31188888a2e33acda0ecc8fd10a853a9":
     {}
 
   "@prisma/engines@5.22.0":
@@ -13705,12 +13724,12 @@ snapshots:
       "@prisma/fetch-engine": 5.22.0
       "@prisma/get-platform": 5.22.0
 
-  "@prisma/engines@6.9.0":
+  "@prisma/engines@6.11.1":
     dependencies:
-      "@prisma/debug": 6.9.0
-      "@prisma/engines-version": 6.9.0-10.81e4af48011447c3cc503a190e86995b66d2a28e
-      "@prisma/fetch-engine": 6.9.0
-      "@prisma/get-platform": 6.9.0
+      "@prisma/debug": 6.11.1
+      "@prisma/engines-version": 6.11.1-1.f40f79ec31188888a2e33acda0ecc8fd10a853a9
+      "@prisma/fetch-engine": 6.11.1
+      "@prisma/get-platform": 6.11.1
 
   "@prisma/fetch-engine@5.22.0":
     dependencies:
@@ -13718,19 +13737,19 @@ snapshots:
       "@prisma/engines-version": 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
       "@prisma/get-platform": 5.22.0
 
-  "@prisma/fetch-engine@6.9.0":
+  "@prisma/fetch-engine@6.11.1":
     dependencies:
-      "@prisma/debug": 6.9.0
-      "@prisma/engines-version": 6.9.0-10.81e4af48011447c3cc503a190e86995b66d2a28e
-      "@prisma/get-platform": 6.9.0
+      "@prisma/debug": 6.11.1
+      "@prisma/engines-version": 6.11.1-1.f40f79ec31188888a2e33acda0ecc8fd10a853a9
+      "@prisma/get-platform": 6.11.1
 
   "@prisma/get-platform@5.22.0":
     dependencies:
       "@prisma/debug": 5.22.0
 
-  "@prisma/get-platform@6.9.0":
+  "@prisma/get-platform@6.11.1":
     dependencies:
-      "@prisma/debug": 6.9.0
+      "@prisma/debug": 6.11.1
 
   "@prisma/nextjs-monorepo-workaround-plugin@6.5.0": {}
 
@@ -15050,10 +15069,6 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  "@types/bcryptjs@3.0.0":
-    dependencies:
-      bcryptjs: 3.0.2
-
   "@types/better-sqlite3@7.6.13":
     dependencies:
       "@types/node": 20.17.10
@@ -15126,6 +15141,10 @@ snapshots:
   "@types/node@22.13.4":
     dependencies:
       undici-types: 6.20.0
+
+  "@types/nodemailer@6.4.17":
+    dependencies:
+      "@types/node": 20.17.10
 
   "@types/parse5@6.0.3": {}
 
@@ -18921,10 +18940,10 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  prisma@6.9.0(typescript@5.5.4):
+  prisma@6.11.1(typescript@5.5.4):
     dependencies:
-      "@prisma/config": 6.9.0
-      "@prisma/engines": 6.9.0
+      "@prisma/config": 6.11.1
+      "@prisma/engines": 6.11.1
     optionalDependencies:
       typescript: 5.5.4
 
