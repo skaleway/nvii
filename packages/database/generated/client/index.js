@@ -226,7 +226,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/bkm/Projects/skaleway/envi/packages/database/generated/client",
+      "value": "/home/tembeng/Documents/new_projects/envincible/packages/database/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -240,7 +240,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/bkm/Projects/skaleway/envi/packages/database/prisma/schema.prisma",
+    "sourceFilePath": "/home/tembeng/Documents/new_projects/envincible/packages/database/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

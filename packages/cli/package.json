@@ -10,7 +10,7 @@
   "module": "./dist/index.mjs",
   "scripts": {
     "build": "tsup",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts --help || true"
   },
   "files": [
     "README.md",
