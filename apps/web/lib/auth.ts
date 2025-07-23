@@ -9,10 +9,10 @@ export const auth = betterAuth({
   }),
 
   session: {
-    expiresIn: 60 * 60 * 1000 * 24 + 25, // Ensure user login session expires after 25 days
+    expiresIn: 60 * 60 * 24 + 14, // Ensure user login session expires after 25 days
     cookieCache: {
       enabled: true,
-      maxAge: 60 * 60 * 1000 * 12, // Ensure that user cookie data is cached for half a day to prevent excess refetch from the database
+      maxAge: 60 * 60 * 12, // Ensure that user cookie data is cached for half a day to prevent excess refetch from the database
     },
   },
   emailAndPassword: {

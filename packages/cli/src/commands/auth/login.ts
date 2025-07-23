@@ -2,7 +2,7 @@ import { FILENAME } from "@workspace/env-helpers";
 import { listen } from "async-listen";
 import { spawn } from "child_process";
 import "dotenv/config";
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
 import http from "http";
 import { customAlphabet } from "nanoid";
 import os from "os";
@@ -22,6 +22,15 @@ async function writeToConfigFile(data: Record<string, string>) {
     const homeDir = os.homedir();
     const filePath = path.join(homeDir, FILENAME);
     writeFileSync(filePath, JSON.stringify(data, null, 2));
+
+    const d = readFileSync(filePath, "utf-8");
+    const dirname = path.dirname(filePath);
+
+    return {
+      filePath,
+      d,
+      dirname,
+    };
   } catch (error) {
     console.error("Error writing to local config file", error);
   }
@@ -42,7 +51,7 @@ export async function login() {
       res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
       res.setHeader(
         "Access-Control-Allow-Headers",
-        "Content-Type, Authorization"
+        "Content-Type, Authorization",
       );
 
       if (req.method === "OPTIONS") {
@@ -74,7 +83,7 @@ export async function login() {
 
   console.log(`Confirmation code: ${pc.bold(code)}\n`);
   console.log(
-    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`
+    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`,
   );
 
   spawn("open", [confirmationUrl.toString()]);
@@ -85,9 +94,10 @@ export async function login() {
     const authData = await authPromise;
     console.log({ authData });
     spinner.stop();
-    writeToConfigFile(authData);
+    const d = await writeToConfigFile(authData);
     console.log(pc.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${FILENAME}\n`);
+    console.log(d);
     server.close();
     process.exit(0);
   } catch (error) {
