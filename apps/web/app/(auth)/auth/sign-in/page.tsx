@@ -5,7 +5,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
+} from "@nvii/ui/components/card";
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/form";
+import { Input } from "@nvii/ui/components/input";
 import { signInSchema } from "@/lib/verification";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 
 import { ErrorContext } from "@better-fetch/fetch";
 import { GithubIcon } from "lucide-react";
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 
 export default function SignIn() {
   const router = useRouter();

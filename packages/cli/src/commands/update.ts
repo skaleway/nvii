@@ -6,7 +6,7 @@ import {
   readEnvFile,
   readProjectConfig,
   getConfiguredClient,
-} from "@workspace/env-helpers";
+} from "@nvii/env-helpers";
 import { login } from "./auth/login";
 
 export async function updateProject() {
@@ -28,8 +28,8 @@ export async function updateProject() {
     if (!projectConfig) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'envi link' to link your project first."
-        )
+          "❌ Project not linked. Please run 'nvii link' to link your project first.",
+        ),
       );
       process.exit(1);
     }
@@ -43,14 +43,14 @@ export async function updateProject() {
       `/projects/${userData!.userId}/${projectConfig.projectId}`,
       {
         content: encryptedEnv,
-      }
+      },
     );
 
     console.log(pc.cyan("Updated environment variables:"));
     console.log(project.data.data.content);
 
     console.log(
-      pc.green("✅ Project updated successfully with new .env variables.")
+      pc.green("✅ Project updated successfully with new .env variables."),
     );
   } catch (error) {
     console.error(pc.red("❌ Error updating project:"), error);

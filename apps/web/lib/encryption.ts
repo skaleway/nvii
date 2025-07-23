@@ -33,4 +33,4 @@ export function decryptEnvValues(
   return parsedContent;
 }
 
-export * from "@workspace/env-helpers";
+export * from "@nvii/env-helpers";

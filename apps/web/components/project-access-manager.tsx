@@ -1,7 +1,7 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
-import { Button } from "@workspace/ui/components/button";
+import { Avatar, AvatarFallback } from "@nvii/ui/components/avatar";
+import { Button } from "@nvii/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -10,15 +10,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/dialog";
+import { Input } from "@nvii/ui/components/input";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
-import UserProfile from "@workspace/ui/components/user-profile";
+} from "@nvii/ui/components/tooltip";
+import UserProfile from "@nvii/ui/components/user-profile";
 import { Loader2, Plus, Users, X } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";

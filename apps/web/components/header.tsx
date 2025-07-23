@@ -2,15 +2,15 @@
 
 import { Search, Bell, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
+import { Button } from "@nvii/ui/components/button";
+import { Input } from "@nvii/ui/components/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import Profile from "@workspace/ui/components/user-profile";
+} from "@nvii/ui/components/dropdown-menu";
+import Profile from "@nvii/ui/components/user-profile";
 import { useSession } from "@/provider/session";
 import Link from "next/link";
 

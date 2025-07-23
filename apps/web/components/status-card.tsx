@@ -1,12 +1,12 @@
 import { CheckCircle, AlertTriangle, XCircle } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "@nvii/ui/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
+} from "@nvii/ui/components/card";
 
 interface StatusCardProps {
   title: string;
@@ -28,7 +28,7 @@ export function StatusCard({
         status === "valid" && "border-emerald-500/20",
         status === "missing" && "border-amber-500/20",
         status === "invalid" && "border-rose-500/20",
-        "shadow-none"
+        "shadow-none",
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between pb-2">

@@ -8,11 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog";
-import { Button } from "@workspace/ui/components/button";
-import { ScrollArea } from "@workspace/ui/components/scroll-area";
-import { Badge } from "@workspace/ui/components/badge";
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
+} from "@nvii/ui/components/dialog";
+import { Button } from "@nvii/ui/components/button";
+import { ScrollArea } from "@nvii/ui/components/scroll-area";
+import { Badge } from "@nvii/ui/components/badge";
+import { Card, CardContent, CardHeader } from "@nvii/ui/components/card";
 import { History } from "lucide-react";
 
 interface Version {

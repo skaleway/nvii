@@ -1,13 +1,12 @@
 {
-  "name": "@workspace/eslint-config",
+  "name": "@nvii/eslint-config",
   "version": "0.0.0",
   "private": true,
-  "main": "base.js",
-  "files": [
-    "base.js",
-    "next.js",
-    "react-internal.js"
-  ],
+  "exports": {
+    "./base": "./base.js",
+    "./nextjs": "./nextjs.js",
+    "./react-internal": "./react-internal.js"
+  },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@next/eslint-plugin-next": "^15.1.0",

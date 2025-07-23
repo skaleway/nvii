@@ -1,4 +1,4 @@
-import { FILENAME } from "@workspace/env-helpers";
+import { FILENAME } from "@nvii/env-helpers";
 import { listen } from "async-listen";
 import { spawn } from "child_process";
 import "dotenv/config";

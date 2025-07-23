@@ -1,17 +1,17 @@
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
+} from "@nvii/ui/components/card";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@workspace/ui/components/tabs";
+} from "@nvii/ui/components/tabs";
 import { SyncTable } from "@/components/sync-table";
 import { ArrowDownToLine, ArrowUpFromLine, RefreshCw } from "lucide-react";
 

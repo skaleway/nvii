@@ -2,15 +2,15 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { Variable } from "@/types/project";
-import { Badge } from "@workspace/ui/components/badge";
-import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@nvii/ui/components/badge";
+import { Button } from "@nvii/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/dropdown-menu";
+import { Input } from "@nvii/ui/components/input";
 import {
   Table,
   TableBody,
@@ -18,8 +18,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@workspace/ui/components/table";
-import { cn } from "@workspace/ui/lib/utils";
+} from "@nvii/ui/components/table";
+import { cn } from "@nvii/ui/lib/utils";
 import {
   CheckCircle,
   Copy,
@@ -49,7 +49,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
       isEditing: false,
       status: value ? "valid" : "missing",
       requiredBy: [],
-    }))
+    })),
   );
 
   const toggleVisibility = (id: string) => {
@@ -57,8 +57,8 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isVisible: !variable.isVisible }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
@@ -67,8 +67,8 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isEditing: !variable.isEditing }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
@@ -81,8 +81,8 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
               value,
               status: value ? "valid" : "missing",
             }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
@@ -91,8 +91,8 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isPublic: !variable.isPublic }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
@@ -133,7 +133,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
               key={variable.id}
               className={cn(
                 variable.status === "missing" && "bg-amber-500/5",
-                variable.status === "invalid" && "bg-rose-500/5"
+                variable.status === "invalid" && "bg-rose-500/5",
               )}
             >
               <TableCell className="font-mono text-sm">
@@ -233,7 +233,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
                     size="icon"
                     className={cn(
                       "h-8 w-8 transition-colors",
-                      copiedId === variable.id && "text-green-500"
+                      copiedId === variable.id && "text-green-500",
                     )}
                     onClick={() => copyToClipboard(variable)}
                     disabled={!variable.value}

@@ -1,4 +1,4 @@
-import { Project } from "@workspace/db";
+import { Project } from "@nvii/db";
 import {
   decryptEnvValues,
   getConfiguredClient,
@@ -6,7 +6,7 @@ import {
   readConfigFile,
   readEnvFile,
   writeProjectConfig,
-} from "@workspace/env-helpers";
+} from "@nvii/env-helpers";
 import { promises as fs } from "fs";
 import inquirer from "inquirer";
 import path from "path";
@@ -51,7 +51,7 @@ export async function linkProject() {
     ]);
 
     const selectedProject = projects.find(
-      (proj) => proj.id === selectedProjectId
+      (proj) => proj.id === selectedProjectId,
     );
 
     if (!selectedProject) {

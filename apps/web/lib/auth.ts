@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { db } from "@workspace/db";
+import { db } from "@nvii/db";
 import { sendEmail } from "./send-mail";
 
 export const auth = betterAuth({

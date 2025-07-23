@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@workspace/ui/components/toaster";
-import "@workspace/ui/globals.css";
+import { Toaster } from "@nvii/ui/components/toaster";
+import "@nvii/ui/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import type React from "react";
@@ -8,7 +8,7 @@ import type React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Envi - Environment Variable Manager",
+  title: "Nvii - Environment Variable Manager",
   description: "Modern environment variable manager for your projects",
 };
 

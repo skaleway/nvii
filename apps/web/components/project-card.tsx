@@ -7,20 +7,20 @@ import {
   XCircle,
   MoreHorizontal,
 } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
-import { Button } from "@workspace/ui/components/button";
+import { cn } from "@nvii/ui/lib/utils";
+import { Button } from "@nvii/ui/components/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@workspace/ui/components/card";
+} from "@nvii/ui/components/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
+} from "@nvii/ui/components/dropdown-menu";
 import { useProjects } from "@/components/projects-provider";
 import { useToast } from "@/hooks/use-toast";
 import { parseISO, format } from "date-fns";

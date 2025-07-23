@@ -14,7 +14,7 @@ services:
     volumes:
       - envi_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U envi -d envi"]
+      test: ["CMD-SHELL", "pg_isready -U nvii -d envi"]
       interval: 30s
       timeout: 10s
       retries: 3

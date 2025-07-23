@@ -7,14 +7,14 @@ import {
   StatusCardSkeleton,
 } from "@/components/skeletons";
 import { StatusCard } from "@/components/status-card";
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@workspace/ui/components/select";
+} from "@nvii/ui/components/select";
 import { RefreshCcw } from "lucide-react";
 
 export default function Dashboard() {

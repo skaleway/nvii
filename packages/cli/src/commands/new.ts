@@ -5,7 +5,7 @@ import {
   readConfigFile,
   readEnvFile,
   writeProjectConfig,
-} from "@workspace/env-helpers";
+} from "@nvii/env-helpers";
 import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
@@ -48,7 +48,7 @@ export async function createProject() {
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
-        pc.red("❌ Invalid user credentials. Please log in again.")
+        pc.red("❌ Invalid user credentials. Please log in again."),
       );
       await login();
       return;

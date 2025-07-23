@@ -7,11 +7,11 @@ import { ConfigData } from "../types";
 
 export * from "./api-client";
 
-export const FILENAME = process.env.FILENAME || ".envincible";
+export const FILENAME = process.env.FILENAME || ".nvii";
 
 const ENCRYPTION_KEY = Buffer.from(
   process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD",
-  "utf8"
+  "utf8",
 ).slice(0, 32);
 
 const IV_LENGTH = 16;
@@ -24,7 +24,7 @@ export async function readConfigFile(): Promise<ConfigData | null> {
     return JSON.parse(fileContent);
   } catch (error: any) {
     console.error(
-      pc.red("Oups! you're not yet logged-in. run npm install -g @envi/cli")
+      pc.red("Oups! you're not yet logged-in. run npm install -g @envi/cli"),
     );
     return null;
   }
@@ -33,7 +33,7 @@ export async function readConfigFile(): Promise<ConfigData | null> {
 export function getVersion() {
   const packageJson = readFileSync(
     path.join(__dirname, "../..", "package.json"),
-    "utf-8"
+    "utf-8",
   );
   const { version } = JSON.parse(packageJson);
   return version;
@@ -50,7 +50,7 @@ export function isLogedIn() {
  * @returns A string representation in `.env` format.
  */
 export function convertEnvJsonToString(
-  envObject: Record<string, string>
+  envObject: Record<string, string>,
 ): string {
   return Object.entries(envObject)
     .map(([key, value]) => `${key}=${value}`)
@@ -77,7 +77,7 @@ export async function readEnvFile(): Promise<Record<string, string>> {
           }
           return acc;
         },
-        {} as Record<string, string>
+        {} as Record<string, string>,
       );
   } catch (error) {
     console.error(pc.yellow("⚠️ No .env file found or unable to read it."));
@@ -123,7 +123,7 @@ function decrypt(text: string, userId: string): string {
  */
 export function encryptEnvValues(
   envObject: Record<string, string>,
-  userId: string
+  userId: string,
 ): Record<string, string> {
   const encryptedEnv: Record<string, string> = {};
   for (const key in envObject) {
@@ -139,7 +139,7 @@ export function encryptEnvValues(
  */
 export function decryptEnvValues(
   encryptedEnv: Record<string, string>,
-  userId: string
+  userId: string,
 ): Record<string, string> {
   const decryptedEnv: Record<string, string> = {};
   for (const key in encryptedEnv) {
@@ -170,8 +170,8 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
     if (!existsSync(enviDirPath) || !existsSync(enviFilePath)) {
       console.warn(
         pc.yellow(
-          "⚠️ No project configuration found. Run 'envi new' to create a new project."
-        )
+          "⚠️ No project configuration found. Run 'nvii new' to create a new project.",
+        ),
       );
       return null;
     }
@@ -183,7 +183,7 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
     // Validate the configuration
     if (!config.projectId) {
       console.warn(
-        pc.yellow("⚠️ Invalid project configuration: missing projectId")
+        pc.yellow("⚠️ Invalid project configuration: missing projectId"),
       );
       return null;
     }
@@ -196,7 +196,7 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
 }
 
 /**
- * Updates or creates .gitignore to include the .envi folder
+ * Updates or creates .gitignore to include the .nvii folder
  */
 async function updateGitignore(): Promise<void> {
   try {
@@ -209,7 +209,7 @@ async function updateGitignore(): Promise<void> {
       // Read existing .gitignore
       content = await fs.readFile(gitignorePath, "utf-8");
 
-      // Check if .envi is already in .gitignore
+      // Check if .nvii is already in .gitignore
       if (content.split("\n").some((line) => line.trim() === enviEntry)) {
         return; // Already exists, no need to update
       }
@@ -223,7 +223,7 @@ async function updateGitignore(): Promise<void> {
     // Append .envi/ to .gitignore
     content += `${enviEntry}\n`;
     await fs.writeFile(gitignorePath, content, "utf-8");
-    console.log(pc.green("✅ Updated .gitignore to exclude .envi folder"));
+    console.log(pc.green("✅ Updated .gitignore to exclude .nvii folder"));
   } catch (error) {
     console.error(pc.red("Error updating .gitignore:"), error);
     // Don't throw error as this is not critical
@@ -242,7 +242,7 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
 
     let existingConfig: { projectId?: string } = {};
 
-    // Check if .envi directory exists
+    // Check if .nvii directory exists
     if (existsSync(enviDirPath)) {
       // Check if envi.json exists and read it
       if (existsSync(enviFilePath)) {
@@ -252,13 +252,13 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
         } catch (error) {
           console.warn(
             pc.yellow(
-              "Warning: Could not parse existing envi.json, creating new file"
-            )
+              "Warning: Could not parse existing envi.json, creating new file",
+            ),
           );
         }
       }
     } else {
-      // Create .envi directory if it doesn't exist
+      // Create .nvii directory if it doesn't exist
       await fs.mkdir(enviDirPath, { recursive: true });
     }
 
@@ -275,13 +275,13 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
     await fs.writeFile(
       enviFilePath,
       JSON.stringify(updatedConfig, null, 2),
-      "utf-8"
+      "utf-8",
     );
 
     console.log(
       pc.green(
-        `✅ Project configuration ${existingConfig.projectId ? "updated" : "saved"} at ${enviFilePath}`
-      )
+        `✅ Project configuration ${existingConfig.projectId ? "updated" : "saved"} at ${enviFilePath}`,
+      ),
     );
   } catch (error) {
     console.error(pc.red("Error writing project configuration:"), error);

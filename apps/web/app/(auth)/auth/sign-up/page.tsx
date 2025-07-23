@@ -13,8 +13,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/card";
+import { Input } from "@nvii/ui/components/input";
 
 import Link from "next/link";
 
@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { authClient } from "@/lib/auth-client";
 import { signUpSchema } from "@/lib/verification";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
