@@ -9,7 +9,7 @@ export async function testencryption() {
   const config = await readConfigFile();
   if (!config?.userId) {
     console.error(
-      "You must be logged in to test encryption. Run 'envi login' first.",
+      "You must be logged in to test encryption. Run 'nvii login' first.",
     );
     process.exit(1);
   }

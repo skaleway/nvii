@@ -8,7 +8,7 @@ import type React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Envi - Environment Variable Manager",
+  title: "Nvii - Environment Variable Manager",
   description: "Modern environment variable manager for your projects",
 };
 

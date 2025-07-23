@@ -2,13 +2,13 @@
 
 ### **Project Title:**
 
-**Envincible – Secure Environment Variable Manager**
+**Nvii – Secure Environment Variable Manager**
 
 ---
 
 ## **1. Overview**
 
-**Envincible** is a comprehensive environment variable management platform consisting of a command-line tool and web application designed to simplify and secure the management of environment variables across multiple projects. It provides developers with tools to link projects to a cloud store, encrypt sensitive values, and interactively control what gets synchronized. The platform includes both a CLI for local development and a web dashboard for team collaboration and project management.
+**Nvii** is a comprehensive environment variable management platform consisting of a command-line tool and web application designed to simplify and secure the management of environment variables across multiple projects. It provides developers with tools to link projects to a cloud store, encrypt sensitive values, and interactively control what gets synchronized. The platform includes both a CLI for local development and a web dashboard for team collaboration and project management.
 
 ---
 
@@ -46,36 +46,36 @@
 
 #### **Authentication**
 
-- Command: `envincible login`
-- Command: `envincible logout`
-- Command: `envincible whoami`
+- Command: `nvii login`
+- Command: `nvii logout`
+- Command: `nvii whoami`
 - Description: Manage user authentication and session.
 
 #### **Project Management**
 
-- Command: `envincible new`
+- Command: `nvii new`
 - Description: Create a new project and initialize configuration.
 
-- Command: `envincible link`
+- Command: `nvii link`
 - Description: Link an existing project to the current directory.
 
 #### **Environment Management**
 
-- Command: `envincible update`
+- Command: `nvii update`
 - Description: Update the existing env file from remote.
 
-- Command: `envincible generate`
+- Command: `nvii generate`
 - Description: Generate a .env.example file from your .env file.
 
-- Command: `envincible test`
+- Command: `nvii test`
 - Description: Test encryption and decryption functionality.
 
 #### **Missing Commands (To Be Implemented)**
 
-- Command: `envincible push`
+- Command: `nvii push`
 - Description: Encrypt and upload environment variables to remote store.
 
-- Command: `envincible pull`
+- Command: `nvii pull`
 - Description: Fetch and decrypt values from remote store.
 
 ### ✅ **Web Application**
@@ -294,7 +294,7 @@ model EnvVersion {
 
 - All `.env` values are encrypted with a secret key before being sent to the server.
 - Decryption only occurs locally.
-- Secret key must be managed securely, ideally stored in `.envincible-key` file or secure OS keychain.
+- Secret key must be managed securely, ideally stored in `.nvii-key` file or secure OS keychain.
 - Environment values are never exposed or logged in plain text.
 - User authentication required for all operations.
 - Device-based authentication for CLI access.
@@ -345,7 +345,7 @@ docker-compose up -d
 
 ## **10. Deliverables**
 
-- ✅ Fully functional CLI published to `npm` as `envincible`.
+- ✅ Fully functional CLI published to `npm` as `nvii`.
 - ✅ Next.js web application for team collaboration.
 - ✅ PostgreSQL database with Prisma ORM.
 - ✅ User authentication and authorization system.

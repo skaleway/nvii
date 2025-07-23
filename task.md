@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines all tasks required to implement a complete version control system for environment variables across the Envincible platform.
+This document outlines all tasks required to implement a complete version control system for environment variables across the Nvii platform.
 
 ---
 
@@ -124,11 +124,11 @@ This document outlines all tasks required to implement a complete version contro
   - [ ] `new --template <versionId>` - Create from template version
 
 - [ ] **Add version management commands**
-  - [ ] `envincible tag <versionId> <tagName>` - Tag a version
-  - [ ] `envincible tags` - List all tags
-  - [ ] `envincible branch <branchName> <baseVersionId>` - Create branch
-  - [ ] `envincible branches` - List branches
-  - [ ] `envincible merge <sourceVersionId> <targetVersionId>` - Merge versions
+  - [ ] `nvii tag <versionId> <tagName>` - Tag a version
+  - [ ] `nvii tags` - List all tags
+  - [ ] `nvii branch <branchName> <baseVersionId>` - Create branch
+  - [ ] `nvii branches` - List branches
+  - [ ] `nvii merge <sourceVersionId> <targetVersionId>` - Merge versions
 
 ---
 

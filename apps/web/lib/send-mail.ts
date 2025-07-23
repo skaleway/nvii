@@ -17,7 +17,7 @@ export async function sendEmail({
 
   const message = {
     to: to.toLowerCase().trim(),
-    from: `Tembeng Flynn at Envi <${process.env.MAIL_FROM}>`,
+    from: `Tembeng Flynn at Nvii <${process.env.MAIL_FROM}>`,
     subject: subject.trim(),
     text: text.trim(),
   };

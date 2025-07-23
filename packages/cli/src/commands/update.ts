@@ -28,7 +28,7 @@ export async function updateProject() {
     if (!projectConfig) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'envi link' to link your project first.",
+          "❌ Project not linked. Please run 'nvii link' to link your project first.",
         ),
       );
       process.exit(1);
