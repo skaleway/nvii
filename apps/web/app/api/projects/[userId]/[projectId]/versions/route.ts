@@ -1,6 +1,6 @@
 import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
-import { db } from "@workspace/db";
+import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { decryptEnvValues } from "@/lib/encryption";
 

@@ -29,7 +29,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@workspace/ui/components/sidebar";
+} from "@nvii/ui/components/sidebar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 

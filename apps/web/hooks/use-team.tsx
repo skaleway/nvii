@@ -1,6 +1,6 @@
 import { tryCatch } from "@/lib/try-catch";
 import { useQuery } from "@tanstack/react-query";
-import { Team } from "@workspace/db";
+import { Team } from "@nvii/db";
 import axios from "axios";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";

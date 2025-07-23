@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { db } from "@workspace/db";
+import { db } from "@nvii/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 

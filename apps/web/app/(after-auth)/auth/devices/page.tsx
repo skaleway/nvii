@@ -13,7 +13,7 @@ import {
 import { toast } from "sonner";
 
 import { useSession } from "@/provider/session";
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 
 function CodeCharacter({ char }: { char: string }) {
   return (

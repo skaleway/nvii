@@ -1,4 +1,4 @@
-import { Icons } from "@workspace/ui/components/icons";
+import { Icons } from "@nvii/ui/components/icons";
 
 import React, { useMemo } from "react";
 

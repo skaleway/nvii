@@ -2,17 +2,17 @@ import { EnvVariableTable } from "@/components/env-variable-table";
 import { ProjectAccessManager } from "@/components/project-access-manager";
 import { VersionHistory } from "@/components/version-history";
 import { getCurrentUserFromSession } from "@/lib/current-user";
-import { db, EnvVersion } from "@workspace/db";
-import { decryptEnvValues } from "@workspace/env-helpers";
-import { Badge } from "@workspace/ui/components/badge";
+import { db, EnvVersion } from "@nvii/db";
+import { decryptEnvValues } from "@nvii/env-helpers";
+import { Badge } from "@nvii/ui/components/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@workspace/ui/components/breadcrumb";
-import { Button } from "@workspace/ui/components/button";
+} from "@nvii/ui/components/breadcrumb";
+import { Button } from "@nvii/ui/components/button";
 import { ChevronRight, Plus, RefreshCw } from "lucide-react";
 import { notFound } from "next/navigation";
 

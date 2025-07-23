@@ -1,4 +1,4 @@
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 import {
   Card,
   CardContent,
@@ -6,23 +6,23 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
-import { Input } from "@workspace/ui/components/input";
-import { Label } from "@workspace/ui/components/label";
+} from "@nvii/ui/components/card";
+import { Input } from "@nvii/ui/components/input";
+import { Label } from "@nvii/ui/components/label";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@workspace/ui/components/tabs";
+} from "@nvii/ui/components/tabs";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@workspace/ui/components/select";
-import { Switch } from "@workspace/ui/components/switch";
+} from "@nvii/ui/components/select";
+import { Switch } from "@nvii/ui/components/switch";
 
 export default function SettingsPage() {
   return (

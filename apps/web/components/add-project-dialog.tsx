@@ -5,7 +5,7 @@ import type React from "react";
 import { useProjects } from "@/components/projects-provider";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog";
+} from "@nvii/ui/components/dialog";
 import {
   Form,
   FormControl,
@@ -23,8 +23,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/form";
+import { Input } from "@nvii/ui/components/input";
 import { Loader2, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

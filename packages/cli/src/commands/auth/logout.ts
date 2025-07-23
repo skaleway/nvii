@@ -1,4 +1,4 @@
-import { FILENAME, readConfigFile } from "@workspace/env-helpers";
+import { FILENAME, readConfigFile } from "@nvii/env-helpers";
 import inquirer from "inquirer";
 import os from "os";
 import path from "path";

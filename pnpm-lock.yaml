@@ -26,10 +26,10 @@ importers:
       "@commitlint/config-conventional":
         specifier: ^19.8.1
         version: 19.8.1
-      "@workspace/eslint-config":
+      "@nvii/eslint-config":
         specifier: workspace:*
         version: link:packages/eslint-config
-      "@workspace/typescript-config":
+      "@nvii/typescript-config":
         specifier: workspace:*
         version: link:packages/typescript-config
       eslint:
@@ -110,10 +110,10 @@ importers:
       "@uploadthing/react":
         specifier: ^7.3.0
         version: 7.3.0(next@15.3.2(@babel/core@7.27.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(uploadthing@7.6.0(next@15.3.2(@babel/core@7.27.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(tailwindcss@3.4.16(ts-node@10.9.2(@swc/core@1.11.29)(@types/node@20.17.10)(typescript@5.7.2))))
-      "@workspace/db":
+      "@nvii/db":
         specifier: workspace:*
         version: link:../../packages/database
-      "@workspace/ui":
+      "@nvii/ui":
         specifier: workspace:*
         version: link:../../packages/ui
       Envi:
@@ -213,10 +213,10 @@ importers:
       "@types/react-syntax-highlighter":
         specifier: ^15.5.13
         version: 15.5.13
-      "@workspace/env-helpers":
+      "@nvii/env-helpers":
         specifier: workspace:*
         version: link:../../packages/env-helpers
-      "@workspace/typescript-config":
+      "@nvii/typescript-config":
         specifier: workspace:*
         version: link:../../packages/typescript-config
       eslint:
@@ -237,10 +237,10 @@ importers:
 
   packages/cli:
     dependencies:
-      "@workspace/db":
+      "@nvii/db":
         specifier: workspace:*
         version: link:../database
-      "@workspace/env-helpers":
+      "@nvii/env-helpers":
         specifier: workspace:*
         version: link:../env-helpers
       async-listen:
@@ -290,10 +290,10 @@ importers:
         specifier: latest
         version: 6.11.1(prisma@6.11.1(typescript@5.5.4))(typescript@5.5.4)
     devDependencies:
-      "@workspace/eslint-config":
+      "@nvii/eslint-config":
         specifier: workspace:*
         version: link:../eslint-config
-      "@workspace/typescript-config":
+      "@nvii/typescript-config":
         specifier: workspace:*
         version: link:../typescript-config
       eslint:
@@ -317,7 +317,7 @@ importers:
 
   packages/env-helpers:
     dependencies:
-      "@workspace/db":
+      "@nvii/db":
         specifier: workspace:*
         version: link:../database
       async-listen:
@@ -495,10 +495,10 @@ importers:
       "@types/react-dom":
         specifier: 18.3.1
         version: 18.3.1
-      "@workspace/eslint-config":
+      "@nvii/eslint-config":
         specifier: workspace:*
         version: link:../eslint-config
-      "@workspace/typescript-config":
+      "@nvii/typescript-config":
         specifier: workspace:*
         version: link:../typescript-config
       autoprefixer:

@@ -1,10 +1,17 @@
-"use client"
+"use client";
 
-import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@workspace/ui/components/toast"
-import { useToast } from "@/hooks/use-toast"
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@nvii/ui/components/toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function Toaster() {
-  const { toasts } = useToast()
+  const { toasts } = useToast();
 
   return (
     <ToastProvider>
@@ -20,5 +27,5 @@ export function Toaster() {
       ))}
       <ToastViewport />
     </ToastProvider>
-  )
+  );
 }

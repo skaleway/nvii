@@ -1,6 +1,6 @@
 import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
-import { db, Project, ProjectAccess } from "@workspace/db";
+import { db, Project, ProjectAccess } from "@nvii/db";
 import { decryptEnvValues } from "@/lib/encryption";
 import { calculateChanges } from "@/lib/version-helpers";
 import { NextResponse } from "next/server";

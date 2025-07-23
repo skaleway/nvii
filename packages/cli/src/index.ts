@@ -10,7 +10,7 @@ import {
   updateProject,
   logout,
 } from "./commands";
-import { readConfigFile } from "@workspace/env-helpers";
+import { readConfigFile } from "@nvii/env-helpers";
 import pc from "picocolors";
 
 const program = new Command();

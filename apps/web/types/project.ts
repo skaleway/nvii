@@ -1,4 +1,4 @@
-import { Project as DbProject } from "@workspace/db";
+import { Project as DbProject } from "@nvii/db";
 
 export interface AnalyzedContent {
   totalElem: number;

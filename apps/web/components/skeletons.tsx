@@ -3,7 +3,7 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-} from "@workspace/ui/components/card";
+} from "@nvii/ui/components/card";
 import { Skeleton } from "./ui/skeleton";
 
 export function StatusCardSkeleton() {

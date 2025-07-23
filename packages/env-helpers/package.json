@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/env-helpers",
+  "name": "@nvii/env-helpers",
   "version": "0.0.1",
   "description": "Evincible helper functions",
   "main": "./dist/index.js",
@@ -35,7 +35,7 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "@workspace/db": "workspace:*",
+    "@nvii/db": "workspace:*",
     "async-listen": "^3.0.1",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
