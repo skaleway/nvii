@@ -937,8 +937,8 @@ var require_command = __commonJS({
     "use strict";
     var EventEmitter = require("events").EventEmitter;
     var childProcess = require("child_process");
-    var path3 = require("path");
-    var fs2 = require("fs");
+    var path4 = require("path");
+    var fs3 = require("fs");
     var process4 = require("process");
     var { Argument: Argument2, humanReadableArgName } = require_argument();
     var { CommanderError: CommanderError2 } = require_error();
@@ -1770,12 +1770,12 @@ Expecting one of '${allowedValues.join("', '")}'`);
         let launchWithNode = false;
         const sourceExt = [".js", ".ts", ".tsx", ".mjs", ".cjs"];
         function findFile(baseDir, baseName) {
-          const localBin = path3.resolve(baseDir, baseName);
-          if (fs2.existsSync(localBin))
+          const localBin = path4.resolve(baseDir, baseName);
+          if (fs3.existsSync(localBin))
             return localBin;
-          if (sourceExt.includes(path3.extname(baseName)))
+          if (sourceExt.includes(path4.extname(baseName)))
             return void 0;
-          const foundExt = sourceExt.find((ext) => fs2.existsSync(`${localBin}${ext}`));
+          const foundExt = sourceExt.find((ext) => fs3.existsSync(`${localBin}${ext}`));
           if (foundExt)
             return `${localBin}${foundExt}`;
           return void 0;
@@ -1787,23 +1787,23 @@ Expecting one of '${allowedValues.join("', '")}'`);
         if (this._scriptPath) {
           let resolvedScriptPath;
           try {
-            resolvedScriptPath = fs2.realpathSync(this._scriptPath);
+            resolvedScriptPath = fs3.realpathSync(this._scriptPath);
           } catch (err) {
             resolvedScriptPath = this._scriptPath;
           }
-          executableDir = path3.resolve(path3.dirname(resolvedScriptPath), executableDir);
+          executableDir = path4.resolve(path4.dirname(resolvedScriptPath), executableDir);
         }
         if (executableDir) {
           let localFile = findFile(executableDir, executableFile);
           if (!localFile && !subcommand._executableFile && this._scriptPath) {
-            const legacyName = path3.basename(this._scriptPath, path3.extname(this._scriptPath));
+            const legacyName = path4.basename(this._scriptPath, path4.extname(this._scriptPath));
             if (legacyName !== this._name) {
               localFile = findFile(executableDir, `${legacyName}-${subcommand._name}`);
             }
           }
           executableFile = localFile || executableFile;
         }
-        launchWithNode = sourceExt.includes(path3.extname(executableFile));
+        launchWithNode = sourceExt.includes(path4.extname(executableFile));
         let proc;
         if (process4.platform !== "win32") {
           if (launchWithNode) {
@@ -2605,7 +2605,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @return {Command}
        */
       nameFromFilename(filename) {
-        this._name = path3.basename(filename, path3.extname(filename));
+        this._name = path4.basename(filename, path4.extname(filename));
         return this;
       }
       /**
@@ -2619,10 +2619,10 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [path]
        * @return {string|null|Command}
        */
-      executableDir(path4) {
-        if (path4 === void 0)
+      executableDir(path5) {
+        if (path5 === void 0)
           return this._executableDir;
-        this._executableDir = path4;
+        this._executableDir = path5;
         return this;
       }
       /**
@@ -3979,15 +3979,15 @@ var require_route = __commonJS({
       };
     }
     function wrapConversion(toModel, graph) {
-      const path3 = [graph[toModel].parent, toModel];
+      const path4 = [graph[toModel].parent, toModel];
       let fn = conversions[graph[toModel].parent][toModel];
       let cur = graph[toModel].parent;
       while (graph[cur].parent) {
-        path3.unshift(graph[cur].parent);
+        path4.unshift(graph[cur].parent);
         fn = link(conversions[graph[cur].parent][cur], fn);
         cur = graph[cur].parent;
       }
-      fn.conversion = path3;
+      fn.conversion = path4;
       return fn;
     }
     module2.exports = function(fromModel) {
@@ -9932,7 +9932,7 @@ var require_iso2022 = __commonJS({
 var require_chardet = __commonJS({
   "../../node_modules/.pnpm/chardet@0.7.0/node_modules/chardet/index.js"(exports2, module2) {
     "use strict";
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var utf8 = require_utf8();
     var unicode = require_unicode();
     var mbcs = require_mbcs();
@@ -10006,29 +10006,29 @@ var require_chardet = __commonJS({
       var fd;
       var handler = function(err, buffer) {
         if (fd) {
-          fs2.closeSync(fd);
+          fs3.closeSync(fd);
         }
         if (err)
           return cb(err, null);
         cb(null, self.detect(buffer, opts));
       };
       if (opts && opts.sampleSize) {
-        fd = fs2.openSync(filepath, "r"), sample = Buffer.allocUnsafe(opts.sampleSize);
-        fs2.read(fd, sample, 0, opts.sampleSize, null, function(err) {
+        fd = fs3.openSync(filepath, "r"), sample = Buffer.allocUnsafe(opts.sampleSize);
+        fs3.read(fd, sample, 0, opts.sampleSize, null, function(err) {
           handler(err, sample);
         });
         return;
       }
-      fs2.readFile(filepath, handler);
+      fs3.readFile(filepath, handler);
     };
     module2.exports.detectFileSync = function(filepath, opts) {
       if (opts && opts.sampleSize) {
-        var fd = fs2.openSync(filepath, "r"), sample2 = Buffer.allocUnsafe(opts.sampleSize);
-        fs2.readSync(fd, sample2, 0, opts.sampleSize);
-        fs2.closeSync(fd);
+        var fd = fs3.openSync(filepath, "r"), sample2 = Buffer.allocUnsafe(opts.sampleSize);
+        fs3.readSync(fd, sample2, 0, opts.sampleSize);
+        fs3.closeSync(fd);
         return self.detect(sample2, opts);
       }
-      return self.detect(fs2.readFileSync(filepath), opts);
+      return self.detect(fs3.readFileSync(filepath), opts);
     };
     module2.exports.detectAll = function(buffer, opts) {
       if (typeof opts !== "object") {
@@ -13514,16 +13514,16 @@ var require_os_tmpdir = __commonJS({
     var isWindows = process.platform === "win32";
     var trailingSlashRe = isWindows ? /[^:]\\$/ : /.\/$/;
     module2.exports = function() {
-      var path3;
+      var path4;
       if (isWindows) {
-        path3 = process.env.TEMP || process.env.TMP || (process.env.SystemRoot || process.env.windir) + "\\temp";
+        path4 = process.env.TEMP || process.env.TMP || (process.env.SystemRoot || process.env.windir) + "\\temp";
       } else {
-        path3 = process.env.TMPDIR || process.env.TMP || process.env.TEMP || "/tmp";
+        path4 = process.env.TMPDIR || process.env.TMP || process.env.TEMP || "/tmp";
       }
-      if (trailingSlashRe.test(path3)) {
-        path3 = path3.slice(0, -1);
+      if (trailingSlashRe.test(path4)) {
+        path4 = path4.slice(0, -1);
       }
-      return path3;
+      return path4;
     };
   }
 });
@@ -13532,8 +13532,8 @@ var require_os_tmpdir = __commonJS({
 var require_tmp = __commonJS({
   "../../node_modules/.pnpm/tmp@0.0.33/node_modules/tmp/lib/tmp.js"(exports2, module2) {
     "use strict";
-    var fs2 = require("fs");
-    var path3 = require("path");
+    var fs3 = require("fs");
+    var path4 = require("path");
     var crypto = require("crypto");
     var osTmpDir = require_os_tmpdir();
     var _c = process.binding("constants");
@@ -13575,7 +13575,7 @@ var require_tmp = __commonJS({
     }
     function _generateTmpName(opts) {
       if (opts.name) {
-        return path3.join(opts.dir || tmpDir, opts.name);
+        return path4.join(opts.dir || tmpDir, opts.name);
       }
       if (opts.template) {
         return opts.template.replace(TEMPLATE_PATTERN, _randomChars(6));
@@ -13586,7 +13586,7 @@ var require_tmp = __commonJS({
         _randomChars(12),
         opts.postfix || ""
       ].join("");
-      return path3.join(opts.dir || tmpDir, name);
+      return path4.join(opts.dir || tmpDir, name);
     }
     function tmpName(options, callback) {
       var args = _parseArguments(options, callback), opts = args[0], cb = args[1], tries = opts.name ? 1 : opts.tries || DEFAULT_TRIES;
@@ -13596,7 +13596,7 @@ var require_tmp = __commonJS({
         return cb(new Error("Invalid template provided"));
       (function _getUniqueName() {
         const name = _generateTmpName(opts);
-        fs2.stat(name, function(err) {
+        fs3.stat(name, function(err) {
           if (!err) {
             if (tries-- > 0)
               return _getUniqueName();
@@ -13615,7 +13615,7 @@ var require_tmp = __commonJS({
       do {
         const name = _generateTmpName(opts);
         try {
-          fs2.statSync(name);
+          fs3.statSync(name);
         } catch (e) {
           return name;
         }
@@ -13628,14 +13628,14 @@ var require_tmp = __commonJS({
       tmpName(opts, function _tmpNameCreated(err, name) {
         if (err)
           return cb(err);
-        fs2.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err2, fd) {
+        fs3.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err2, fd) {
           if (err2)
             return cb(err2);
           if (opts.discardDescriptor) {
-            return fs2.close(fd, function _discardCallback(err3) {
+            return fs3.close(fd, function _discardCallback(err3) {
               if (err3) {
                 try {
-                  fs2.unlinkSync(name);
+                  fs3.unlinkSync(name);
                 } catch (e) {
                   if (!isENOENT(e)) {
                     err3 = e;
@@ -13658,9 +13658,9 @@ var require_tmp = __commonJS({
       opts.postfix = opts.postfix || ".tmp";
       const discardOrDetachDescriptor = opts.discardDescriptor || opts.detachDescriptor;
       const name = tmpNameSync(opts);
-      var fd = fs2.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
+      var fd = fs3.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
       if (opts.discardDescriptor) {
-        fs2.closeSync(fd);
+        fs3.closeSync(fd);
         fd = void 0;
       }
       return {
@@ -13672,9 +13672,9 @@ var require_tmp = __commonJS({
     function _rmdirRecursiveSync(root) {
       const dirs = [root];
       do {
-        var dir2 = dirs.pop(), deferred = false, files = fs2.readdirSync(dir2);
+        var dir2 = dirs.pop(), deferred = false, files = fs3.readdirSync(dir2);
         for (var i = 0, length = files.length; i < length; i++) {
-          var file2 = path3.join(dir2, files[i]), stat = fs2.lstatSync(file2);
+          var file2 = path4.join(dir2, files[i]), stat = fs3.lstatSync(file2);
           if (stat.isDirectory()) {
             if (!deferred) {
               deferred = true;
@@ -13682,11 +13682,11 @@ var require_tmp = __commonJS({
             }
             dirs.push(file2);
           } else {
-            fs2.unlinkSync(file2);
+            fs3.unlinkSync(file2);
           }
         }
         if (!deferred) {
-          fs2.rmdirSync(dir2);
+          fs3.rmdirSync(dir2);
         }
       } while (dirs.length !== 0);
     }
@@ -13695,7 +13695,7 @@ var require_tmp = __commonJS({
       tmpName(opts, function _tmpNameCreated(err, name) {
         if (err)
           return cb(err);
-        fs2.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err2) {
+        fs3.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err2) {
           if (err2)
             return cb(err2);
           cb(null, name, _prepareTmpDirRemoveCallback(name, opts));
@@ -13705,7 +13705,7 @@ var require_tmp = __commonJS({
     function dirSync(options) {
       var args = _parseArguments(options), opts = args[0];
       const name = tmpNameSync(opts);
-      fs2.mkdirSync(name, opts.mode || DIR_MODE);
+      fs3.mkdirSync(name, opts.mode || DIR_MODE);
       return {
         name,
         removeCallback: _prepareTmpDirRemoveCallback(name, opts)
@@ -13715,7 +13715,7 @@ var require_tmp = __commonJS({
       const removeCallback = _prepareRemoveCallback(function _removeCallback(fdPath) {
         try {
           if (0 <= fdPath[0]) {
-            fs2.closeSync(fdPath[0]);
+            fs3.closeSync(fdPath[0]);
           }
         } catch (e) {
           if (!isEBADF(e) && !isENOENT(e)) {
@@ -13723,7 +13723,7 @@ var require_tmp = __commonJS({
           }
         }
         try {
-          fs2.unlinkSync(fdPath[1]);
+          fs3.unlinkSync(fdPath[1]);
         } catch (e) {
           if (!isENOENT(e)) {
             throw e;
@@ -13736,7 +13736,7 @@ var require_tmp = __commonJS({
       return removeCallback;
     }
     function _prepareTmpDirRemoveCallback(name, opts) {
-      const removeFunction = opts.unsafeCleanup ? _rmdirRecursiveSync : fs2.rmdirSync.bind(fs2);
+      const removeFunction = opts.unsafeCleanup ? _rmdirRecursiveSync : fs3.rmdirSync.bind(fs3);
       const removeCallback = _prepareRemoveCallback(removeFunction, name);
       if (!opts.keep) {
         _removeObjects.unshift(removeCallback);
@@ -26119,9 +26119,9 @@ var import_run_async = __toESM(require_run_async(), 1);
 var import_mute_stream2 = __toESM(require_lib(), 1);
 var import_ansi_escapes5 = __toESM(require_ansi_escapes(), 1);
 var _ = {
-  set: (obj, path3 = "", value) => {
+  set: (obj, path4 = "", value) => {
     let pointer = obj;
-    path3.split(".").forEach((key, index, arr) => {
+    path4.split(".").forEach((key, index, arr) => {
       if (key === "__proto__" || key === "constructor")
         return;
       if (index === arr.length - 1) {
@@ -26132,8 +26132,8 @@ var _ = {
       pointer = pointer[key];
     });
   },
-  get: (obj, path3 = "", defaultValue) => {
-    const travel = (regexp) => String.prototype.split.call(path3, regexp).filter(Boolean).reduce(
+  get: (obj, path4 = "", defaultValue) => {
+    const travel = (regexp) => String.prototype.split.call(path4, regexp).filter(Boolean).reduce(
       // @ts-expect-error implicit any on res[key]
       (res, key) => res == null ? res : res[key],
       obj
@@ -26384,7 +26384,7 @@ var esm_default12 = inquirer;
 var import_path3 = __toESM(require("path"));
 var import_picocolors3 = __toESM(require_picocolors());
 
-// src/commands/login.ts
+// src/commands/auth/login.ts
 var import_env_helpers2 = require("@workspace/env-helpers");
 var import_async_listen = require("async-listen");
 var import_child_process = require("child_process");
@@ -26461,6 +26461,7 @@ ${import_picocolors2.default.bold(confirmationUrl.toString())}
   const spinner = ora("Waiting for authentication...\n").start();
   try {
     const authData = await authPromise;
+    console.log({ authData });
     spinner.stop();
     writeToConfigFile(authData);
     console.log(import_picocolors2.default.green("Authentication successful!"));
@@ -26662,14 +26663,66 @@ async function updateProject() {
   }
 }
 
-// src/index.ts
+// src/commands/auth/logout.ts
 var import_env_helpers6 = require("@workspace/env-helpers");
+var import_os2 = __toESM(require("os"));
+var import_path4 = __toESM(require("path"));
+var import_picocolors6 = __toESM(require_picocolors());
+var import_fs4 = __toESM(require("fs"));
+async function logout() {
+  try {
+    const config = await (0, import_env_helpers6.readConfigFile)();
+    if (!config) {
+      console.log(import_picocolors6.default.yellow("You are not logged in."));
+      return;
+    }
+    const { userId } = await esm_default12.prompt([
+      {
+        type: "input",
+        name: "userId",
+        message: `Please enter your username to confirm logout ("${config.username}"): `,
+        validate: (input) => {
+          if (input === config.username) {
+            return true;
+          }
+          return "Username does not match. Please try again.";
+        }
+      }
+    ]);
+    const { confirm } = await esm_default12.prompt([
+      {
+        type: "confirm",
+        name: "confirm",
+        message: "Are you sure you want to logout? This will remove all your local credentials.",
+        default: false
+      }
+    ]);
+    if (!confirm) {
+      console.log(import_picocolors6.default.yellow("Logout cancelled."));
+      return;
+    }
+    const homeDir = import_os2.default.homedir();
+    const filePath = import_path4.default.join(homeDir, import_env_helpers6.FILENAME);
+    import_fs4.default.unlinkSync(filePath);
+    console.log(import_picocolors6.default.green("Successfully logged out!"));
+  } catch (error) {
+    console.error(import_picocolors6.default.red("Error during logout:"), error);
+    process.exit(1);
+  }
+}
+
+// src/index.ts
+var import_env_helpers7 = require("@workspace/env-helpers");
+var import_picocolors7 = __toESM(require_picocolors());
 var program2 = new Command();
 program2.command("login").description("Authenticate with your service via the CLI").action(login);
+program2.command("logout").description("Logout from your service via the CLI").action(logout);
 program2.command("whoami").description("Show the current user").action(async () => {
   try {
-    const file = await (0, import_env_helpers6.readConfigFile)();
-    console.log(file);
+    const file = await (0, import_env_helpers7.readConfigFile)();
+    if (!file)
+      return;
+    console.log(import_picocolors7.default.green(`Logged in as ${file.username} (${file.email})`));
   } catch (error) {
     console.error("Error reading config:", error);
   }
