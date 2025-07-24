@@ -23909,12 +23909,12 @@ var {
 } = import_index.default;
 
 // src/commands/crypt.ts
-var import_env_helpers = require("@workspace/env-helpers");
+var import_env_helpers = require("@nvii/env-helpers");
 async function testencryption() {
   const config = await (0, import_env_helpers.readConfigFile)();
   if (!config?.userId) {
     console.error(
-      "You must be logged in to test encryption. Run 'envi login' first."
+      "You must be logged in to test encryption. Run 'nvii login' first."
     );
     process.exit(1);
   }
@@ -23976,7 +23976,7 @@ async function generateExample() {
 }
 
 // src/commands/link.ts
-var import_env_helpers3 = require("@workspace/env-helpers");
+var import_env_helpers3 = require("@nvii/env-helpers");
 var import_fs3 = require("fs");
 
 // ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/key.js
@@ -26385,7 +26385,7 @@ var import_path3 = __toESM(require("path"));
 var import_picocolors3 = __toESM(require_picocolors());
 
 // src/commands/auth/login.ts
-var import_env_helpers2 = require("@workspace/env-helpers");
+var import_env_helpers2 = require("@nvii/env-helpers");
 var import_async_listen = require("async-listen");
 var import_child_process = require("child_process");
 var import_config = require("dotenv/config");
@@ -26407,6 +26407,13 @@ async function writeToConfigFile(data) {
     const homeDir = import_os.default.homedir();
     const filePath = import_path2.default.join(homeDir, import_env_helpers2.FILENAME);
     (0, import_fs2.writeFileSync)(filePath, JSON.stringify(data, null, 2));
+    const d = (0, import_fs2.readFileSync)(filePath, "utf-8");
+    const dirname = import_path2.default.dirname(filePath);
+    return {
+      filePath,
+      d,
+      dirname
+    };
   } catch (error) {
     console.error("Error writing to local config file", error);
   }
@@ -26463,10 +26470,11 @@ ${import_picocolors2.default.bold(confirmationUrl.toString())}
     const authData = await authPromise;
     console.log({ authData });
     spinner.stop();
-    writeToConfigFile(authData);
+    const d = await writeToConfigFile(authData);
     console.log(import_picocolors2.default.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${import_env_helpers2.FILENAME}
 `);
+    console.log(d);
     server.close();
     process.exit(0);
   } catch (error) {
@@ -26574,7 +26582,7 @@ async function linkProject() {
 }
 
 // src/commands/new.ts
-var import_env_helpers4 = require("@workspace/env-helpers");
+var import_env_helpers4 = require("@nvii/env-helpers");
 var import_picocolors4 = __toESM(require_picocolors());
 async function promptUser(message) {
   const response = await esm_default12.prompt([
@@ -26622,7 +26630,7 @@ async function createProject() {
 
 // src/commands/update.ts
 var import_picocolors5 = __toESM(require_picocolors());
-var import_env_helpers5 = require("@workspace/env-helpers");
+var import_env_helpers5 = require("@nvii/env-helpers");
 async function updateProject() {
   try {
     const userData = await (0, import_env_helpers5.readConfigFile)();
@@ -26638,7 +26646,7 @@ async function updateProject() {
     if (!projectConfig) {
       console.error(
         import_picocolors5.default.red(
-          "\u274C Project not linked. Please run 'envi link' to link your project first."
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
@@ -26663,17 +26671,68 @@ async function updateProject() {
   }
 }
 
-// src/commands/auth/logout.ts
-var import_env_helpers6 = require("@workspace/env-helpers");
-var import_os2 = __toESM(require("os"));
-var import_path4 = __toESM(require("path"));
+// src/commands/pull.ts
 var import_picocolors6 = __toESM(require_picocolors());
-var import_fs4 = __toESM(require("fs"));
+var import_env_helpers6 = require("@nvii/env-helpers");
+var import_fs4 = require("fs");
+var import_path4 = require("path");
+var import_axios = __toESM(require("axios"));
+var getRemoteEnvVariables = async (projectId, userId) => {
+  try {
+    const res = await import_axios.default.get(
+      `${process.env.CLIENT_URL}/api/projects/${userId}/${projectId}`
+    );
+    const project = res.data;
+    if (!project) {
+      throw new Error("An unexpected error occurred pulling remote changes.");
+    }
+    return project;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+async function pullRemoteChanges() {
+  try {
+    const userData = await (0, import_env_helpers6.readConfigFile)();
+    if (!(0, import_env_helpers6.isLogedIn)()) {
+      console.log(import_picocolors6.default.red("You must be logged in to update a project."));
+      await login();
+    }
+    if (!userData) {
+      console.log(import_picocolors6.default.red("You must be logged in to update a project."));
+      await login();
+    }
+    const cwd = process.cwd();
+    const envs = await (0, import_env_helpers6.readEnvFile)();
+    const projectPath = (0, import_path4.join)(cwd, ".envi/envi.json");
+    const content = (0, import_fs4.readFileSync)(projectPath, "utf-8");
+    const projectId = JSON.parse(content).projectId;
+    const remoteEnvs = await getRemoteEnvVariables(
+      projectId,
+      userData?.userId
+    );
+    const decryptedContent = [];
+    (remoteEnvs?.content).map((item) => {
+      const decrypted = (0, import_env_helpers6.decryptEnvValues)(item, userData?.userId);
+      decryptedContent.push(decrypted);
+    });
+  } catch (error) {
+    console.error(import_picocolors6.default.red("\u274C Error updating project:"), error);
+    process.exit(1);
+  }
+}
+
+// src/commands/auth/logout.ts
+var import_env_helpers7 = require("@nvii/env-helpers");
+var import_os2 = __toESM(require("os"));
+var import_path5 = __toESM(require("path"));
+var import_picocolors7 = __toESM(require_picocolors());
+var import_fs5 = __toESM(require("fs"));
 async function logout() {
   try {
-    const config = await (0, import_env_helpers6.readConfigFile)();
+    const config = await (0, import_env_helpers7.readConfigFile)();
     if (!config) {
-      console.log(import_picocolors6.default.yellow("You are not logged in."));
+      console.log(import_picocolors7.default.yellow("You are not logged in."));
       return;
     }
     const { userId } = await esm_default12.prompt([
@@ -26698,31 +26757,31 @@ async function logout() {
       }
     ]);
     if (!confirm) {
-      console.log(import_picocolors6.default.yellow("Logout cancelled."));
+      console.log(import_picocolors7.default.yellow("Logout cancelled."));
       return;
     }
     const homeDir = import_os2.default.homedir();
-    const filePath = import_path4.default.join(homeDir, import_env_helpers6.FILENAME);
-    import_fs4.default.unlinkSync(filePath);
-    console.log(import_picocolors6.default.green("Successfully logged out!"));
+    const filePath = import_path5.default.join(homeDir, import_env_helpers7.FILENAME);
+    import_fs5.default.unlinkSync(filePath);
+    console.log(import_picocolors7.default.green("Successfully logged out!"));
   } catch (error) {
-    console.error(import_picocolors6.default.red("Error during logout:"), error);
+    console.error(import_picocolors7.default.red("Error during logout:"), error);
     process.exit(1);
   }
 }
 
 // src/index.ts
-var import_env_helpers7 = require("@workspace/env-helpers");
-var import_picocolors7 = __toESM(require_picocolors());
+var import_env_helpers8 = require("@nvii/env-helpers");
+var import_picocolors8 = __toESM(require_picocolors());
 var program2 = new Command();
 program2.command("login").description("Authenticate with your service via the CLI").action(login);
 program2.command("logout").description("Logout from your service via the CLI").action(logout);
 program2.command("whoami").description("Show the current user").action(async () => {
   try {
-    const file = await (0, import_env_helpers7.readConfigFile)();
+    const file = await (0, import_env_helpers8.readConfigFile)();
     if (!file)
       return;
-    console.log(import_picocolors7.default.green(`Logged in as ${file.username} (${file.email})`));
+    console.log(import_picocolors8.default.green(`Logged in as ${file.username} (${file.email})`));
   } catch (error) {
     console.error("Error reading config:", error);
   }
@@ -26733,6 +26792,7 @@ program2.command("new").description("Create a new project").action(() => {
 program2.command("link").description("Link an existing project to the current directory").action(linkProject);
 program2.command("test").description("Test to see if the encryption and decryption works").action(testencryption);
 program2.command("update").description("Update the existing env file").action(updateProject);
+program2.command("pull").description("Pull latest remote changes.").action(pullRemoteChanges);
 program2.command("generate").description("Generate a .env.example file from your .env file").action(generateExample);
 program2.parse(process.argv);
 /*! Bundled license information:

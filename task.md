@@ -56,9 +56,9 @@ This document outlines all tasks required to implement a complete version contro
 
 - [ ] **Implement `pull.ts`** - Fetch and decrypt environment variables
 
-  - [ ] Read `.envi` file for project configuration
-  - [ ] Fetch latest version from API
-  - [ ] Decrypt environment variables
+  - [x] Read `.envi` file for project configuration
+  - [x] Fetch latest version from API
+  - [x] Decrypt environment variables
   - [ ] Handle conflicts with existing `.env`
   - [ ] Write to `.env` file
   - [ ] Show change summary
