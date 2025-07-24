@@ -1,7 +1,5 @@
 import { createTransport } from "nodemailer";
 
-console.log(process.env.MAIL_HOST);
-
 // Transporter setup
 export const transporter = createTransport({
   host: process.env.MAIL_HOST,

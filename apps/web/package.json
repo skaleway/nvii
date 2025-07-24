@@ -29,7 +29,6 @@
     "@uploadthing/react": "^7.3.0",
     "@nvii/db": "workspace:*",
     "@nvii/ui": "workspace:*",
-    "Envi": "workspace:*",
     "axios": "^1.7.9",
     "bcryptjs": "^3.0.2",
     "better-auth": "^1.2.8",

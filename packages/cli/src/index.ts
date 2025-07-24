@@ -9,6 +9,7 @@ import {
   createProject,
   updateProject,
   logout,
+  pullRemoteChanges,
 } from "./commands";
 import { readConfigFile } from "@nvii/env-helpers";
 import pc from "picocolors";
@@ -60,6 +61,11 @@ program
   .command("update")
   .description("Update the existing env file")
   .action(updateProject);
+
+program
+  .command("pull")
+  .description("Pull latest remote changes.")
+  .action(pullRemoteChanges);
 
 program
   .command("generate")
