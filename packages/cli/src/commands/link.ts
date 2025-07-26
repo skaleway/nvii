@@ -85,7 +85,13 @@ export async function linkProject() {
     const finalEnv: Record<string, string> = { ...existingEnv };
     let commentedLines = "";
 
-    for (const [key, value] of Object.entries(selectedProject.content)) {
+    // decrypt envs before comparing
+    const decryptedEnv = decryptEnvValues(
+      selectedProject?.content as Record<string, string>,
+      userConfig.userId,
+    );
+
+    for (const [key, value] of Object.entries(decryptedEnv)) {
       const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
       const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
 
@@ -106,24 +112,25 @@ export async function linkProject() {
         } else {
           commentedLines += `# ${key}=${value}\n`;
         }
+        console.log("\n");
       } else {
         finalEnv[key] = value;
       }
     }
 
-    const decryptedEnv = decryptEnvValues(finalEnv, userConfig.userId);
-
     const finalEnvContent =
-      Object.entries(decryptedEnv)
+      Object.entries(finalEnv)
         .map(([key, value]) => `${key}=${value}`)
         .join("\n") +
       "\n" +
       commentedLines;
 
     await fs.writeFile(envFilePath, finalEnvContent);
+    console.log("\n");
     await writeProjectConfig(selectedProject.id);
     console.log(pc.green(".env file updated successfully!"));
   } catch (error: Error | any) {
-    console.error(pc.red("Error linking project:"), error.message);
+    console.error(pc.red("\nError linking project:"), error.message);
+    process.exit(1);
   }
 }

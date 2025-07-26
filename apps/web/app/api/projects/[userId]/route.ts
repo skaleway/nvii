@@ -4,7 +4,7 @@ import { db } from "@nvii/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-type AuthUser = {
+export type AuthUser = {
   id: string;
   name: string | null;
   email: string | null;
@@ -14,7 +14,9 @@ type AuthUser = {
   updatedAt: Date;
 };
 
-async function validateCliAuth(headers: Headers): Promise<AuthUser | null> {
+export async function validateCliAuth(
+  headers: Headers,
+): Promise<AuthUser | null> {
   const userId = headers.get("X-User-Id");
   const deviceId = headers.get("X-Device-Id");
   const authCode = headers.get("X-Auth-Code");

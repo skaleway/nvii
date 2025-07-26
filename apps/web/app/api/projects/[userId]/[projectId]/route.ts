@@ -5,18 +5,35 @@ import { decryptEnvValues } from "@/lib/encryption";
 import { calculateChanges } from "@/lib/version-helpers";
 import { NextResponse } from "next/server";
 import { User } from "better-auth";
+import { headers } from "next/headers";
+import { AuthUser, validateCliAuth } from "../route";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
-    const user = await getCurrentUserFromSession();
-    if (!user) {
+    const { userId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    let cliUser = await validateCliAuth(headersList);
+
+    if (!cliUser) {
+      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
+    }
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId, projectId } = await params;
+    if (cliUser?.id !== userId) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+    const { projectId } = await params;
 
     // Verify the user has access to this project
     const project = await db.project.findUnique({
