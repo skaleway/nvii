@@ -76,7 +76,7 @@ export async function pullRemoteChanges() {
           {
             type: "confirm",
             name: "overwrite",
-            message: `${pc.yellowBright("Warning")}: ${key} exists in local .env. Overwrite? Current: "${pc.greenBright(`${normalizedExisting}`)}" New: "${pc.yellowBright(`${normalizedNew}`)}"`,
+            message: `${pc.yellowBright("Warning")}: ${key} exists in local .env. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
             default: false,
           },
         ]);
@@ -103,13 +103,16 @@ export async function pullRemoteChanges() {
       commentedLines;
 
     await fs.writeFile(envFilePath, finalEnvContent);
-    // log change summary
-    console.log(pc.bold("\nChange summary:"));
-    changedEnvs.map((item) => {
-      console.log(
-        `${item.key}: changed from ${item.original} to ${item.value}`,
-      );
-    });
+
+    if (changedEnvs.length > 0) {
+      // log change summary
+      console.log(pc.bold("\nChange summary:"));
+      changedEnvs.map((item) => {
+        console.log(
+          `${item.key}: changed from ${item.original} to ${item.value}`,
+        );
+      });
+    }
 
     console.log("\n");
     await writeProjectConfig(project.id);
