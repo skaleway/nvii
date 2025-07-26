@@ -27,8 +27,9 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
 import { ErrorContext } from "@better-fetch/fetch";
-import { GithubIcon } from "lucide-react";
+import { GithubIcon, Loader2 } from "lucide-react";
 import { Button } from "@nvii/ui/components/button";
+import { cn } from "@nvii/ui/lib/utils";
 
 export default function SignIn() {
   const router = useRouter();
@@ -53,18 +54,15 @@ export default function SignIn() {
         password: values.password,
       },
       {
-        onRequest: () => {
-          setPendingCredentials(true);
-        },
+        onRequest: () => setPendingCredentials(true),
         onSuccess: async () => {
           router.push("/");
           router.refresh();
         },
         onError: (ctx: ErrorContext) => {
-          console.log(ctx);
           toast({
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
+            title: "Login failed",
+            description: ctx.error.message ?? "Unknown error.",
             variant: "destructive",
           });
         },
@@ -75,21 +73,17 @@ export default function SignIn() {
 
   const handleSignInWithGithub = async () => {
     await authClient.signIn.social(
+      { provider: "github" },
       {
-        provider: "github",
-      },
-      {
-        onRequest: () => {
-          setPendingGithub(true);
-        },
+        onRequest: () => setPendingGithub(true),
         onSuccess: async () => {
           router.push("/");
           router.refresh();
         },
         onError: (ctx: ErrorContext) => {
           toast({
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
+            title: "GitHub sign-in failed",
+            description: ctx.error.message ?? "Unknown error.",
             variant: "destructive",
           });
         },
@@ -99,15 +93,17 @@ export default function SignIn() {
   };
 
   return (
-    <div className="grow flex items-center justify-center p-4 w-full">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
+      <Card className="w-full max-w-md rounded-2xl shadow-xl border border-transbg-transparent bg-background text-white">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center text-gray-800">
+          <CardTitle className="text-4xl font-extrabold text-center">
             Sign In
           </CardTitle>
+          <p className="text-sm text-center text-gray-400">
+            Welcome back! Login to your account
+          </p>
         </CardHeader>
         <CardContent>
-          {/* @ts-expect-error - react-hook-form types are not compatible with zod 7.54.2 */}
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleCredentialsSignIn)}
@@ -115,23 +111,41 @@ export default function SignIn() {
             >
               {["email", "password"].map((field) => (
                 <FormField
-                  // @ts-expect-error - react-hook-form types are not compatible with zod 7.54.2
-                  control={form.control}
                   key={field}
+                  control={form.control}
                   name={field as keyof z.infer<typeof signInSchema>}
                   render={({ field: fieldProps }) => (
                     <FormItem>
-                      <FormLabel>
-                        {field.charAt(0).toUpperCase() + field.slice(1)}
-                      </FormLabel>
+                      <div
+                        className={cn(
+                          field === "password"
+                            ? "flex items-center justify-between w-full"
+                            : "",
+                        )}
+                      >
+                        <FormLabel className="capitalize text-gray-300">
+                          {field === "email" ? "Email Address" : "Password"}
+                        </FormLabel>
+                        {field === "password" && (
+                          <div className="text-left -mt-2 text-sm">
+                            <Link
+                              href="/forgot-password"
+                              className="text-primary hover:underline"
+                            >
+                              Forgot password?
+                            </Link>
+                          </div>
+                        )}
+                      </div>
                       <FormControl>
                         <Input
+                          className="bg-transparent border border-gray-700 text-white placeholder:text-gray-500 focus:ring-primary focus:border-primary"
                           type={field === "password" ? "password" : "email"}
                           placeholder={`Enter your ${field}`}
-                          {...fieldProps}
                           autoComplete={
                             field === "password" ? "current-password" : "email"
                           }
+                          {...fieldProps}
                         />
                       </FormControl>
                       <FormMessage />
@@ -139,22 +153,36 @@ export default function SignIn() {
                   )}
                 />
               ))}
-              <Button disabled={pendingCredentials}>Sign in</Button>
-              <div className="mt-4 text-center text-sm">
-                <Link
-                  href="/forgot-password"
-                  className="text-primary hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <Button
+                disabled={pendingCredentials}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                {pendingCredentials && (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                )}
+                Sign In
+              </Button>
             </form>
           </Form>
-          <div className="mt-4">
-            <Button disabled={pendingGithub} onClick={handleSignInWithGithub}>
-              <GithubIcon className="w-4 h-4 mr-2" />
-              Continue with GitHub
+          <div className="mt-6">
+            <Button
+              variant="secondary"
+              className="w-full flex items-center justify-center gap-2 bg-transparent border border-transbg-transparent p-4"
+              onClick={handleSignInWithGithub}
+              disabled={pendingGithub}
+            >
+              {pendingGithub && <Loader2 className="w-4 h-4 animate-spin" />}
+              <GithubIcon className="w-4 h-4" /> Continue with GitHub
             </Button>
+          </div>
+          <div className="mt-6 text-center text-sm text-gray-400">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/auth/sign-up"
+              className="text-primary font-medium hover:underline"
+            >
+              Sign up
+            </Link>
           </div>
         </CardContent>
       </Card>

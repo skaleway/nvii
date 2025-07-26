@@ -31,13 +31,17 @@ export async function linkProject() {
 
     const client = await getConfiguredClient();
     const response = await client.get(`/projects/${userConfig.userId}`);
-    const projects = response.data.data as Project[];
+    if (response.data) {
+      console.log({ data: response.data });
+      return;
+    }
+    const projects = response.data as Project[];
 
     if (!projects.length) {
       console.log(pc.yellow("No projects found for this user."));
       return;
     }
-
+    console.log({ response });
     const { selectedProjectId } = await inquirer.prompt([
       {
         type: "list",

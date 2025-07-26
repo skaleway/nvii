@@ -92,12 +92,10 @@ export async function login() {
 
   try {
     const authData = await authPromise;
-    console.log({ authData });
     spinner.stop();
     const d = await writeToConfigFile(authData);
     console.log(pc.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${FILENAME}\n`);
-    console.log(d);
     server.close();
     process.exit(0);
   } catch (error) {
