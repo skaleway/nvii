@@ -112,7 +112,6 @@ export async function linkProject() {
         } else {
           commentedLines += `# ${key}=${value}\n`;
         }
-        console.log("\n");
       } else {
         finalEnv[key] = value;
       }

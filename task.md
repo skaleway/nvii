@@ -59,9 +59,9 @@ This document outlines all tasks required to implement a complete version contro
   - [x] Read `.envi` file for project configuration
   - [x] Fetch latest version from API
   - [x] Decrypt environment variables
-  - [ ] Handle conflicts with existing `.env`
-  - [ ] Write to `.env` file
-  - [ ] Show change summary
+  - [x] Handle conflicts with existing `.env`
+  - [x] Write to `.env` file
+  - [x] Show change summary
 
 - [ ] **Implement `push.ts`** - Encrypt and upload environment variables
 

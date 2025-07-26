@@ -55,6 +55,8 @@ export async function pullRemoteChanges() {
 
     const finalEnv: Record<string, string> = { ...existingEnv };
     let commentedLines = "";
+    // keep track of changes
+    const changedEnvs: Record<string, string>[] = [];
 
     // decrypt envs before comparing
     const decryptedEnv = decryptEnvValues(
@@ -80,11 +82,14 @@ export async function pullRemoteChanges() {
         ]);
         if (overwrite) {
           finalEnv[key] = value;
-          console.log(pc.greenBright(`🚀 ${key} updated to ${normalizedNew}.`));
+          changedEnvs.push({
+            key,
+            value,
+            original: normalizedExisting,
+          });
         } else {
           commentedLines += `# ${key}=${value}\n`;
         }
-        console.log("\n");
       } else {
         finalEnv[key] = value;
       }
@@ -98,6 +103,14 @@ export async function pullRemoteChanges() {
       commentedLines;
 
     await fs.writeFile(envFilePath, finalEnvContent);
+    // log change summary
+    console.log(pc.bold("\nChange summary:"));
+    changedEnvs.map((item) => {
+      console.log(
+        `${item.key}: changed from ${item.original} to ${item.value}`,
+      );
+    });
+
     console.log("\n");
     await writeProjectConfig(project.id);
     console.log(pc.green(".env file updated successfully!"));
