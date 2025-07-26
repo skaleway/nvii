@@ -1,1 +1,5 @@
 .envi/
+
+dist
+.turbo
+nodemon.json

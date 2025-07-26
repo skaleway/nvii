@@ -1,5 +1,5 @@
 {
-  "name": "envi",
+  "name": "nvii",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
+    "@nvii/env-helpers": "workspace*",
     "@prisma/client": "^6.9.0",
     "next-auth": "^4.24.11"
   }

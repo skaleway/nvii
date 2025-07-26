@@ -11,8 +11,7 @@ import {
   logout,
   pullRemoteChanges,
 } from "./commands";
-import { readConfigFile } from "@nvii/env-helpers";
-import pc from "picocolors";
+import { whoami } from "./commands/auth/whoami";
 
 const program = new Command();
 
@@ -26,26 +25,12 @@ program
   .description("Logout from your service via the CLI")
   .action(logout);
 
-program
-  .command("whoami")
-  .description("Show the current user")
-  .action(async () => {
-    try {
-      const file = await readConfigFile();
-      if (!file) return;
-
-      console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
-    } catch (error) {
-      console.error("Error reading config:", error);
-    }
-  });
+program.command("whoami").description("Show the current user").action(whoami);
 
 program
   .command("new")
   .description("Create a new project")
-  .action(() => {
-    createProject();
-  });
+  .action(createProject);
 
 program
   .command("link")

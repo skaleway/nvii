@@ -57,12 +57,26 @@ export const GET = async (
   { params }: { params: Promise<{ userId: string }> },
 ): Promise<NextResponse> => {
   try {
-    const user = await getCurrentUserFromSession();
-    if (!user) {
+    const { userId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    let cliUser = await validateCliAuth(headersList);
+
+    if (!cliUser) {
+      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
+    }
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId } = await params;
+    if (cliUser?.id !== userId) {
+      return ErrorResponse("Unauthorized", 401);
+    }
 
     const projects = await db.project.findMany({
       where: {
@@ -101,21 +115,27 @@ export const POST = async (
 ): Promise<NextResponse> => {
   try {
     const { userId } = await params;
+    // read request headers sent from the cli
     const headersList = await headers();
+    // validate cli request headers
+    let cliUser = await validateCliAuth(headersList);
 
-    let user = await validateCliAuth(headersList);
-
-    if (!user) {
-      user = (await getCurrentUserFromSession()) as AuthUser | null;
+    if (!cliUser) {
+      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
     }
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
 
-    if (!user) {
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (user.id !== userId) {
-      return ErrorResponse("Unauthorized - User ID mismatch", 401);
+    if (cliUser?.id !== userId) {
+      return ErrorResponse("Unauthorized", 401);
     }
+
+    const user = webUser || cliUser;
 
     const body = await request.json();
 

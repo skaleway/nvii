@@ -13,7 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@nvii/ui/components/breadcrumb";
 import { Button } from "@nvii/ui/components/button";
-import { ChevronRight, Plus, RefreshCw } from "lucide-react";
+import { ChevronRight, RefreshCw } from "lucide-react";
 import { notFound } from "next/navigation";
 
 interface ProjectPageProps {

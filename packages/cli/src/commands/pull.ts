@@ -8,12 +8,15 @@ import {
   writeProjectConfig,
   readEnvFile,
   decryptEnvValues,
+  getConfiguredClient,
 } from "@nvii/env-helpers";
 import { login } from "./auth/login";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { Project } from "@nvii/db";
 import axios from "axios";
+
+const DOT_ENV_FILE = ".env";
 
 const getRemoteEnvVariables = async (
   projectId: string,
@@ -37,16 +40,25 @@ const getRemoteEnvVariables = async (
 
 export async function pullRemoteChanges() {
   try {
-    const userData = await readConfigFile();
-    // Ensure user is logged in
     if (!isLogedIn()) {
-      console.log(pc.red("You must be logged in to update a project."));
+      console.log(pc.red("You must be logged in to link a project."));
       await login();
+      return;
     }
 
-    if (!userData) {
-      console.log(pc.red("You must be logged in to update a project."));
-      await login();
+    const userConfig = await readConfigFile();
+    if (!userConfig?.userId) {
+      console.log(pc.red("No user ID found. Please log in again."));
+      return;
+    }
+
+    const client = await getConfiguredClient();
+    const response = await client.get(`/projects/${userConfig.userId}`);
+    const projects = response.data as Project[];
+
+    if (!projects.length) {
+      console.log(pc.yellow("No projects found for this user."));
+      return;
     }
 
     const cwd = process.cwd();
@@ -61,12 +73,12 @@ export async function pullRemoteChanges() {
     // TODO: fix database access error. To retrieve remote envs
     const remoteEnvs = await getRemoteEnvVariables(
       projectId,
-      userData?.userId as string,
+      userConfig?.userId as string,
     );
 
     const decryptedContent = [];
     (remoteEnvs?.content as Record<string, string>[]).map((item) => {
-      const decrypted = decryptEnvValues(item, userData?.userId as string);
+      const decrypted = decryptEnvValues(item, userConfig?.userId as string);
       decryptedContent.push(decrypted);
     });
   } catch (error) {
