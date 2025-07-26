@@ -1,4 +1,4 @@
-import { FILENAME } from "@nvii/env-helpers";
+import { FILENAME, checkLoginStats } from "@nvii/env-helpers";
 import { listen } from "async-listen";
 import { spawn } from "child_process";
 import "dotenv/config";
@@ -23,12 +23,12 @@ async function writeToConfigFile(data: Record<string, string>) {
     const filePath = path.join(homeDir, FILENAME);
     writeFileSync(filePath, JSON.stringify(data, null, 2));
 
-    const d = readFileSync(filePath, "utf-8");
+    const userData = readFileSync(filePath, "utf-8");
     const dirname = path.dirname(filePath);
 
     return {
       filePath,
-      d,
+      userData,
       dirname,
     };
   } catch (error) {
@@ -39,6 +39,11 @@ async function writeToConfigFile(data: Record<string, string>) {
 const nanoid = customAlphabet("123456789QAZWSXEDCRFVTGBYHNUJMIKOLP", 8);
 
 export async function login() {
+  // check if user is already logged in and prevent useless login
+  const res = await checkLoginStats();
+  if (res?.success) {
+    return;
+  }
   const oraModule = await import("ora");
   const ora = oraModule.default;
 
@@ -94,6 +99,7 @@ export async function login() {
     const authData = await authPromise;
     spinner.stop();
     const d = await writeToConfigFile(authData);
+    console.log({ d });
     console.log(pc.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${FILENAME}\n`);
     server.close();

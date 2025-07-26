@@ -31,17 +31,12 @@ export async function linkProject() {
 
     const client = await getConfiguredClient();
     const response = await client.get(`/projects/${userConfig.userId}`);
-    if (response.data) {
-      console.log({ data: response.data });
-      return;
-    }
     const projects = response.data as Project[];
 
     if (!projects.length) {
       console.log(pc.yellow("No projects found for this user."));
       return;
     }
-    console.log({ response });
     const { selectedProjectId } = await inquirer.prompt([
       {
         type: "list",
@@ -94,7 +89,6 @@ export async function linkProject() {
       const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
       const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
 
-      console.log({ normalizedNew, normalizedExisting });
       if (
         existingEnv[key] !== undefined &&
         normalizedExisting === normalizedNew
@@ -129,7 +123,7 @@ export async function linkProject() {
     await fs.writeFile(envFilePath, finalEnvContent);
     await writeProjectConfig(selectedProject.id);
     console.log(pc.green(".env file updated successfully!"));
-  } catch (error) {
-    console.error(pc.red("Error linking project:"), error);
+  } catch (error: Error | any) {
+    console.error(pc.red("Error linking project:"), error.message);
   }
 }

@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const commands_1 = require("./commands");
-const whoami_1 = require("./commands/auth/whoami");
 const program = new commander_1.Command();
 program
     .command("login")
@@ -13,7 +12,7 @@ program
     .command("logout")
     .description("Logout from your service via the CLI")
     .action(commands_1.logout);
-program.command("whoami").description("Show the current user").action(whoami_1.whoami);
+program.command("whoami").description("Show the current user").action(commands_1.whoami);
 program
     .command("new")
     .description("Create a new project")

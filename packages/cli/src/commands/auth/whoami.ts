@@ -6,6 +6,8 @@ export const whoami = async () => {
     const file = await readConfigFile();
     if (!file) return;
 
+    console.log({ file });
+
     console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
   } catch (error) {
     console.error("Error reading config:", error);

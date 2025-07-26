@@ -24,9 +24,29 @@ export async function readConfigFile(): Promise<ConfigData | null> {
     return JSON.parse(fileContent);
   } catch (error: any) {
     console.error(
-      pc.red("Oups! you're not yet logged-in. run npm install -g @envi/cli"),
+      pc.red("Oups! you're not yet logged-in. run npm install -g @nvii/cli"),
     );
     return null;
+  }
+}
+
+// check login stats
+export async function checkLoginStats(): Promise<{ success: boolean }> {
+  try {
+    const homeDir = os.homedir();
+    const filePath = path.join(homeDir, FILENAME);
+    const fileContent = await fs.readFile(filePath, "utf-8");
+
+    if (!fileContent) {
+      return { success: false };
+    }
+
+    const file = JSON.parse(fileContent);
+
+    console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
+    return { success: true };
+  } catch (error) {
+    return { success: false };
   }
 }
 

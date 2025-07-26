@@ -10,8 +10,8 @@ import {
   updateProject,
   logout,
   pullRemoteChanges,
+  whoami,
 } from "./commands";
-import { whoami } from "./commands/auth/whoami";
 
 const program = new Command();
 
