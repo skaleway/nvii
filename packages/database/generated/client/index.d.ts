@@ -9532,6 +9532,7 @@ export namespace Prisma {
     createdAt: Date | null
     createdBy: string | null
     description: string | null
+    branch: string | null
   }
 
   export type EnvVersionMaxAggregateOutputType = {
@@ -9540,6 +9541,7 @@ export namespace Prisma {
     createdAt: Date | null
     createdBy: string | null
     description: string | null
+    branch: string | null
   }
 
   export type EnvVersionCountAggregateOutputType = {
@@ -9550,6 +9552,7 @@ export namespace Prisma {
     createdBy: number
     description: number
     changes: number
+    branch: number
     _all: number
   }
 
@@ -9560,6 +9563,7 @@ export namespace Prisma {
     createdAt?: true
     createdBy?: true
     description?: true
+    branch?: true
   }
 
   export type EnvVersionMaxAggregateInputType = {
@@ -9568,6 +9572,7 @@ export namespace Prisma {
     createdAt?: true
     createdBy?: true
     description?: true
+    branch?: true
   }
 
   export type EnvVersionCountAggregateInputType = {
@@ -9578,6 +9583,7 @@ export namespace Prisma {
     createdBy?: true
     description?: true
     changes?: true
+    branch?: true
     _all?: true
   }
 
@@ -9661,6 +9667,7 @@ export namespace Prisma {
     createdBy: string
     description: string | null
     changes: JsonValue | null
+    branch: string
     _count: EnvVersionCountAggregateOutputType | null
     _min: EnvVersionMinAggregateOutputType | null
     _max: EnvVersionMaxAggregateOutputType | null
@@ -9688,6 +9695,7 @@ export namespace Prisma {
     createdBy?: boolean
     description?: boolean
     changes?: boolean
+    branch?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["envVersion"]>
@@ -9700,6 +9708,7 @@ export namespace Prisma {
     createdBy?: boolean
     description?: boolean
     changes?: boolean
+    branch?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["envVersion"]>
@@ -9712,6 +9721,7 @@ export namespace Prisma {
     createdBy?: boolean
     description?: boolean
     changes?: boolean
+    branch?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["envVersion"]>
@@ -9724,9 +9734,10 @@ export namespace Prisma {
     createdBy?: boolean
     description?: boolean
     changes?: boolean
+    branch?: boolean
   }
 
-  export type EnvVersionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "content" | "createdAt" | "createdBy" | "description" | "changes", ExtArgs["result"]["envVersion"]>
+  export type EnvVersionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "content" | "createdAt" | "createdBy" | "description" | "changes" | "branch", ExtArgs["result"]["envVersion"]>
   export type EnvVersionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -9754,6 +9765,7 @@ export namespace Prisma {
       createdBy: string
       description: string | null
       changes: Prisma.JsonValue | null
+      branch: string
     }, ExtArgs["result"]["envVersion"]>
     composites: {}
   }
@@ -10186,6 +10198,7 @@ export namespace Prisma {
     readonly createdBy: FieldRef<"EnvVersion", 'String'>
     readonly description: FieldRef<"EnvVersion", 'String'>
     readonly changes: FieldRef<"EnvVersion", 'Json'>
+    readonly branch: FieldRef<"EnvVersion", 'String'>
   }
     
 
@@ -10713,7 +10726,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     createdBy: 'createdBy',
     description: 'description',
-    changes: 'changes'
+    changes: 'changes',
+    branch: 'branch'
   };
 
   export type EnvVersionScalarFieldEnum = (typeof EnvVersionScalarFieldEnum)[keyof typeof EnvVersionScalarFieldEnum]
@@ -11344,6 +11358,7 @@ export namespace Prisma {
     createdBy?: StringFilter<"EnvVersion"> | string
     description?: StringNullableFilter<"EnvVersion"> | string | null
     changes?: JsonNullableFilter<"EnvVersion">
+    branch?: StringFilter<"EnvVersion"> | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -11356,6 +11371,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     description?: SortOrderInput | SortOrder
     changes?: SortOrderInput | SortOrder
+    branch?: SortOrder
     project?: ProjectOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
@@ -11371,6 +11387,7 @@ export namespace Prisma {
     createdBy?: StringFilter<"EnvVersion"> | string
     description?: StringNullableFilter<"EnvVersion"> | string | null
     changes?: JsonNullableFilter<"EnvVersion">
+    branch?: StringFilter<"EnvVersion"> | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
@@ -11383,6 +11400,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     description?: SortOrderInput | SortOrder
     changes?: SortOrderInput | SortOrder
+    branch?: SortOrder
     _count?: EnvVersionCountOrderByAggregateInput
     _max?: EnvVersionMaxOrderByAggregateInput
     _min?: EnvVersionMinOrderByAggregateInput
@@ -11399,6 +11417,7 @@ export namespace Prisma {
     createdBy?: StringWithAggregatesFilter<"EnvVersion"> | string
     description?: StringNullableWithAggregatesFilter<"EnvVersion"> | string | null
     changes?: JsonNullableWithAggregatesFilter<"EnvVersion">
+    branch?: StringWithAggregatesFilter<"EnvVersion"> | string
   }
 
   export type UserCreateInput = {
@@ -11941,6 +11960,7 @@ export namespace Prisma {
     createdAt?: Date | string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
     project: ProjectCreateNestedOneWithoutVersionsInput
     user: UserCreateNestedOneWithoutEnvVersionInput
   }
@@ -11953,6 +11973,7 @@ export namespace Prisma {
     createdBy: string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
   }
 
   export type EnvVersionUpdateInput = {
@@ -11961,6 +11982,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutVersionsNestedInput
     user?: UserUpdateOneRequiredWithoutEnvVersionNestedInput
   }
@@ -11973,6 +11995,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
   export type EnvVersionCreateManyInput = {
@@ -11983,6 +12006,7 @@ export namespace Prisma {
     createdBy: string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
   }
 
   export type EnvVersionUpdateManyMutationInput = {
@@ -11991,6 +12015,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
   export type EnvVersionUncheckedUpdateManyInput = {
@@ -12001,6 +12026,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -12523,6 +12549,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     description?: SortOrder
     changes?: SortOrder
+    branch?: SortOrder
   }
 
   export type EnvVersionMaxOrderByAggregateInput = {
@@ -12531,6 +12558,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     createdBy?: SortOrder
     description?: SortOrder
+    branch?: SortOrder
   }
 
   export type EnvVersionMinOrderByAggregateInput = {
@@ -12539,6 +12567,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     createdBy?: SortOrder
     description?: SortOrder
+    branch?: SortOrder
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -13549,6 +13578,7 @@ export namespace Prisma {
     createdAt?: Date | string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
     project: ProjectCreateNestedOneWithoutVersionsInput
   }
 
@@ -13559,6 +13589,7 @@ export namespace Prisma {
     createdAt?: Date | string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
   }
 
   export type EnvVersionCreateOrConnectWithoutUserInput = {
@@ -13761,6 +13792,7 @@ export namespace Prisma {
     createdBy?: StringFilter<"EnvVersion"> | string
     description?: StringNullableFilter<"EnvVersion"> | string | null
     changes?: JsonNullableFilter<"EnvVersion">
+    branch?: StringFilter<"EnvVersion"> | string
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -14176,6 +14208,7 @@ export namespace Prisma {
     createdAt?: Date | string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
     user: UserCreateNestedOneWithoutEnvVersionInput
   }
 
@@ -14186,6 +14219,7 @@ export namespace Prisma {
     createdBy: string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
   }
 
   export type EnvVersionCreateOrConnectWithoutProjectInput = {
@@ -14679,6 +14713,7 @@ export namespace Prisma {
     createdAt?: Date | string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -14873,6 +14908,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutVersionsNestedInput
   }
 
@@ -14883,6 +14919,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
   export type EnvVersionUncheckedUpdateManyWithoutUserInput = {
@@ -14892,6 +14929,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
   export type ProjectCreateManyDeviceInput = {
@@ -14952,6 +14990,7 @@ export namespace Prisma {
     createdBy: string
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
   }
 
   export type UserUpdateWithoutAccessToProjectsInput = {
@@ -15017,6 +15056,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
     user?: UserUpdateOneRequiredWithoutEnvVersionNestedInput
   }
 
@@ -15027,6 +15067,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
   export type EnvVersionUncheckedUpdateManyWithoutProjectInput = {
@@ -15036,6 +15077,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
 

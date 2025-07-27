@@ -47,13 +47,12 @@ export async function updateProject() {
     );
 
     console.log(pc.cyan("Updated environment variables:"));
-    console.log(project.data.data.content);
 
     console.log(
       pc.green("✅ Project updated successfully with new .env variables."),
     );
-  } catch (error) {
-    console.error(pc.red("❌ Error updating project:"), error);
+  } catch (error: Error | any) {
+    console.error(pc.red("❌ Error updating project:"), error.message);
     process.exit(1);
   }
 }

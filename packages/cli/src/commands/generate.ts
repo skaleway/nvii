@@ -24,7 +24,7 @@ export async function generateExample() {
       sourceFile = ".env.local";
     } else {
       throw new Error(
-        "No .env or .env.local file found in the current directory"
+        "No .env or .env.local file found in the current directory",
       );
     }
 
@@ -49,7 +49,7 @@ export async function generateExample() {
     console.log(pc.green("✓"), "Generated .env.example file successfully!");
     console.log(pc.dim("Source:"), sourceFile);
     console.log(pc.dim("Location:"), examplePath);
-  } catch (error: unknown) {
+  } catch (error: Error | any) {
     const fileError = error as FileError;
     if (fileError.code === "ENOENT") {
       console.error(pc.red("✗"), fileError.message);
@@ -58,7 +58,8 @@ export async function generateExample() {
     console.error(
       pc.red("✗"),
       "Failed to generate .env.example file:",
-      fileError.message
+      fileError.message,
     );
+    process.exit(1);
   }
 }

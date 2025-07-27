@@ -13,6 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@nvii/ui/components/breadcrumb";
 import { Button } from "@nvii/ui/components/button";
+import axios from "axios";
 import { ChevronRight, RefreshCw } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -89,6 +90,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     project.content as Record<string, string>,
     user.id,
   );
+
+  // const tryMe = async () => {
+  //   const res = await axios.get(
+  //     `api/projects/${user.id}/${projectId}/versions`
+  //   );
+  //   console.log({ data: res.data });
+  // };
+
+  // await tryMe();
 
   return (
     <div className="max-w-7xl mx-auto container py-6 space-y-6">

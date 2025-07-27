@@ -51,8 +51,8 @@ export async function logout() {
     fs.unlinkSync(filePath);
 
     console.log(pc.green("Successfully logged out!"));
-  } catch (error) {
-    console.error(pc.red("Error during logout:"), error);
+  } catch (error: Error | any) {
+    console.error(pc.red("Error during logout:"), error.message);
     process.exit(1);
   }
 }

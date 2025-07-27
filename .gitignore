@@ -42,3 +42,6 @@ packages/database/generated
 # local editor files
 .vscode
 # Generated
+
+# local todo list
+task.todo

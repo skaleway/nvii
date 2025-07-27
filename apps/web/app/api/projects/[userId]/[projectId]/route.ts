@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import { AuthUser, validateCliAuth } from "../route";
 
 export async function GET(
-  request: Request,
+  _: Request,
   { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
@@ -71,12 +71,28 @@ export async function PATCH(
   { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
-    const user = await getCurrentUserFromSession();
-    const { userId, projectId } = await params;
+    const { userId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    let cliUser = await validateCliAuth(headersList);
 
-    if (!user) {
+    if (!cliUser) {
+      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
+    }
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
+
+    if (cliUser?.id !== userId) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+    const { projectId } = await params;
+    const user = cliUser || webUser;
 
     const existingProject = await db.project.findUnique({
       where: {

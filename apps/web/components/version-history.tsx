@@ -32,6 +32,7 @@ interface Version {
 
 interface VersionHistoryProps {
   versions?: Version[];
+  projectId: string;
 }
 
 export function VersionHistory({ versions = [] }: VersionHistoryProps) {

@@ -2,7 +2,7 @@
 
 import { Command } from "commander";
 import {
-  testencryption,
+  testEncryption,
   generateExample,
   linkProject,
   login,
@@ -11,9 +11,14 @@ import {
   logout,
   pullRemoteChanges,
   whoami,
+  some,
+  unlinkProject,
 } from "./commands";
+import { pushLatestChanges } from "./commands/push";
 
 const program = new Command();
+
+// program.usage("Usage: nvii [options] [command]");
 
 program
   .command("login")
@@ -38,19 +43,47 @@ program
   .action(linkProject);
 
 program
+  .command("unlink")
+  .description(
+    "Unlink the current directory from a remote project. This deletes the existing remote project.",
+  )
+  .action(unlinkProject);
+
+program
   .command("test")
   .description("Test to see if the encryption and decryption works")
-  .action(testencryption);
+  .action(testEncryption);
 
 program
   .command("update")
-  .description("Update the existing env file")
+  .description(
+    "Update the existing env file with changes from the main branch (version).",
+  )
   .action(updateProject);
 
 program
   .command("pull")
   .description("Pull latest remote changes.")
   .action(pullRemoteChanges);
+
+program
+  .command("push")
+  .description(
+    "Push latest local changes and create a new remote branch (version).",
+  )
+  .action(pushLatestChanges);
+
+program
+  .command("some")
+  .description(
+    "Merge all available remote and local env branches (versions) to main branch.",
+  )
+  .action(some);
+
+program
+  .command("crypt")
+  .description("Test env encryption.")
+  .action(testEncryption);
 
 program
   .command("generate")
