@@ -15,7 +15,7 @@ import { login } from "./auth/login";
 
 const DOT_ENV_FILE = ".env";
 
-export async function linkProject() {
+export async function unlinkProject() {
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to link a project."));

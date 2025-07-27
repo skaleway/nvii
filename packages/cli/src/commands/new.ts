@@ -68,7 +68,8 @@ export async function createProject() {
 
     const projectId = response.data.data.id;
     await writeProjectConfig(projectId);
-  } catch (error) {
-    console.error(pc.red("❌ Error creating project:"), error);
+  } catch (error: Error | any) {
+    console.error(pc.red("❌ Error creating project:"), error.message);
+    process.exit(1);
   }
 }

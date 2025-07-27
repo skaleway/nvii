@@ -198,7 +198,8 @@ exports.Prisma.EnvVersionScalarFieldEnum = {
   createdAt: 'createdAt',
   createdBy: 'createdBy',
   description: 'description',
-  changes: 'changes'
+  changes: 'changes',
+  branch: 'branch'
 };
 
 exports.Prisma.SortOrder = {

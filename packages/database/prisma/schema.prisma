@@ -129,6 +129,7 @@ model EnvVersion {
   user        User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   description String? // Optional description of what changed
   changes     Json? // Stores what was added/modified/deleted
+  branch      String   @default("main")
 
   @@map("env_versions")
 }

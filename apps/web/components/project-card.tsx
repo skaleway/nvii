@@ -80,9 +80,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <DropdownMenuItem asChild>
               <Link href={`/projects/${project.id}`}>View Details</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            {/* <DropdownMenuItem asChild>
               <Link href={`/projects/${project.id}`}>Edit Variables</Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem asChild>
               <Link href="/sync">Sync Variables</Link>
             </DropdownMenuItem>

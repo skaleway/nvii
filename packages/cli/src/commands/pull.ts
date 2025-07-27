@@ -1,44 +1,27 @@
 import pc from "picocolors";
 import {
-  encryptEnvValues,
   isLogedIn,
   readConfigFile,
-  convertEnvJsonToString,
-  readProjectConfig,
   writeProjectConfig,
   readEnvFile,
   decryptEnvValues,
   getConfiguredClient,
 } from "@nvii/env-helpers";
 import { login } from "./auth/login";
-import { existsSync, readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync, promises as fs } from "fs";
+import path, { join } from "path";
 import { Project } from "@nvii/db";
-import axios from "axios";
+import inquirer from "inquirer";
+import { argv } from "process";
 
 const DOT_ENV_FILE = ".env";
 
-const getRemoteEnvVariables = async (
-  projectId: string,
-  userId: string,
-): Promise<Project | null> => {
-  try {
-    const res = await axios.get<Project>(
-      `${process.env.CLIENT_URL}/api/projects/${userId}/${projectId}`,
-    );
-    const project = res.data;
-
-    if (!project) {
-      throw new Error("An unexpected error occurred pulling remote changes.");
-    }
-
-    return project;
-  } catch (error) {
-    throw new Error(error as string);
-  }
-};
-
 export async function pullRemoteChanges() {
+  // NOTE: Change later to work with args for the pull command
+  if (argv) {
+    console.log({ argv }, argv[3], argv[4]);
+    return;
+  }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to link a project."));
@@ -52,37 +35,96 @@ export async function pullRemoteChanges() {
       return;
     }
 
-    const client = await getConfiguredClient();
-    const response = await client.get(`/projects/${userConfig.userId}`);
-    const projects = response.data as Project[];
-
-    if (!projects.length) {
-      console.log(pc.yellow("No projects found for this user."));
-      return;
-    }
-
     const cwd = process.cwd();
-
-    const envs = await readEnvFile();
-
     const projectPath = join(cwd, ".envi/envi.json");
 
     const content = readFileSync(projectPath, "utf-8");
     const projectId = JSON.parse(content).projectId;
 
-    // TODO: fix database access error. To retrieve remote envs
-    const remoteEnvs = await getRemoteEnvVariables(
-      projectId,
-      userConfig?.userId as string,
+    const client = await getConfiguredClient();
+    const response = await client.get(
+      `/projects/${userConfig.userId}/${projectId}`,
+    );
+    const project = response.data as Project;
+
+    if (!project) {
+      console.log(pc.yellow("No project found for this user or repository."));
+      return;
+    }
+
+    if (!project.content) {
+      console.log(pc.yellow("No content found for this project envs."));
+      return;
+    }
+    const envFilePath = path.join(cwd, DOT_ENV_FILE);
+    const existingEnv = await readEnvFile();
+
+    const finalEnv: Record<string, string> = { ...existingEnv };
+    let commentedLines = "";
+    // keep track of changes
+    const changedEnvs: Record<string, string>[] = [];
+
+    // decrypt envs before comparing
+    const decryptedEnv = decryptEnvValues(
+      project?.content as Record<string, string>,
+      userConfig.userId,
     );
 
-    const decryptedContent = [];
-    (remoteEnvs?.content as Record<string, string>[]).map((item) => {
-      const decrypted = decryptEnvValues(item, userConfig?.userId as string);
-      decryptedContent.push(decrypted);
-    });
-  } catch (error) {
-    console.error(pc.red("❌ Error updating project:"), error);
+    for (const [key, value] of Object.entries(decryptedEnv)) {
+      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
+      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
+
+      if (
+        existingEnv[key] !== undefined &&
+        normalizedExisting === normalizedNew
+      ) {
+        const { overwrite } = await inquirer.prompt([
+          {
+            type: "confirm",
+            name: "overwrite",
+            message: `${pc.yellowBright("Warning")}: ${key} exists in local .env. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
+            default: false,
+          },
+        ]);
+        if (overwrite) {
+          finalEnv[key] = value;
+          changedEnvs.push({
+            key,
+            value,
+            original: normalizedExisting,
+          });
+        } else {
+          commentedLines += `# ${key}=${value}\n`;
+        }
+      } else {
+        finalEnv[key] = value;
+      }
+    }
+
+    const finalEnvContent =
+      Object.entries(finalEnv)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("\n") +
+      "\n" +
+      commentedLines;
+
+    await fs.writeFile(envFilePath, finalEnvContent);
+
+    if (changedEnvs.length > 0) {
+      // log change summary
+      console.log(pc.bold("\nChange summary:"));
+      changedEnvs.map((item) => {
+        console.log(
+          `${item.key}: changed from ${item.original} to ${item.value}`,
+        );
+      });
+    }
+
+    console.log("\n");
+    await writeProjectConfig(project.id);
+    console.log(pc.green(".env file updated successfully!"));
+  } catch (error: Error | any) {
+    console.error(pc.red("\nError linking project:"), error.message);
     process.exit(1);
   }
 }

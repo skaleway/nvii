@@ -7,7 +7,8 @@ export const whoami = async () => {
     if (!file) return;
 
     console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
-  } catch (error) {
-    console.error("Error reading config:", error);
+  } catch (error: Error | any) {
+    console.error("Error reading config:", error.message);
+    process.exit(1);
   }
 };

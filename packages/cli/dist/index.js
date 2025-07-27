@@ -3,8 +3,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const commands_1 = require("./commands");
-const whoami_1 = require("./commands/auth/whoami");
+const push_1 = require("./commands/push");
 const program = new commander_1.Command();
+// program.usage("Usage: nvii [options] [command]");
 program
     .command("login")
     .description("Authenticate with your service via the CLI")
@@ -13,7 +14,7 @@ program
     .command("logout")
     .description("Logout from your service via the CLI")
     .action(commands_1.logout);
-program.command("whoami").description("Show the current user").action(whoami_1.whoami);
+program.command("whoami").description("Show the current user").action(commands_1.whoami);
 program
     .command("new")
     .description("Create a new project")
@@ -23,17 +24,33 @@ program
     .description("Link an existing project to the current directory")
     .action(commands_1.linkProject);
 program
+    .command("unlink")
+    .description("Unlink the current directory from a remote project. This deletes the existing remote project.")
+    .action(commands_1.unlinkProject);
+program
     .command("test")
     .description("Test to see if the encryption and decryption works")
-    .action(commands_1.testencryption);
+    .action(commands_1.testEncryption);
 program
     .command("update")
-    .description("Update the existing env file")
+    .description("Update the existing env file with changes from the main branch (version).")
     .action(commands_1.updateProject);
 program
     .command("pull")
     .description("Pull latest remote changes.")
     .action(commands_1.pullRemoteChanges);
+program
+    .command("push")
+    .description("Push latest local changes and create a new remote branch (version).")
+    .action(push_1.pushLatestChanges);
+program
+    .command("some")
+    .description("Merge all available remote and local env branches (versions) to main branch.")
+    .action(commands_1.some);
+program
+    .command("crypt")
+    .description("Test env encryption.")
+    .action(commands_1.testEncryption);
 program
     .command("generate")
     .description("Generate a .env.example file from your .env file")
