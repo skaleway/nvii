@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const commands_1 = require("./commands");
-const push_1 = require("./commands/push");
 const program = new commander_1.Command();
 program
     .command("login")
@@ -36,12 +35,13 @@ program
     .action(commands_1.updateProject);
 program
     .command("pull")
-    .description("Pull latest remote changes.")
+    .description("Pull latest remote changes from a specified branch (version).")
     .action(commands_1.pullRemoteChanges);
+// .usage("Usage nvii pull [branch] [options]");
 program
     .command("push")
     .description("Push latest local changes and create a new remote branch (version).")
-    .action(push_1.pushLatestChanges);
+    .action(commands_1.pushLatestChanges);
 program
     .command("some")
     .description("Merge all available remote and local env branches (versions) to main branch.")

@@ -13,8 +13,8 @@ import {
   whoami,
   some,
   unlinkProject,
+  pushLatestChanges,
 } from "./commands";
-import { pushLatestChanges } from "./commands/push";
 
 const program = new Command();
 
@@ -61,8 +61,9 @@ program
 
 program
   .command("pull")
-  .description("Pull latest remote changes.")
+  .description("Pull latest remote changes from a specified branch (version).")
   .action(pullRemoteChanges);
+// .usage("Usage nvii pull [branch] [options]");
 
 program
   .command("push")

@@ -35,6 +35,19 @@ export async function pullRemoteChanges() {
       return;
     }
 
+    // TODO: Complete this one
+    // const { selectedProjectBranch } = await inquirer.prompt([
+    //   {
+    //     type: "list",
+    //     name: "selectedProjectBranch",
+    //     message: "Select a project branch to pull from:",
+    //     choices: versions.map((version) => ({
+    //       branch: version.branch,
+    //       name: version.Project.name,
+    //     })),
+    //   },
+    // ]);
+
     const cwd = process.cwd();
     const projectPath = join(cwd, ".envi/envi.json");
 

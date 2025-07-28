@@ -6,6 +6,7 @@ export * from "./update";
 export * from "./pull";
 export * from "./some";
 export * from "./unlink";
+export * from "./push";
 
 export * from "./auth/logout";
 export * from "./auth/login";
