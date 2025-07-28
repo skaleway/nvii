@@ -5,7 +5,6 @@ const commander_1 = require("commander");
 const commands_1 = require("./commands");
 const push_1 = require("./commands/push");
 const program = new commander_1.Command();
-// program.usage("Usage: nvii [options] [command]");
 program
     .command("login")
     .description("Authenticate with your service via the CLI")

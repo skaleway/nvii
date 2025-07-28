@@ -18,8 +18,6 @@ import { pushLatestChanges } from "./commands/push";
 
 const program = new Command();
 
-// program.usage("Usage: nvii [options] [command]");
-
 program
   .command("login")
   .description("Authenticate with your service via the CLI")

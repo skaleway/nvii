@@ -1,4 +1,7 @@
-import { getCurrentUserFromSession } from "@/lib/current-user";
+import {
+  getCurrentUserFromDb,
+  getCurrentUserFromSession,
+} from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
 import { db, Project, ProjectAccess } from "@nvii/db";
 import { decryptEnvValues } from "@/lib/encryption";
@@ -175,12 +178,27 @@ export async function DELETE(
   { params }: { params: { userId: string; projectId: string } },
 ): Promise<NextResponse> {
   try {
-    const user = await getCurrentUserFromSession();
-    const { userId, projectId } = params;
+    const { userId, projectId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    let cliUser = await validateCliAuth(headersList);
 
-    if (!user) {
+    if (!cliUser) {
+      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
+    }
+    // read web request headers
+    const webUser = await getCurrentUserFromDb();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
+
+    if (cliUser?.id !== userId) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+    const user = cliUser || webUser;
 
     const project = await db.project.findUnique({
       where: {
@@ -205,7 +223,7 @@ export async function DELETE(
       return ErrorResponse("Project not found", 404);
     }
 
-    if (!canDeleteProject(project, user)) {
+    if (!canDeleteProject(project, user as User)) {
       return ErrorResponse("Unauthorized", 401);
     }
 
@@ -213,7 +231,11 @@ export async function DELETE(
       where: { id: projectId },
     });
 
-    return Response("Project deleted", 200);
+    return NextResponse.json({
+      message: "Project deleted",
+      name: project.name,
+      status: 200,
+    });
   } catch (error) {
     console.error("[PROJECT_DELETE]", error);
     return ErrorResponse("Internal Server Error", 500);

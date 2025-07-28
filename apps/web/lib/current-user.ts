@@ -1,5 +1,6 @@
 import { auth, Session } from "@/lib/auth";
 import { betterFetch } from "@better-fetch/fetch";
+import { db } from "@nvii/db";
 import { headers } from "next/headers";
 
 export async function getCurrentUserFromDb() {
@@ -9,7 +10,15 @@ export async function getCurrentUserFromDb() {
 
   if (!session) return null;
 
-  return session.user;
+  const user = await db.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+  });
+
+  if (!user) return null;
+
+  return user;
 }
 
 export async function getCurrentUserFromSession() {
