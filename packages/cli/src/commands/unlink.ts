@@ -1,19 +1,13 @@
 import { Project } from "@nvii/db";
 import {
-  decryptEnvValues,
   getConfiguredClient,
   isLogedIn,
   readConfigFile,
-  readEnvFile,
-  writeProjectConfig,
+  unlinkProjectConfig,
 } from "@nvii/env-helpers";
-import { promises as fs } from "fs";
 import inquirer from "inquirer";
-import path from "path";
 import pc from "picocolors";
 import { login } from "./auth/login";
-
-const DOT_ENV_FILE = ".env";
 
 export async function unlinkProject() {
   try {
@@ -34,14 +28,16 @@ export async function unlinkProject() {
     const projects = response.data as Project[];
 
     if (!projects.length) {
-      console.log(pc.yellow("No projects found for this user."));
+      console.log(
+        pc.yellow("No projects found for this directory. Run 'nvii new'."),
+      );
       return;
     }
     const { selectedProjectId } = await inquirer.prompt([
       {
         type: "list",
         name: "selectedProjectId",
-        message: "Select a project to link:",
+        message: "Select a project to unlink:",
         choices: projects.map((proj) => ({
           name: proj.name,
           value: proj.id,
@@ -58,76 +54,34 @@ export async function unlinkProject() {
       return;
     }
 
-    const currentDir = process.cwd();
-
     if (!selectedProject.content) {
       return;
     }
 
-    const { createEnvFile } = await inquirer.prompt([
+    const { deleteProject } = await inquirer.prompt([
       {
         type: "confirm",
-        name: "createEnvFile",
-        message:
-          "This project contains a .env file. Do you want to populate its values?",
+        name: "deleteProject",
+        message: `Are you sure you really want to delete this project? '${selectedProject.name}'`,
         default: false,
       },
     ]);
 
-    if (!createEnvFile) {
-      console.log(pc.yellow("Skipping .env file creation."));
+    if (!deleteProject) {
+      console.log(pc.yellow("Skipping .envi directory deletion."));
       return;
     }
 
-    const envFilePath = path.join(currentDir, DOT_ENV_FILE);
-    let existingEnv = await readEnvFile();
-
-    const finalEnv: Record<string, string> = { ...existingEnv };
-    let commentedLines = "";
-
-    // decrypt envs before comparing
-    const decryptedEnv = decryptEnvValues(
-      selectedProject?.content as Record<string, string>,
-      userConfig.userId,
+    // Delete the project from db
+    const res = await client.delete<{ message: string; name: string }>(
+      `/projects/${userConfig.userId}/${selectedProjectId}`,
     );
+    const { message } = res.data;
 
-    for (const [key, value] of Object.entries(decryptedEnv)) {
-      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
-      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
-
-      if (
-        existingEnv[key] !== undefined &&
-        normalizedExisting === normalizedNew
-      ) {
-        const { overwrite } = await inquirer.prompt([
-          {
-            type: "confirm",
-            name: "overwrite",
-            message: `Conflict: ${key} exists. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
-            default: false,
-          },
-        ]);
-        if (overwrite) {
-          finalEnv[key] = value;
-        } else {
-          commentedLines += `# ${key}=${value}\n`;
-        }
-      } else {
-        finalEnv[key] = value;
-      }
-    }
-
-    const finalEnvContent =
-      Object.entries(finalEnv)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n") +
-      "\n" +
-      commentedLines;
-
-    await fs.writeFile(envFilePath, finalEnvContent);
     console.log("\n");
-    await writeProjectConfig(selectedProject.id);
-    console.log(pc.green(".env file updated successfully!"));
+    const result = await unlinkProjectConfig(selectedProject.id);
+    if (!result) return;
+    console.log(pc.green(`${message} successfully!`));
   } catch (error: Error | any) {
     console.error(pc.red("\nError linking project:"), error.message);
     process.exit(1);

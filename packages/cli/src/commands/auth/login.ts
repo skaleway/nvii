@@ -99,7 +99,6 @@ export async function login() {
     const authData = await authPromise;
     spinner.stop();
     const d = await writeToConfigFile(authData);
-    console.log({ d });
     console.log(pc.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${FILENAME}\n`);
     server.close();

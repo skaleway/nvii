@@ -178,9 +178,9 @@ export interface ProjectConfig {
 
 /**
  * Reads project configuration from .envi/envi.json file
- * @returns Promise<ProjectConfig | null> The project configuration or null if not found
+ * @returns Promise<ProjectConfig[] | null> The project configurations or null if not found
  */
-export async function readProjectConfig(): Promise<ProjectConfig | null> {
+export async function readProjectConfig(): Promise<ProjectConfig[] | null> {
   try {
     const currentDir = process.cwd();
     const enviDirPath = path.join(currentDir, ".envi");
@@ -189,21 +189,22 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
     // Check if both directory and file exist
     if (!existsSync(enviDirPath) || !existsSync(enviFilePath)) {
       console.warn(
-        pc.yellow(
-          "⚠️ No project configuration found. Run 'nvii new' to create a new project.",
-        ),
+        pc.yellow("No project configuration found. A new one will be created."),
       );
       return null;
     }
 
     // Read and parse the configuration file
     const fileContent = await fs.readFile(enviFilePath, "utf-8");
-    const config = JSON.parse(fileContent);
+    const config: ProjectConfig[] = JSON.parse(fileContent);
 
     // Validate the configuration
-    if (!config.projectId) {
+    const validConfig = config.map((item) => item.projectId);
+    if (validConfig.length !== config.length) {
       console.warn(
-        pc.yellow("⚠️ Invalid project configuration: missing projectId"),
+        pc.yellow(
+          "⚠️ Invalid project configuration: missing projectId for some projects.",
+        ),
       );
       return null;
     }
@@ -260,36 +261,24 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
     const enviDirPath = path.join(currentDir, ".envi");
     const enviFilePath = path.join(enviDirPath, "envi.json");
 
-    let existingConfig: { projectId?: string } = {};
+    let existingConfig = await readProjectConfig();
 
-    // Check if .nvii directory exists
-    if (existsSync(enviDirPath)) {
-      // Check if envi.json exists and read it
-      if (existsSync(enviFilePath)) {
-        try {
-          const fileContent = await fs.readFile(enviFilePath, "utf-8");
-          existingConfig = JSON.parse(fileContent);
-        } catch (error) {
-          console.warn(
-            pc.yellow(
-              "Warning: Could not parse existing envi.json, creating new file",
-            ),
-          );
-        }
-      }
-    } else {
+    if (!existingConfig) {
       // Create .nvii directory if it doesn't exist
       await fs.mkdir(enviDirPath, { recursive: true });
+      existingConfig = [];
     }
 
     // Update .gitignore before writing the config
     await updateGitignore();
 
     // Merge new projectId with existing config
-    const updatedConfig = {
-      ...existingConfig,
-      projectId,
-    };
+    const updatedConfig = [
+      ...(existingConfig as ProjectConfig[]),
+      {
+        projectId,
+      },
+    ];
 
     // Write the updated configuration
     await fs.writeFile(
@@ -300,11 +289,61 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
 
     console.log(
       pc.green(
-        `✅ Project configuration ${existingConfig.projectId ? "updated" : "saved"} at ${enviFilePath}`,
+        `✅ Project configuration ${projectId ? "updated" : "saved"} at ${enviFilePath}`,
       ),
     );
   } catch (error) {
     console.error(pc.red("Error writing project configuration:"), error);
     throw error;
+  }
+}
+
+/**
+ * Delete project configuration from .envi/envi.json file
+ * @param projectId - The project ID to unlink
+ */
+export async function unlinkProjectConfig(projectId: string): Promise<boolean> {
+  let success = false;
+  try {
+    const currentDir = process.cwd();
+    const enviDirPath = path.join(currentDir, ".envi");
+    const enviFilePath = path.join(enviDirPath, "envi.json");
+
+    // Check if .nvii directory exists
+    if (existsSync(enviDirPath)) {
+      // Check if envi.json exists and delete it
+      if (existsSync(enviFilePath)) {
+        try {
+          const result = await readProjectConfig();
+          // delete the directory if result length === 0
+          if (result?.length === 0) {
+            await fs.unlink(enviFilePath);
+            await fs.rmdir(enviDirPath);
+          }
+          const config = result?.filter((item) => item.projectId !== projectId);
+          // update the file
+          await fs.writeFile(
+            enviFilePath,
+            JSON.stringify(config, null, 2),
+            "utf-8",
+          );
+          success = true;
+        } catch (error) {
+          console.warn(pc.yellow("Warning: Could not delete envi.json."));
+          return success;
+        }
+      }
+    } else {
+      console.warn(pc.yellow("Warning: .envi directory not found."));
+      return success;
+    }
+
+    console.log(
+      pc.green(`✅ Project configuration ${projectId ? "updated" : "saved"}.`),
+    );
+    return success;
+  } catch (error) {
+    console.error(pc.red("Error writing project configuration:"), error);
+    return success;
   }
 }

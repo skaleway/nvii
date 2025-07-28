@@ -18,13 +18,13 @@ const DOT_ENV_FILE = ".env";
 
 export async function pullRemoteChanges() {
   // NOTE: Change later to work with args for the pull command
-  if (argv) {
-    console.log({ argv }, argv[3], argv[4]);
-    return;
-  }
+  // if (argv) {
+  //   console.log({ argv }, argv[3], argv[4]);
+  //   return;
+  // }
   try {
     if (!isLogedIn()) {
-      console.log(pc.red("You must be logged in to link a project."));
+      console.log(pc.red("You must be logged in to pull a project."));
       await login();
       return;
     }
@@ -34,6 +34,19 @@ export async function pullRemoteChanges() {
       console.log(pc.red("No user ID found. Please log in again."));
       return;
     }
+
+    // TODO: Complete this one
+    // const { selectedProjectBranch } = await inquirer.prompt([
+    //   {
+    //     type: "list",
+    //     name: "selectedProjectBranch",
+    //     message: "Select a project branch to pull from:",
+    //     choices: versions.map((version) => ({
+    //       branch: version.branch,
+    //       name: version.Project.name,
+    //     })),
+    //   },
+    // ]);
 
     const cwd = process.cwd();
     const projectPath = join(cwd, ".envi/envi.json");

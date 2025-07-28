@@ -34,7 +34,9 @@ export async function linkProject() {
     const projects = response.data as Project[];
 
     if (!projects.length) {
-      console.log(pc.yellow("No projects found for this user."));
+      console.log(
+        pc.yellow("No projects found for this directory. Run 'nvii new'."),
+      );
       return;
     }
     const { selectedProjectId } = await inquirer.prompt([
