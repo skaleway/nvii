@@ -40,7 +40,7 @@ export async function updateProject() {
     const client = await getConfiguredClient();
 
     const project = await client.patch(
-      `/projects/${userData!.userId}/${projectConfig.projectId}`,
+      `/projects/${userData!.userId}/${projectConfig}`, // TODO: Remove all of this later
       {
         content: encryptedEnv,
       },

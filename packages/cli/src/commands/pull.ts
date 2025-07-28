@@ -18,13 +18,13 @@ const DOT_ENV_FILE = ".env";
 
 export async function pullRemoteChanges() {
   // NOTE: Change later to work with args for the pull command
-  if (argv) {
-    console.log({ argv }, argv[3], argv[4]);
-    return;
-  }
+  // if (argv) {
+  //   console.log({ argv }, argv[3], argv[4]);
+  //   return;
+  // }
   try {
     if (!isLogedIn()) {
-      console.log(pc.red("You must be logged in to link a project."));
+      console.log(pc.red("You must be logged in to pull a project."));
       await login();
       return;
     }

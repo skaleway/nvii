@@ -19,7 +19,7 @@ export async function logout() {
       {
         type: "input",
         name: "userId",
-        message: `Please enter your username to confirm logout ("${config.username}"): `,
+        message: `Please enter your username to confirm logout: `,
         validate: (input) => {
           if (input === config.username) {
             return true;
