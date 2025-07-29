@@ -65,18 +65,18 @@ This document outlines all tasks required to implement a complete version contro
 
 - [ ] **Implement `push.ts`** - Encrypt and upload environment variables
 
-  - [ ] Read `.env` file
-  - [ ] Encrypt environment variables
-  - [ ] Calculate changes from previous version
-  - [ ] Create new version via API
-  - [ ] Update project content
+  - [x] Read `.env` file
+  - [x] Encrypt environment variables
+  - [x] Calculate changes from previous version
+  - [x] Create new version via API
+  - [x] Update project content
   - [ ] Show change summary
 
 - [ ] **Implement `history.ts`** - Show version history
 
-  - [ ] Fetch version history from API
-  - [ ] Display formatted version list
-  - [ ] Show change summaries
+  - [x] Fetch version history from API
+  - [x] Display formatted version list
+  - [x] Show change summaries
   - [ ] Add filtering options (date, user, changes)
 
 - [ ] **Implement `rollback.ts`** - Rollback to specific version
