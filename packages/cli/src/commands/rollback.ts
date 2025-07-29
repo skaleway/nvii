@@ -10,6 +10,8 @@ import { EnvVersion, User } from "@nvii/db";
 import pc from "picocolors";
 import inquirer from "inquirer";
 import { login } from "./auth/login";
+import { join } from "path";
+import { readFileSync } from "fs";
 
 type VersionWithUser = EnvVersion & { user: Pick<User, "name" | "email"> };
 
@@ -22,7 +24,13 @@ export async function rollback() {
     }
 
     const userConfig = await readConfigFile();
-    const projectId = await readProjectConfig();
+    const cwd = process.cwd();
+    const projectPath = join(cwd, ".envi/envi.json");
+
+    const content = readFileSync(projectPath, "utf-8");
+
+    const projectId = (JSON.parse(content) as { projectId: string }[])[0]
+      .projectId;
 
     if (!userConfig?.userId || !projectId) {
       console.error(
