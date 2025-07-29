@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const commands_1 = require("./commands");
+const rollback_1 = require("./commands/rollback");
 const program = new commander_1.Command();
 program
     .command("login")
@@ -46,6 +47,10 @@ program
     .command("log")
     .description("Get the history of changes made to the project.")
     .action(commands_1.getHistory);
+program
+    .command("rollback")
+    .description("Roll back to a previous version of the project by selecting from available versions.")
+    .action(rollback_1.rollback);
 program
     .command("some")
     .description("Merge all available remote and local env branches (versions) to main branch.")

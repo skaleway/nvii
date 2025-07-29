@@ -16,6 +16,7 @@ import {
   pushLatestChanges,
   getHistory,
 } from "./commands";
+import { rollback } from "./commands/rollback";
 
 const program = new Command();
 
@@ -77,6 +78,13 @@ program
   .command("log")
   .description("Get the history of changes made to the project.")
   .action(getHistory);
+
+program
+  .command("rollback")
+  .description(
+    "Roll back to a previous version of the project by selecting from available versions.",
+  )
+  .action(rollback);
 
 program
   .command("some")
