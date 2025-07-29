@@ -14,6 +14,7 @@ import {
   some,
   unlinkProject,
   pushLatestChanges,
+  getHistory,
 } from "./commands";
 
 const program = new Command();
@@ -73,16 +74,16 @@ program
   .action(pushLatestChanges);
 
 program
+  .command("log")
+  .description("Get the history of changes made to the project.")
+  .action(getHistory);
+
+program
   .command("some")
   .description(
     "Merge all available remote and local env branches (versions) to main branch.",
   )
   .action(some);
-
-program
-  .command("crypt")
-  .description("Test env encryption.")
-  .action(testEncryption);
 
 program
   .command("generate")

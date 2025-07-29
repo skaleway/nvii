@@ -52,7 +52,18 @@ export async function pullRemoteChanges() {
     const projectPath = join(cwd, ".envi/envi.json");
 
     const content = readFileSync(projectPath, "utf-8");
-    const projectId = JSON.parse(content).projectId;
+
+    const projectId = (JSON.parse(content) as { projectId: string }[])[0]
+      .projectId;
+
+    if (!projectId) {
+      console.error(
+        pc.red(
+          "❌ Project not linked. Please run 'nvii link' to link your project first.",
+        ),
+      );
+      process.exit(1);
+    }
 
     const client = await getConfiguredClient();
     const response = await client.get(
@@ -62,12 +73,12 @@ export async function pullRemoteChanges() {
 
     if (!project) {
       console.log(pc.yellow("No project found for this user or repository."));
-      return;
+      process.exit(1);
     }
 
     if (!project.content) {
       console.log(pc.yellow("No content found for this project envs."));
-      return;
+      process.exit(1);
     }
     const envFilePath = path.join(cwd, DOT_ENV_FILE);
     const existingEnv = await readEnvFile();

@@ -3,6 +3,8 @@ import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { decryptEnvValues } from "@/lib/encryption";
+import { headers } from "next/headers";
+import { AuthUser, validateCliAuth } from "../../route";
 
 // Get all versions for a project
 export async function GET(
@@ -10,12 +12,28 @@ export async function GET(
   { params }: { params: { userId: string; projectId: string } },
 ): Promise<NextResponse> {
   try {
-    const user = await getCurrentUserFromSession();
-    if (!user) {
+    const { userId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    let cliUser = await validateCliAuth(headersList);
+
+    if (!cliUser) {
+      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
+    }
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId, projectId } = params;
+    if (cliUser?.id !== userId) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+    const { projectId } = await params;
+    const user = cliUser || webUser;
 
     // Verify user has access to the project
     const project = await db.project.findUnique({
@@ -77,12 +95,28 @@ export async function POST(
   { params }: { params: { userId: string; projectId: string } },
 ): Promise<NextResponse> {
   try {
-    const user = await getCurrentUserFromSession();
-    if (!user) {
+    const { userId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    let cliUser = await validateCliAuth(headersList);
+
+    if (!cliUser) {
+      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
+    }
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId, projectId } = params;
+    if (cliUser?.id !== userId) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+    const { projectId } = await params;
+    const user = cliUser || webUser;
     const body = await request.json();
     const { content, description, changes } = body;
 
