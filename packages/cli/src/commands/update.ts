@@ -23,9 +23,11 @@ export async function updateProject() {
       await login();
     }
 
-    // Check for project configuration
-    const projectConfig = await readProjectConfig();
-    if (!projectConfig) {
+    const content = await readProjectConfig();
+    // console.log({ content });
+
+    const projectId = (content as { projectId: string }[])[0].projectId;
+    if (!projectId) {
       console.error(
         pc.red(
           "❌ Project not linked. Please run 'nvii link' to link your project first.",
@@ -40,7 +42,7 @@ export async function updateProject() {
     const client = await getConfiguredClient();
 
     const project = await client.patch(
-      `/projects/${userData!.userId}/${projectConfig}`, // TODO: Remove all of this later
+      `/projects/${userData!.userId}/${projectId}`, // TODO: Remove all of this later
       {
         content: encryptedEnv,
       },

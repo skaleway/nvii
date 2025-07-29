@@ -43,13 +43,13 @@ program
     .description("Push latest local changes and create a new remote branch (version).")
     .action(commands_1.pushLatestChanges);
 program
+    .command("log")
+    .description("Get the history of changes made to the project.")
+    .action(commands_1.getHistory);
+program
     .command("some")
     .description("Merge all available remote and local env branches (versions) to main branch.")
     .action(commands_1.some);
-program
-    .command("crypt")
-    .description("Test env encryption.")
-    .action(commands_1.testEncryption);
 program
     .command("generate")
     .description("Generate a .env.example file from your .env file")

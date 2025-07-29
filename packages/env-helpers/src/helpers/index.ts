@@ -6,6 +6,10 @@ import pc from "picocolors";
 import { ConfigData } from "../types";
 
 export * from "./api-client";
+export * from "./conflict";
+export * from "./version";
+export * from "./encrypt";
+export * from "./diff";
 
 export const FILENAME = process.env.FILENAME || ".nvii";
 
