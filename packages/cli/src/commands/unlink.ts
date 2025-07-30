@@ -76,11 +76,27 @@ export async function unlinkProject() {
     const res = await client.delete<{ message: string; name: string }>(
       `/projects/${userConfig.userId}/${selectedProjectId}`,
     );
+
+    if (!res.data) {
+      console.log(
+        pc.yellow(
+          "Oops. An error occurred unlinking project. Check your internet access and try again later.",
+        ),
+      );
+      process.exit(1);
+    }
     const { message } = res.data;
 
     console.log("\n");
     const result = await unlinkProjectConfig(selectedProject.id);
-    if (!result) return;
+    if (!result) {
+      console.log(
+        pc.yellow(
+          "Oops. An error occurred deleting the local .envi directory. You can delete it manually.",
+        ),
+      );
+      process.exit(1);
+    }
     console.log(pc.green(`${message} successfully!`));
   } catch (error: Error | any) {
     console.error(pc.red("\nError linking project:"), error.message);

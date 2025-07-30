@@ -25,14 +25,16 @@ export async function rollback() {
     }
 
     const userConfig = await readConfigFile();
-    const cwd = process.cwd();
-    const projectPath = join(cwd, ".envi/envi.json");
-    const envPath = join(cwd, ".env");
 
-    const content = readFileSync(projectPath, "utf-8");
+    const config = await readProjectConfig();
+    if (!config) {
+      console.log(
+        pc.red("Cannot read local .envi folder currently. Try again."),
+      );
+      process.exit(1);
+    }
 
-    const projectId = (JSON.parse(content) as { projectId: string }[])[0]
-      .projectId;
+    const projectId = config.projectId;
 
     if (!userConfig?.userId || !projectId) {
       console.error(
@@ -84,9 +86,6 @@ export async function rollback() {
 
     // 4. Update local .env file
     console.log(pc.cyan("Updating local .env file..."));
-
-    // keep track of commented lines
-    let commentedLines = "";
 
     // decrypt envs before comparing
     const decryptedEnv = decryptEnvValues(

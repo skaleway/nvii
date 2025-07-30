@@ -34,12 +34,14 @@ program.command("whoami").description("Show the current user").action(whoami);
 
 program
   .command("new")
-  .description("Create a new project")
+  .description(
+    "Create a new project. And unlink from the previously linked project.",
+  )
   .action(createProject);
 
 program
   .command("link")
-  .description("Link an existing project to the current directory")
+  .description("Link an existing remote project to the current directory")
   .action(linkProject);
 
 program
@@ -57,13 +59,15 @@ program
 program
   .command("update")
   .description(
-    "Update the existing env file with changes from the main branch (version).",
+    "Update the existing env file with changes from the latest remote project version.",
   )
   .action(updateProject);
 
 program
   .command("pull")
-  .description("Pull latest remote changes from a specified branch (version).")
+  .description(
+    "Pull latest remote changes from a specified branch (version). Select a version from a proposed list of versions to pull from.",
+  )
   .action(pullRemoteChanges);
 // .usage("Usage nvii pull [branch] [options]");
 
@@ -76,7 +80,9 @@ program
 
 program
   .command("log")
-  .description("Get the history of changes made to the project.")
+  .description(
+    "Get the history of changes made to the project. Or type in a version id to get it's history.",
+  )
   .action(getHistory);
 
 program

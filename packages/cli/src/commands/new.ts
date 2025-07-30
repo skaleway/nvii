@@ -4,11 +4,13 @@ import {
   isLogedIn,
   readConfigFile,
   readEnvFile,
+  readProjectConfig,
   writeProjectConfig,
 } from "@nvii/env-helpers";
 import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
+import { unlinkProject } from "./unlink";
 
 const ENV_FILE = ".envi";
 
@@ -58,8 +60,28 @@ export async function createProject() {
 
     const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
 
-    const client = await getConfiguredClient();
+    const projectConfig = await readProjectConfig();
+    if (projectConfig && projectConfig.projectId) {
+      const { createNewProject } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "createNewProject",
+          message: `Are you sure you really want to delete current project this workspace is linked to and create another one?`,
+          default: false,
+        },
+      ]);
 
+      if (!createNewProject) {
+        console.log(pc.yellow("Skipping .envi directory clean up."));
+        return;
+      }
+    }
+
+    // unlink from the existing project and delete it from the db
+    await unlinkProject();
+
+    // contact the api
+    const client = await getConfiguredClient();
     const response = await client.post(`/projects/${userConfig.userId}`, {
       name: projectName,
       content: encryptedEnvs,
@@ -69,6 +91,13 @@ export async function createProject() {
     const projectId = response.data.data.id;
     await writeProjectConfig(projectId);
   } catch (error: Error | any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      console.error(
+        pc.red("❌ Error creating project:"),
+        error.response.data.message,
+      );
+      process.exit(1);
+    }
     console.error(pc.red("❌ Error creating project:"), error.message);
     process.exit(1);
   }

@@ -24,11 +24,15 @@ export async function pushLatestChanges() {
       console.log(pc.red("No user ID found. Please log in again.")); // Should not happen if logged in, but good practice
       return;
     }
+    const config = await readProjectConfig();
+    if (!config) {
+      console.log(
+        pc.red("Cannot read local .envi folder currently. Try again."),
+      );
+      process.exit(1);
+    }
 
-    const content = await readProjectConfig();
-    // console.log({ content });
-
-    const projectId = (content as { projectId: string }[])[0].projectId;
+    const projectId = config.projectId;
     if (!projectId) {
       console.error(
         pc.red(
