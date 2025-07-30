@@ -133,17 +133,25 @@ export async function pullRemoteChanges() {
       commentedLines;
 
     await fs.writeFile(envFilePath, finalEnvContent);
-
+    // log change summary
     if (changedEnvs.length > 0) {
-      // log change summary
-      console.log(pc.bold("\nChange summary:"));
-      changedEnvs.map((item) => {
+      console.log(
+        pc.bold(
+          `\n📜 Change summary for project: ${pc.cyan(`${project.name} - ${project.id}`)}`,
+        ),
+      );
+
+      console.log(pc.dim("--------------------------------------------------"));
+      changedEnvs.forEach((change) => {
         console.log(
-          `${item.key}: changed from ${item.original} to ${item.value}`,
+          `${pc.yellow(`${change.key}:`)} changed from ${change.original} to ${change.value})}`,
+        );
+        console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+        console.log(
+          pc.dim("--------------------------------------------------"),
         );
       });
     }
-
     console.log("\n");
     await writeProjectConfig(project.id);
     console.log(pc.green(".env file updated successfully!"));
