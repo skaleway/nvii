@@ -141,6 +141,21 @@ export const POST = async (
 
     const body = await request.json();
 
+    // check for duplicate project names
+    const existingProject = await db.project.findFirst({
+      where: {
+        userId: user.id,
+        name: body.name,
+      },
+    });
+
+    if (existingProject) {
+      return NextResponse.json(
+        { message: "Project with this name already exists" },
+        { status: 400 },
+      );
+    }
+
     const project = await db.$transaction(async (tx) => {
       const newProject = await tx.project.create({
         data: {
@@ -178,6 +193,9 @@ export const POST = async (
     return Response(project);
   } catch (error) {
     console.error(error);
-    return ErrorResponse("Internal Server Error", 500);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 };

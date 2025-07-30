@@ -6,6 +6,8 @@ import {
   readEnvFile,
   decryptEnvValues,
   getConfiguredClient,
+  readProjectConfig,
+  writeEnvFile,
 } from "@nvii/env-helpers";
 import { login } from "./auth/login";
 import { readFileSync, promises as fs } from "fs";
@@ -17,11 +19,6 @@ import { argv } from "process";
 const DOT_ENV_FILE = ".env";
 
 export async function pullRemoteChanges() {
-  // NOTE: Change later to work with args for the pull command
-  // if (argv) {
-  //   console.log({ argv }, argv[3], argv[4]);
-  //   return;
-  // }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to pull a project."));
@@ -49,12 +46,16 @@ export async function pullRemoteChanges() {
     // ]);
 
     const cwd = process.cwd();
-    const projectPath = join(cwd, ".envi/envi.json");
 
-    const content = readFileSync(projectPath, "utf-8");
+    const config = await readProjectConfig();
+    if (!config) {
+      console.log(
+        pc.red("Cannot read local .envi folder currently. Try again."),
+      );
+      process.exit(1);
+    }
 
-    const projectId = (JSON.parse(content) as { projectId: string }[])[0]
-      .projectId;
+    const projectId = config.projectId;
 
     if (!projectId) {
       console.error(
@@ -94,45 +95,11 @@ export async function pullRemoteChanges() {
       userConfig.userId,
     );
 
-    for (const [key, value] of Object.entries(decryptedEnv)) {
-      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
-      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
-
-      if (
-        existingEnv[key] !== undefined &&
-        normalizedExisting === normalizedNew
-      ) {
-        const { overwrite } = await inquirer.prompt([
-          {
-            type: "confirm",
-            name: "overwrite",
-            message: `${pc.yellowBright("Warning")}: ${key} exists in local .env. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
-            default: false,
-          },
-        ]);
-        if (overwrite) {
-          finalEnv[key] = value;
-          changedEnvs.push({
-            key,
-            value,
-            original: normalizedExisting,
-          });
-        } else {
-          commentedLines += `# ${key}=${value}\n`;
-        }
-      } else {
-        finalEnv[key] = value;
-      }
+    const values = await writeEnvFile(decryptedEnv);
+    if (!values) {
+      console.error(pc.red("\nOops an unexpected error occurred."));
+      process.exit(1);
     }
-
-    const finalEnvContent =
-      Object.entries(finalEnv)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n") +
-      "\n" +
-      commentedLines;
-
-    await fs.writeFile(envFilePath, finalEnvContent);
     // log change summary
     if (changedEnvs.length > 0) {
       console.log(

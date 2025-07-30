@@ -23,10 +23,16 @@ export async function getHistory(options: { limit?: string }) {
       return;
     }
 
-    const content = await readProjectConfig();
-    // console.log({ content });
+    const config = await readProjectConfig();
+    if (!config) {
+      console.log(
+        pc.red("Cannot read local .envi folder currently. Try again."),
+      );
+      process.exit(1);
+    }
 
-    const projectId = (content as { projectId: string }[])[0].projectId;
+    const projectId = config.projectId;
+
     if (!projectId) {
       console.error(
         pc.red(

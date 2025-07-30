@@ -6,8 +6,11 @@ import {
   readEnvFile,
   readProjectConfig,
   getConfiguredClient,
+  writeEnvFile,
+  decryptEnvValues,
 } from "@nvii/env-helpers";
 import { login } from "./auth/login";
+import { EnvVersion } from "@nvii/db";
 
 export async function updateProject() {
   try {
@@ -23,10 +26,15 @@ export async function updateProject() {
       await login();
     }
 
-    const content = await readProjectConfig();
-    // console.log({ content });
+    const config = await readProjectConfig();
+    if (!config) {
+      console.log(
+        pc.red("Cannot read local .envi folder currently. Try again."),
+      );
+      process.exit(1);
+    }
 
-    const projectId = (content as { projectId: string }[])[0].projectId;
+    const projectId = config.projectId;
     if (!projectId) {
       console.error(
         pc.red(
@@ -41,12 +49,35 @@ export async function updateProject() {
 
     const client = await getConfiguredClient();
 
-    const project = await client.patch(
-      `/projects/${userData!.userId}/${projectId}`, // TODO: Remove all of this later
-      {
-        content: encryptedEnv,
-      },
+    const versions = await client.get<EnvVersion[]>(
+      `/projects/${userData!.userId}/${projectId}/versions/latest`,
     );
+
+    if (!versions || !versions.data) {
+      console.error(pc.red("❌ Project not found or no data available."));
+      process.exit(1);
+    }
+
+    const versionToUpdateTo = versions.data[0];
+
+    if (!versionToUpdateTo.content) {
+      console.error(pc.red("❌ No content found for this project envs."));
+      process.exit(1);
+    }
+
+    // decrypt envs before comparing
+    const decryptedEnv = decryptEnvValues(
+      versionToUpdateTo?.content as Record<string, string>,
+      userData?.userId as string,
+    );
+    const data = await writeEnvFile(decryptedEnv);
+
+    if (!data) {
+      console.error(
+        pc.red("❌ Failed to write environment variables to .env file."),
+      );
+      process.exit(1);
+    }
 
     console.log(pc.cyan("Updated environment variables:"));
 
