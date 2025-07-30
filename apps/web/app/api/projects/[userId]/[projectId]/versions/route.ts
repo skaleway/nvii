@@ -74,15 +74,7 @@ export async function GET(
       },
     });
 
-    // Decrypt content for each version
-    const decryptedVersions = versions.map((version) => ({
-      ...version,
-      content: version.content
-        ? decryptEnvValues(version.content as Record<string, string>, user.id)
-        : null,
-    }));
-
-    return NextResponse.json(decryptedVersions);
+    return NextResponse.json(versions);
   } catch (error) {
     console.error("[VERSIONS_GET]", error);
     return ErrorResponse("Internal Server Error", 500);
@@ -160,15 +152,7 @@ export async function POST(
       },
     });
 
-    // Decrypt content before sending response
-    const decryptedVersion = {
-      ...version,
-      content: version.content
-        ? decryptEnvValues(version.content as Record<string, string>, user.id)
-        : null,
-    };
-
-    return NextResponse.json(decryptedVersion);
+    return NextResponse.json(version);
   } catch (error) {
     console.error("[VERSION_POST]", error);
     return ErrorResponse("Internal Server Error", 500);
