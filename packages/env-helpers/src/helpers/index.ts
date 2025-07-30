@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { existsSync, promises as fs, readFileSync } from "fs";
+import { existsSync, promises as fs, readFileSync, writeFileSync } from "fs";
 import os from "os";
 import path from "path";
 import pc from "picocolors";
@@ -105,6 +105,59 @@ export async function readEnvFile(): Promise<Record<string, string>> {
       );
   } catch (error) {
     console.error(pc.yellow("⚠️ No .env file found or unable to read it."));
+    return {};
+  }
+}
+
+/**
+ * Writes to the root `.env` file
+ * @param envs - The decrypted env values from the server.
+ * @returns A parsed object containing key-value pairs from the `.env` file.
+ */
+export async function writeEnvFile(
+  envs: Record<string, string>,
+): Promise<Record<string, string>> {
+  try {
+    const envPath = path.join(process.cwd(), ".env");
+    const envContent = await fs.readFile(envPath, "utf-8");
+    let newEnvContent: Record<string, string> = {};
+
+    Object.entries(envs).map((item) => {
+      envContent.split("\n").map(
+        (line) => {
+          const [key, value] = line.split("=");
+          // tackle empty commented lines
+          if (!key && !value && line.startsWith("#")) {
+            newEnvContent = { ...newEnvContent, "#": "" };
+          }
+          // update these lines with values received
+          if (key && value) {
+            // tackle commented lines that were ignored in the push or read process.
+            if (line.startsWith("#")) {
+              newEnvContent[key.trim()] = value.trim();
+            } else {
+              if (envs[key.trim()]) {
+                newEnvContent[key.trim()] = envs[key.trim()];
+              }
+            }
+          }
+        },
+        {} as Record<string, string>,
+      );
+
+      // handle values that are not available locally.
+      newEnvContent[item[0]] = item[1];
+    });
+
+    const finalEnvContent = Object.entries(newEnvContent)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("\n");
+    await writeFileSync(envPath, finalEnvContent);
+
+    return envs;
+  } catch (error: Error | any) {
+    console.log(pc.red(error));
+    console.error(pc.yellow("⚠️ No .env file found or unable to write in it."));
     return {};
   }
 }

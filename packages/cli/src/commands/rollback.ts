@@ -5,13 +5,14 @@ import {
   readProjectConfig,
   decryptEnvValues,
   writeProjectConfig,
+  writeEnvFile,
 } from "@nvii/env-helpers";
 import { EnvVersion, User } from "@nvii/db";
 import pc from "picocolors";
 import inquirer from "inquirer";
 import { login } from "./auth/login";
 import { join } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 
 type VersionWithUser = EnvVersion & { user: Pick<User, "name" | "email"> };
 
@@ -26,6 +27,7 @@ export async function rollback() {
     const userConfig = await readConfigFile();
     const cwd = process.cwd();
     const projectPath = join(cwd, ".envi/envi.json");
+    const envPath = join(cwd, ".env");
 
     const content = readFileSync(projectPath, "utf-8");
 
@@ -60,18 +62,18 @@ export async function rollback() {
         type: "list",
         name: "versionIdToRollback",
         message: "Select a version to roll back to:",
-        choices: versions.slice(1).map((v) => ({
-          name: `${new Date(v.createdAt).toLocaleString()} - ${v.description} (by ${v.user.name})`,
-          value: v.id,
+        choices: versions.slice(1).map((version) => ({
+          name: `${new Date(version.createdAt).toLocaleString()} - ${version.description} (by ${version.user.name})`,
+          value: version.id,
         })),
       },
     ]);
 
     // 3. Fetch the content of the selected version
-    const versionResponse = await client.get(
+    const response = await client.get(
       `/projects/${userConfig.userId}/${projectId}/versions/${versionIdToRollback}`,
     );
-    const versionToRollback = versionResponse.data as EnvVersion;
+    const versionToRollback = response.data as EnvVersion;
 
     if (!versionToRollback.content) {
       console.error(
@@ -80,33 +82,23 @@ export async function rollback() {
       return;
     }
 
-    // 4. Create a new version with the old content
-    const description = `Rollback to version ${versionIdToRollback}`;
-    console.log(pc.cyan(`\nCreating new version: "${description}"...`));
-
-    // The content is already encrypted on the server, so we can just push it back.
-    const pushResponse = await client.patch(
-      `/projects/${userConfig.userId}/${projectId}`,
-      {
-        content: versionToRollback.content,
-        description,
-      },
-    );
-
-    const { version: newVersion } = pushResponse.data as {
-      version: EnvVersion;
-    };
-    console.log(
-      pc.green(`✅ Successfully created new version ${newVersion.id}.`),
-    );
-
-    // 5. Update local .env file
+    // 4. Update local .env file
     console.log(pc.cyan("Updating local .env file..."));
-    const decryptedEnvs = decryptEnvValues(
-      versionToRollback.content as Record<string, string>,
+
+    // keep track of commented lines
+    let commentedLines = "";
+
+    // decrypt envs before comparing
+    const decryptedEnv = decryptEnvValues(
+      versionToRollback?.content as Record<string, string>,
       userConfig.userId,
     );
-    // await writeProjectConfig(decryptedEnvs);
+
+    const values = await writeEnvFile(decryptedEnv);
+    if (!values) {
+      console.error(pc.red("\nOops an unexpected error occurred."));
+      process.exit(1);
+    }
     console.log(
       pc.green(
         "✅ Local .env file has been updated to match the rollback version.",
