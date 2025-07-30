@@ -70,21 +70,21 @@ This document outlines all tasks required to implement a complete version contro
   - [x] Calculate changes from previous version
   - [x] Create new version via API
   - [x] Update project content
-  - [ ] Show change summary
+  - [x] Show change summary
 
 - [ ] **Implement `history.ts`** - Show version history
 
   - [x] Fetch version history from API
   - [x] Display formatted version list
   - [x] Show change summaries
-  - [ ] Add filtering options (date, user, changes)
+  - [x] Add filtering options (date, user, changes)
 
 - [ ] **Implement `rollback.ts`** - Rollback to specific version
-  - [ ] List available versions
-  - [ ] Select version to rollback to
-  - [ ] Fetch and decrypt version
-  - [ ] Create new version with rollback description
-  - [ ] Update local `.env` file
+  - [x] List available versions
+  - [x] Select version to rollback to
+  - [x] Fetch and decrypt version
+  - [x] Create new version with rollback description
+  - [x] Update local `.env` file
 
 #### **Missing Library Files**
 
