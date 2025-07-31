@@ -27,6 +27,7 @@ import { parseISO, format } from "date-fns";
 import { AnalyzedContent, Project, ProjectAccess } from "@/types/project";
 import { useSession } from "@/provider/session";
 import { VersionHistory } from "./version-history";
+import { toast as toaster } from "sonner";
 
 interface ProjectCardProps {
   project: Project;
@@ -43,14 +44,26 @@ export function ProjectCard({ project }: ProjectCardProps) {
     (access: ProjectAccess) => access.user.id === project.userId,
   )?.user;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!project.id) return;
 
-    removeProject(project.id);
-    toast({
-      title: "Project deleted",
-      description: `${project.name} has been deleted successfully.`,
-    });
+    const toastId = toaster.loading(`Deleting "${project.name}"`);
+    try {
+      await removeProject(project.id);
+      toast({
+        title: "Project deleted",
+        description: `${project.name} has been deleted successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Something went wrong",
+        description: "Your project could not be deleted. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Error creating project:", error);
+    } finally {
+      toaster.dismiss(toastId);
+    }
   };
 
   return (
@@ -88,7 +101,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </DropdownMenuItem>
             {!isSharedProject && (
               <DropdownMenuItem
-                className="text-destructive"
+                className="text-destructive hover:bg-destructive"
                 onClick={handleDelete}
               >
                 Delete Project

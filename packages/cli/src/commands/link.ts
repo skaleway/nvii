@@ -7,13 +7,11 @@ import {
   readEnvFile,
   writeProjectConfig,
 } from "@nvii/env-helpers";
-import { promises as fs } from "fs";
+import { existsSync, promises as fs, mkdirSync, writeFileSync } from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import pc from "picocolors";
 import { login } from "./auth/login";
-
-const DOT_ENV_FILE = ".env";
 
 export async function linkProject() {
   try {
@@ -61,75 +59,20 @@ export async function linkProject() {
     }
 
     const currentDir = process.cwd();
+    const enviDirPath = path.join(currentDir, ".envi");
+    const enviFilePath = path.join(enviDirPath, "envi.json");
 
-    if (!selectedProject.content) {
-      return;
-    }
+    // create project config file path and .env if they don't exist
+    if (!existsSync(enviDirPath)) {
+      mkdirSync(enviDirPath);
 
-    const { createEnvFile } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "createEnvFile",
-        message:
-          "This project contains a .env file. Do you want to populate its values?",
-        default: false,
-      },
-    ]);
-
-    if (!createEnvFile) {
-      console.log(pc.yellow("Skipping .env file creation."));
-      return;
-    }
-
-    const envFilePath = path.join(currentDir, DOT_ENV_FILE);
-    let existingEnv = await readEnvFile();
-
-    const finalEnv: Record<string, string> = { ...existingEnv };
-    let commentedLines = "";
-
-    // decrypt envs before comparing
-    const decryptedEnv = decryptEnvValues(
-      selectedProject?.content as Record<string, string>,
-      userConfig.userId,
-    );
-
-    for (const [key, value] of Object.entries(decryptedEnv)) {
-      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
-      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
-
-      if (
-        existingEnv[key] !== undefined &&
-        normalizedExisting === normalizedNew
-      ) {
-        const { overwrite } = await inquirer.prompt([
-          {
-            type: "confirm",
-            name: "overwrite",
-            message: `Conflict: ${key} exists. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
-            default: false,
-          },
-        ]);
-        if (overwrite) {
-          finalEnv[key] = value;
-        } else {
-          commentedLines += `# ${key}=${value}\n`;
-        }
-      } else {
-        finalEnv[key] = value;
+      if (!existsSync(enviFilePath)) {
+        writeFileSync(enviFilePath, "", { encoding: "utf-8" });
       }
     }
-
-    const finalEnvContent =
-      Object.entries(finalEnv)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n") +
-      "\n" +
-      commentedLines;
-
-    await fs.writeFile(envFilePath, finalEnvContent);
     console.log("\n");
     await writeProjectConfig(selectedProject.id);
-    console.log(pc.green(".env file updated successfully!"));
+    console.log(pc.green("Project linked successfully!"));
   } catch (error: Error | any) {
     console.error(pc.red("\nError linking project:"), error.message);
     process.exit(1);

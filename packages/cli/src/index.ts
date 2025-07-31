@@ -41,13 +41,13 @@ program
 
 program
   .command("link")
-  .description("Link an existing remote project to the current directory")
+  .description("Link an existing remote project to the current directory.")
   .action(linkProject);
 
 program
   .command("unlink")
   .description(
-    "Unlink the current directory from a remote project. This deletes the existing remote project.",
+    "Unlink the current directory from the current linked remote project.",
   )
   .action(unlinkProject);
 

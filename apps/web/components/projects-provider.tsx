@@ -20,6 +20,8 @@ import { useSession } from "@/provider/session";
 
 type ProjectsContextType = {
   projects: Project[];
+  isRefetchingProjects: boolean;
+  refetchProjects: () => void;
   isLoading: boolean;
   error: Error | null;
   addProject: (project: CreateProjectInput) => Promise<void>;
@@ -79,9 +81,13 @@ function ProjectsProviderInner({
     data: projects = [],
     isLoading,
     error,
+    refetch: refetchProjects,
+    isRefetching: isRefetchingProjects,
   } = useQuery({
     queryKey: ["projects"],
     queryFn: projectsApi.list,
+    staleTime: Infinity,
+    gcTime: 0,
   });
 
   // Add project mutation
@@ -95,7 +101,7 @@ function ProjectsProviderInner({
 
   // Remove project mutation
   const removeProjectMutation = useMutation({
-    mutationFn: projectsApi.delete,
+    mutationFn: (id: string) => projectsApi.delete(id, user.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
@@ -182,6 +188,8 @@ function ProjectsProviderInner({
         getProjectAccess,
         addProjectAccess,
         removeProjectAccess,
+        isRefetchingProjects,
+        refetchProjects,
       }}
     >
       {children}

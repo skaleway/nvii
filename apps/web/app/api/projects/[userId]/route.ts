@@ -156,12 +156,29 @@ export const POST = async (
       );
     }
 
+    const authenticatedUser = await db.user.findUnique({
+      where: { id: user.id },
+    });
+
+    if (!authenticatedUser) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    const authenticatedUserDeviceId = await db.device.findFirst({
+      where: {
+        userId: authenticatedUser.id,
+      },
+    });
+    if (!authenticatedUserDeviceId) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
     const project = await db.$transaction(async (tx) => {
       const newProject = await tx.project.create({
         data: {
           userId,
           name: body.name,
-          deviceId: body.deviceId,
+          deviceId: body.deviceId ?? authenticatedUserDeviceId.id,
           content: body.content,
         },
       });
@@ -189,7 +206,6 @@ export const POST = async (
 
       return newProject;
     });
-
     return Response(project);
   } catch (error) {
     console.error(error);

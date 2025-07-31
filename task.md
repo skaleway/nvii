@@ -77,7 +77,7 @@ This document outlines all tasks required to implement a complete version contro
   - [x] Fetch version history from API
   - [x] Display formatted version list
   - [x] Show change summaries
-  - [x] Add filtering options (date, user, changes)
+  - [ ] Add filtering options (date, user, changes)
 
 - [ ] **Implement `rollback.ts`** - Rollback to specific version
   - [x] List available versions
@@ -90,11 +90,11 @@ This document outlines all tasks required to implement a complete version contro
 
 - [ ] **Create `lib/version.ts`** - Version management utilities
 
-  - [ ] `fetchVersions(projectId: string): Promise<VersionInfo[]>`
-  - [ ] `createVersion(projectId: string, content: Record<string, string>, description?: string): Promise<VersionInfo>`
-  - [ ] `getVersion(versionId: string): Promise<VersionInfo>`
-  - [ ] `formatVersionHistory(versions: VersionInfo[]): string`
-  - [ ] `compareVersions(version1: Record<string, string>, version2: Record<string, string>): DiffResult`
+  - [x] `fetchVersions(projectId: string): Promise<VersionInfo[]>`
+  - [x] `createVersion(projectId: string, content: Record<string, string>, description?: string): Promise<VersionInfo>`
+  - [x] `getVersion(versionId: string): Promise<VersionInfo>`
+  - [x] `formatVersionHistory(versions: VersionInfo[]): string`
+  - [x] `compareVersions(version1: Record<string, string>, version2: Record<string, string>): DiffResult`
 
 - [ ] **Create `lib/conflict.ts`** - Conflict resolution utilities
 
@@ -110,10 +110,10 @@ This document outlines all tasks required to implement a complete version contro
   - [ ] `applyDiff(baseContent: Record<string, string>, diff: DiffResult): Record<string, string>`
 
 - [ ] **Create `lib/encrypt.ts`** - Enhanced encryption utilities
-  - [ ] `encryptEnvValues(values: Record<string, string>, userId: string): Record<string, string>`
-  - [ ] `decryptEnvValues(encryptedValues: Record<string, string>, userId: string): Record<string, string>`
-  - [ ] `generateEncryptionKey(): string`
-  - [ ] `validateEncryptionKey(key: string): boolean`
+  - [x] `encryptEnvValues(values: Record<string, string>, userId: string): Record<string, string>`
+  - [x] `decryptEnvValues(encryptedValues: Record<string, string>, userId: string): Record<string, string>`
+  - [x] `generateEncryptionKey(): string`
+  - [x] `validateEncryptionKey(key: string): boolean`
 
 #### **CLI Command Enhancements**
 
@@ -122,6 +122,8 @@ This document outlines all tasks required to implement a complete version contro
   - [ ] `link --version <versionId>` - Link to specific version
   - [ ] `update --version <versionId>` - Update to specific version
   - [ ] `new --template <versionId>` - Create from template version
+  - [ ] `pull --version <versionId>` - Pull from a specific version
+  - [ ] `log --version <versionId> --username <userName> --date <logDate>` - Get log with specific details
 
 - [ ] **Add version management commands**
   - [ ] `nvii tag <versionId> <tagName>` - Tag a version
@@ -147,9 +149,9 @@ This document outlines all tasks required to implement a complete version contro
 
 - [ ] **Create `api/projects/[userId]/[projectId]/versions/[versionId]/route.ts`**
 
-  - [ ] `GET` - Fetch specific version details
-  - [ ] `DELETE` - Delete specific version (with permissions)
-  - [ ] `PATCH` - Update version metadata (description, tags)
+  - [x] `GET` - Fetch specific version details
+  - [x] `DELETE` - Delete specific version (with permissions)
+  - [x] `PATCH` - Update version metadata (description, tags)
 
 - [ ] **Create `api/projects/[userId]/[projectId]/versions/compare/route.ts`**
 
@@ -295,8 +297,8 @@ This document outlines all tasks required to implement a complete version contro
 
 - [ ] **CLI-Web Integration**
 
-  - [ ] Ensure CLI authentication works with web user system
-  - [ ] Sync CLI version operations with web UI
+  - [x] Ensure CLI authentication works with web user system
+  - [x] Sync CLI version operations with web UI
   - [ ] Handle version conflicts between CLI and web
 
 - [ ] **Database-API Integration**

@@ -3,6 +3,7 @@ import {
   getConfiguredClient,
   isLogedIn,
   readConfigFile,
+  readProjectConfig,
   unlinkProjectConfig,
 } from "@nvii/env-helpers";
 import inquirer from "inquirer";
@@ -23,72 +24,41 @@ export async function unlinkProject() {
       return;
     }
 
+    const projectConfig = await readProjectConfig();
+
     const client = await getConfiguredClient();
     const response = await client.get(`/projects/${userConfig.userId}`);
     const projects = response.data as Project[];
 
     if (!projects.length) {
       console.log(
-        pc.yellow("No projects found for this directory. Run 'nvii new'."),
+        pc.yellow("No projects found for current user. Run 'nvii new'."),
       );
       return;
     }
-    const { selectedProjectId } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "selectedProjectId",
-        message: "Select a project to unlink:",
-        choices: projects.map((proj) => ({
-          name: proj.name,
-          value: proj.id,
-        })),
-      },
-    ]);
 
-    const selectedProject = projects.find(
-      (proj) => proj.id === selectedProjectId,
+    const project = projects.find(
+      (item) => item.id === projectConfig?.projectId,
     );
-
-    if (!selectedProject) {
-      console.log(pc.red("Selected project not found."));
+    if (!project) {
+      console.log(pc.red("Project not linked remote project yet."));
       return;
     }
-
-    if (!selectedProject.content) {
-      return;
-    }
-
-    const { deleteProject } = await inquirer.prompt([
+    const { unLinkProject } = await inquirer.prompt([
       {
         type: "confirm",
-        name: "deleteProject",
-        message: `Are you sure you really want to delete this project? '${selectedProject.name}'`,
-        default: false,
+        name: "unLinkProject",
+        message: `Are you sure you want to unlink from ${pc.dim(project?.name)}`,
       },
     ]);
 
-    if (!deleteProject) {
-      console.log(pc.yellow("Skipping .envi directory deletion."));
+    if (!unLinkProject) {
+      console.log("Skipping project unlink.");
       return;
     }
 
-    // Delete the project from db
-    const res = await client.delete<{ message: string; name: string }>(
-      `/projects/${userConfig.userId}/${selectedProjectId}`,
-    );
-
-    if (!res.data) {
-      console.log(
-        pc.yellow(
-          "Oops. An error occurred unlinking project. Check your internet access and try again later.",
-        ),
-      );
-      process.exit(1);
-    }
-    const { message } = res.data;
-
     console.log("\n");
-    const result = await unlinkProjectConfig(selectedProject.id);
+    const result = await unlinkProjectConfig(project.id);
     if (!result) {
       console.log(
         pc.yellow(
@@ -97,7 +67,7 @@ export async function unlinkProject() {
       );
       process.exit(1);
     }
-    console.log(pc.green(`${message} successfully!`));
+    console.log(pc.green(`Project unlinked successfully!`));
   } catch (error: Error | any) {
     console.error(pc.red("\nError linking project:"), error.message);
     process.exit(1);

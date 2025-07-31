@@ -18,8 +18,15 @@ import {
 import { RefreshCcw } from "lucide-react";
 
 export default function Dashboard() {
-  const { projects, filteredProjects, filterValue, setFilterValue, isLoading } =
-    useProjects();
+  const {
+    projects,
+    filteredProjects,
+    filterValue,
+    setFilterValue,
+    isLoading,
+    refetchProjects,
+    isRefetchingProjects,
+  } = useProjects();
 
   const validCount = projects.filter((p) => p.status === "valid").length;
   const missingCount = projects.filter((p) => p.status === "missing").length;
@@ -49,11 +56,7 @@ export default function Dashboard() {
               <SelectItem value="invalid">Invalid Variables</SelectItem>
             </SelectContent>
           </Select>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => window.location.reload()}
-          >
+          <Button variant="outline" size="icon" onClick={refetchProjects}>
             <RefreshCcw className="h-4 w-4" />
           </Button>
           <AddProjectDialog>
@@ -63,7 +66,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {isLoading ? (
+        {isLoading || isRefetchingProjects ? (
           <>
             <StatusCardSkeleton />
             <StatusCardSkeleton />
@@ -96,7 +99,7 @@ export default function Dashboard() {
       <div>
         <h2 className="text-lg font-semibold mb-4">Projects</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-7xl">
-          {isLoading ? (
+          {isLoading || isRefetchingProjects ? (
             <>
               <ProjectCardSkeleton />
               <ProjectCardSkeleton />
