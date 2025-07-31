@@ -37,6 +37,7 @@ interface EnvVariableTableProps {
 }
 
 export function EnvVariableTable({ environment }: EnvVariableTableProps) {
+  console.log(environment);
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [variables, setVariables] = useState<Variable[]>(() =>

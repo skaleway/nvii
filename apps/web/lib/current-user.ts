@@ -1,3 +1,5 @@
+"use server";
+
 import { auth, Session } from "@/lib/auth";
 import { betterFetch } from "@better-fetch/fetch";
 import { db } from "@nvii/db";

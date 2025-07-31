@@ -86,6 +86,8 @@ function ProjectsProviderInner({
   } = useQuery({
     queryKey: ["projects"],
     queryFn: projectsApi.list,
+    staleTime: Infinity,
+    gcTime: 0,
   });
 
   // Add project mutation
