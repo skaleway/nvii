@@ -129,7 +129,7 @@ export default function SignIn() {
                         {field === "password" && (
                           <div className="text-left -mt-2 text-sm">
                             <Link
-                              href="/forgot-password"
+                              href="/auth/forgot-password"
                               className="text-primary hover:underline"
                             >
                               Forgot password?

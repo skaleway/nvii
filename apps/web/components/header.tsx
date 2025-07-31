@@ -13,10 +13,32 @@ import {
 import Profile from "@nvii/ui/components/user-profile";
 import { useSession } from "@/provider/session";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@nvii/ui/lib/utils";
 
 export function Header() {
   const { setTheme } = useTheme();
   const { user } = useSession();
+  const pathName = usePathname();
+
+  const navItems = [
+    {
+      name: "Dashboard",
+      url: "/",
+    },
+    {
+      name: "Projects",
+      url: "/projects",
+    },
+    {
+      name: "Sync",
+      url: "/sync",
+    },
+    {
+      name: "Settings",
+      url: "/settings",
+    },
+  ];
 
   return (
     <header className="flex h-16 items-center border-b bg-background">
@@ -27,30 +49,20 @@ export function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <Link
-              href="/"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/projects"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Projects
-            </Link>
-            <Link
-              href="/sync"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Sync
-            </Link>
-            <Link
-              href="/settings"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Settings
-            </Link>
+            {navItems.map((item, index) => (
+              <Link
+                key={item.name}
+                href={item.url}
+                className={cn(
+                  "text-sm text-muted-foreground hover:text-foreground relative",
+                  pathName === item.url
+                    ? "text-primary hover:text-primary"
+                    : "",
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
           </nav>
         </div>
 

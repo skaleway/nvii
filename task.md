@@ -77,7 +77,7 @@ This document outlines all tasks required to implement a complete version contro
   - [x] Fetch version history from API
   - [x] Display formatted version list
   - [x] Show change summaries
-  - [x] Add filtering options (date, user, changes)
+  - [ ] Add filtering options (date, user, changes)
 
 - [ ] **Implement `rollback.ts`** - Rollback to specific version
   - [x] List available versions

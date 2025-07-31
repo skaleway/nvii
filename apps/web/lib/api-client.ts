@@ -4,7 +4,7 @@ const API_BASE = "/api";
 
 export type CreateProjectInput = Omit<
   Project,
-  "id" | "createdAt" | "updatedAt" | "userId" | "content"
+  "id" | "createdAt" | "updatedAt" | "userId" | "content" | "deviceId"
 >;
 
 export const projectsApi = {
@@ -25,7 +25,7 @@ export const projectsApi = {
 
   create: async (
     project: CreateProjectInput,
-    userId: string
+    userId: string,
   ): Promise<Project> => {
     const response = await fetch(`${API_BASE}/projects/${userId}`, {
       method: "POST",
@@ -40,15 +40,17 @@ export const projectsApi = {
     const data = await response.json();
 
     // Transform the response to set status based on totalEmpty
+    const completeData = data.data;
     return {
-      ...data,
-      status: data.content.totalEmpty > 0 ? "missing" : "valid",
-      envCount: data.content.totalElem,
+      ...completeData,
+      status:
+        Object.entries(completeData.content).length > 0 ? "missing" : "valid",
+      envCount: completeData.content.totalElem,
     };
   },
 
-  delete: async (id: string): Promise<void> => {
-    const response = await fetch(`${API_BASE}/projects/${id}`, {
+  delete: async (id: string, userId: string): Promise<void> => {
+    const response = await fetch(`${API_BASE}/projects/${userId}/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {
@@ -112,7 +114,7 @@ export const projectAccessApi = {
       `/api/projects/access?projectId=${projectId}&userIdToRemove=${userIdToRemove}`,
       {
         method: "DELETE",
-      }
+      },
     );
     if (!response.ok) {
       throw new Error("Failed to remove project access");

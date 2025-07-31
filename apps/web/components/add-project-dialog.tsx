@@ -41,16 +41,12 @@ const projectSchema = z.object({
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
-type EnvVariable = {
-  key: string;
-  value: string;
-};
-
 export function AddProjectDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const { addProject, isLoading } = useProjects();
+  const { addProject } = useProjects();
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -60,13 +56,14 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
   });
 
   async function onSubmit(data: ProjectFormValues) {
+    setIsLoading(true);
     try {
       const projectData = {
         name: data.name,
         description: "",
         status: "valid" as const,
         key: crypto.randomUUID(),
-        deviceId: crypto.randomUUID(),
+        content: {},
         envCount: 0,
         slug: data.name.toLowerCase().replace(/\s+/g, "-"),
       };
@@ -77,12 +74,7 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
         title: "Project created",
         description: `${data.name} has been created successfully.`,
       });
-
-      setOpen(false);
       form.reset();
-
-      // Navigate to the new project
-      router.push(`/projects/${projectData.slug}`);
     } catch (error) {
       toast({
         title: "Something went wrong",
@@ -90,6 +82,8 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
       console.error("Error creating project:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 

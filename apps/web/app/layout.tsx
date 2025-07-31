@@ -4,6 +4,7 @@ import "@nvii/ui/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import type React from "react";
+import { Toaster as Toast } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,10 +27,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="flex-1 bg-muted/30 w-full min-h-[calc(100vh-64px)]">
+          <main className="flex-1 bg-muted/30 w-full h-screen min-h-[calc(100vh-64px)]">
             {children}
           </main>
           <Toaster />
+          <Toast
+            className="bg-background"
+            theme="system"
+            richColors
+            closeButton
+          />
         </ThemeProvider>
       </body>
     </html>
