@@ -3,6 +3,7 @@
 import { EnvVariableTable } from "@/components/env-variable-table";
 import { ProjectAccessManager } from "@/components/project-access-manager";
 import { VersionHistory } from "@/components/version-history";
+import { Skeleton } from "@/components/ui/skeleton";
 import { projectApi } from "@/lib/api-client";
 import { useSession } from "@/provider/session";
 import { Project } from "@/types/project";
@@ -42,10 +43,6 @@ export default function ProjectPage() {
     }
   };
 
-  if (!user) {
-    return notFound();
-  }
-
   // Fetch project
   const {
     data: project,
@@ -60,7 +57,66 @@ export default function ProjectPage() {
     gcTime: 100,
   });
 
-  if (!project || isPending) {
+  if (!user) {
+    return notFound();
+  }
+
+  if (isPending || isRefetchingProject) {
+    return (
+      <div className="max-w-7xl mx-auto container py-6 space-y-6">
+        {/* Breadcrumb skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-4 w-20" />
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <Skeleton className="h-9 w-32" />
+        </div>
+
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-48" />
+              <Skeleton className="h-6 w-24" />
+            </div>
+            <Skeleton className="h-5 w-80" />
+          </div>
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-9 w-20" />
+            <Skeleton className="h-9 w-32" />
+          </div>
+        </div>
+
+        {/* Table skeleton */}
+        <div className="rounded-md border bg-card">
+          <div className="p-4">
+            <div className="space-y-3">
+              {/* Table header */}
+              <div className="grid grid-cols-4 gap-4 pb-2 border-b">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+              {/* Table rows */}
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="grid grid-cols-4 gap-4 py-3">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-8" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!project) {
     return;
   }
 
@@ -82,7 +138,10 @@ export default function ProjectPage() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <ProjectAccessManager projectId={project?.id as string} />
+        <ProjectAccessManager
+          projectId={project?.id as string}
+          userId={user.id}
+        />
       </div>
 
       <div className="flex items-center justify-between">
@@ -109,27 +168,12 @@ export default function ProjectPage() {
             <RefreshCw className="h-4 w-4" />
             Sync
           </Button>
-          <VersionHistory
-            // versions={versions.map(
-            //   (
-            //     version: EnvVersion & {
-            //       user: { name: string | null; email: string | null };
-            //     },
-            //   ) => ({
-            //     ...version,
-            //     changes: version.changes
-            //       ? JSON.parse(JSON.stringify(version.changes))
-            //       : null,
-            //   }),
-            // )}
-
-            versions={[]}
-          />
+          <VersionHistory userId={user.id} projectId={projectId as string} />
         </div>
       </div>
 
       <EnvVariableTable
-        environment={project?.content as Record<string, string>}
+        environment={project?.content as unknown as Record<string, string>}
       />
     </div>
   );

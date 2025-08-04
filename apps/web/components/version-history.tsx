@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
   Dialog,
@@ -14,6 +14,8 @@ import { ScrollArea } from "@nvii/ui/components/scroll-area";
 import { Badge } from "@nvii/ui/components/badge";
 import { Card, CardContent, CardHeader } from "@nvii/ui/components/card";
 import { History } from "lucide-react";
+import { useProjects } from "./projects-provider";
+import { toast } from "sonner";
 
 interface Version {
   id: string;
@@ -31,12 +33,38 @@ interface Version {
 }
 
 interface VersionHistoryProps {
-  versions?: Version[];
   projectId: string;
+  userId: string;
 }
 
-export function VersionHistory({ versions = [] }: VersionHistoryProps) {
+export function VersionHistory({ userId, projectId }: VersionHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [versions, setVersions] = useState<Version[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { getProjectVersions } = useProjects();
+
+  useEffect(() => {
+    const handleFetch = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getProjectVersions(projectId, userId);
+
+        if (!data) {
+          toast.error("Cannot fetch env versions at the moment.");
+          return;
+        }
+
+        setVersions(data);
+      } catch (error) {
+        toast.error("An error occurred loading env versions.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    handleFetch();
+  }, [getProjectVersions, userId, projectId]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
