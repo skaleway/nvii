@@ -116,7 +116,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {format(parseISO(project.updatedAt), "MMM d, yyyy")}
           </div>
           <div className="flex items-center gap-2">
-            <VersionHistory projectId={project.id} />
+            <VersionHistory projectId={project.id} userId={user.id} />
             <span className="text-sm font-medium">
               {project.content.totalElem} variables
             </span>
