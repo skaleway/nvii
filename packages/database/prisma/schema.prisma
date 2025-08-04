@@ -101,6 +101,7 @@ model Project {
   havingAccess  User[]          @relation("ProjectAccess")
   ProjectAccess ProjectAccess[]
   versions      EnvVersion[]
+  VersionTag    VersionTag[]
 
   @@unique([userId, name])
   @@map("projects")
@@ -111,7 +112,7 @@ model ProjectAccess {
   project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId  String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
+  userId     String   @unique
   assignedAt DateTime @default(now())
 
   @@id([projectId, userId])
@@ -120,16 +121,33 @@ model ProjectAccess {
 
 // Model to track environment variable versions
 model EnvVersion {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   content     Json // Stores the environment variables at this version
-  createdAt   DateTime @default(now())
+  createdAt   DateTime     @default(now())
   createdBy   String
-  user        User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   description String? // Optional description of what changed
   changes     Json? // Stores what was added/modified/deleted
-  branch      String   @default("main")
+  branch      String       @default("main")
+  VersionTag  VersionTag[]
 
+  @@index([projectId, createdAt(sort: Desc)])
+  @@index([createdBy])
+  @@index([branch])
   @@map("env_versions")
+}
+
+model VersionTag {
+  id          String     @id @default(cuid())
+  projectId   String
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  versionId   String
+  version     EnvVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+
+  @@map("env_version_tag")
 }

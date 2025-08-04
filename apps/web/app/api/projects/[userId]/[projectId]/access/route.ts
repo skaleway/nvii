@@ -8,7 +8,7 @@ import { getCurrentUserFromSession } from "@/lib/current-user";
 // Get all users with access to a project
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ projectId: string }> },
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -64,7 +64,10 @@ export async function GET(
 }
 
 // Add user access to a project
-export async function POST(request: Request): Promise<NextResponse> {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ userId: string; projectId: string }> }
+): Promise<NextResponse> {
   try {
     const user = await getCurrentUserFromSession();
     if (!user) {
@@ -72,13 +75,29 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const body = await request.json();
-    const { projectId, userId } = body;
+    const { projectId, userId } = await params;
+    const { email } = body;
+
+    // Check the user to be added exists in the database.
+    const userExists = await db.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!userExists) {
+      return ErrorResponse(`User email ${email} not found`, 400);
+    }
+
+    console.log({ userExists });
+
+    // TODO: Use the user email to send them an invitation email later.
 
     // Verify the user is the owner of the project
     const project = await db.project.findUnique({
       where: {
         id: projectId,
-        userId: user.id, // Only project owner can grant access
+        userId, // Only project owner can grant access
       },
     });
 
@@ -90,7 +109,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     await db.projectAccess.create({
       data: {
         projectId,
-        userId,
+        userId: userExists.id,
       },
     });
 

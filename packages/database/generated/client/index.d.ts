@@ -53,6 +53,11 @@ export type ProjectAccess = $Result.DefaultSelection<Prisma.$ProjectAccessPayloa
  * 
  */
 export type EnvVersion = $Result.DefaultSelection<Prisma.$EnvVersionPayload>
+/**
+ * Model VersionTag
+ * 
+ */
+export type VersionTag = $Result.DefaultSelection<Prisma.$VersionTagPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -258,6 +263,16 @@ export class PrismaClient<
     * ```
     */
   get envVersion(): Prisma.EnvVersionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.versionTag`: Exposes CRUD operations for the **VersionTag** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more VersionTags
+    * const versionTags = await prisma.versionTag.findMany()
+    * ```
+    */
+  get versionTag(): Prisma.VersionTagDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -705,7 +720,8 @@ export namespace Prisma {
     Device: 'Device',
     Project: 'Project',
     ProjectAccess: 'ProjectAccess',
-    EnvVersion: 'EnvVersion'
+    EnvVersion: 'EnvVersion',
+    VersionTag: 'VersionTag'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -724,7 +740,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "account" | "verification" | "device" | "project" | "projectAccess" | "envVersion"
+      modelProps: "user" | "session" | "account" | "verification" | "device" | "project" | "projectAccess" | "envVersion" | "versionTag"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1320,6 +1336,80 @@ export namespace Prisma {
           }
         }
       }
+      VersionTag: {
+        payload: Prisma.$VersionTagPayload<ExtArgs>
+        fields: Prisma.VersionTagFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.VersionTagFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.VersionTagFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>
+          }
+          findFirst: {
+            args: Prisma.VersionTagFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.VersionTagFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>
+          }
+          findMany: {
+            args: Prisma.VersionTagFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>[]
+          }
+          create: {
+            args: Prisma.VersionTagCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>
+          }
+          createMany: {
+            args: Prisma.VersionTagCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.VersionTagCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>[]
+          }
+          delete: {
+            args: Prisma.VersionTagDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>
+          }
+          update: {
+            args: Prisma.VersionTagUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>
+          }
+          deleteMany: {
+            args: Prisma.VersionTagDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.VersionTagUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.VersionTagUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>[]
+          }
+          upsert: {
+            args: Prisma.VersionTagUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VersionTagPayload>
+          }
+          aggregate: {
+            args: Prisma.VersionTagAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateVersionTag>
+          }
+          groupBy: {
+            args: Prisma.VersionTagGroupByArgs<ExtArgs>
+            result: $Utils.Optional<VersionTagGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.VersionTagCountArgs<ExtArgs>
+            result: $Utils.Optional<VersionTagCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1420,6 +1510,7 @@ export namespace Prisma {
     project?: ProjectOmit
     projectAccess?: ProjectAccessOmit
     envVersion?: EnvVersionOmit
+    versionTag?: VersionTagOmit
   }
 
   /* Types for Logging */
@@ -1638,12 +1729,14 @@ export namespace Prisma {
     havingAccess: number
     ProjectAccess: number
     versions: number
+    VersionTag: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     havingAccess?: boolean | ProjectCountOutputTypeCountHavingAccessArgs
     ProjectAccess?: boolean | ProjectCountOutputTypeCountProjectAccessArgs
     versions?: boolean | ProjectCountOutputTypeCountVersionsArgs
+    VersionTag?: boolean | ProjectCountOutputTypeCountVersionTagArgs
   }
 
   // Custom InputTypes
@@ -1676,6 +1769,44 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountVersionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EnvVersionWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountVersionTagArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VersionTagWhereInput
+  }
+
+
+  /**
+   * Count Type EnvVersionCountOutputType
+   */
+
+  export type EnvVersionCountOutputType = {
+    VersionTag: number
+  }
+
+  export type EnvVersionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    VersionTag?: boolean | EnvVersionCountOutputTypeCountVersionTagArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * EnvVersionCountOutputType without action
+   */
+  export type EnvVersionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnvVersionCountOutputType
+     */
+    select?: EnvVersionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * EnvVersionCountOutputType without action
+   */
+  export type EnvVersionCountOutputTypeCountVersionTagArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VersionTagWhereInput
   }
 
 
@@ -7491,6 +7622,7 @@ export namespace Prisma {
     havingAccess?: boolean | Project$havingAccessArgs<ExtArgs>
     ProjectAccess?: boolean | Project$ProjectAccessArgs<ExtArgs>
     versions?: boolean | Project$versionsArgs<ExtArgs>
+    VersionTag?: boolean | Project$VersionTagArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -7538,6 +7670,7 @@ export namespace Prisma {
     havingAccess?: boolean | Project$havingAccessArgs<ExtArgs>
     ProjectAccess?: boolean | Project$ProjectAccessArgs<ExtArgs>
     versions?: boolean | Project$versionsArgs<ExtArgs>
+    VersionTag?: boolean | Project$VersionTagArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7557,6 +7690,7 @@ export namespace Prisma {
       havingAccess: Prisma.$UserPayload<ExtArgs>[]
       ProjectAccess: Prisma.$ProjectAccessPayload<ExtArgs>[]
       versions: Prisma.$EnvVersionPayload<ExtArgs>[]
+      VersionTag: Prisma.$VersionTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7966,6 +8100,7 @@ export namespace Prisma {
     havingAccess<T extends Project$havingAccessArgs<ExtArgs> = {}>(args?: Subset<T, Project$havingAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ProjectAccess<T extends Project$ProjectAccessArgs<ExtArgs> = {}>(args?: Subset<T, Project$ProjectAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     versions<T extends Project$versionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnvVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    VersionTag<T extends Project$VersionTagArgs<ExtArgs> = {}>(args?: Subset<T, Project$VersionTagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8468,6 +8603,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EnvVersionScalarFieldEnum | EnvVersionScalarFieldEnum[]
+  }
+
+  /**
+   * Project.VersionTag
+   */
+  export type Project$VersionTagArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    where?: VersionTagWhereInput
+    orderBy?: VersionTagOrderByWithRelationInput | VersionTagOrderByWithRelationInput[]
+    cursor?: VersionTagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VersionTagScalarFieldEnum | VersionTagScalarFieldEnum[]
   }
 
   /**
@@ -9711,6 +9870,8 @@ export namespace Prisma {
     branch?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    VersionTag?: boolean | EnvVersion$VersionTagArgs<ExtArgs>
+    _count?: boolean | EnvVersionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["envVersion"]>
 
   export type EnvVersionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9754,6 +9915,8 @@ export namespace Prisma {
   export type EnvVersionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    VersionTag?: boolean | EnvVersion$VersionTagArgs<ExtArgs>
+    _count?: boolean | EnvVersionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EnvVersionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -9769,6 +9932,7 @@ export namespace Prisma {
     objects: {
       project: Prisma.$ProjectPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
+      VersionTag: Prisma.$VersionTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10175,6 +10339,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    VersionTag<T extends EnvVersion$VersionTagArgs<ExtArgs> = {}>(args?: Subset<T, EnvVersion$VersionTagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10608,6 +10773,30 @@ export namespace Prisma {
   }
 
   /**
+   * EnvVersion.VersionTag
+   */
+  export type EnvVersion$VersionTagArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    where?: VersionTagWhereInput
+    orderBy?: VersionTagOrderByWithRelationInput | VersionTagOrderByWithRelationInput[]
+    cursor?: VersionTagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VersionTagScalarFieldEnum | VersionTagScalarFieldEnum[]
+  }
+
+  /**
    * EnvVersion without action
    */
   export type EnvVersionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10623,6 +10812,1085 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: EnvVersionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model VersionTag
+   */
+
+  export type AggregateVersionTag = {
+    _count: VersionTagCountAggregateOutputType | null
+    _min: VersionTagMinAggregateOutputType | null
+    _max: VersionTagMaxAggregateOutputType | null
+  }
+
+  export type VersionTagMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    versionId: string | null
+    name: string | null
+    description: string | null
+    createdAt: Date | null
+  }
+
+  export type VersionTagMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    versionId: string | null
+    name: string | null
+    description: string | null
+    createdAt: Date | null
+  }
+
+  export type VersionTagCountAggregateOutputType = {
+    id: number
+    projectId: number
+    versionId: number
+    name: number
+    description: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type VersionTagMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    versionId?: true
+    name?: true
+    description?: true
+    createdAt?: true
+  }
+
+  export type VersionTagMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    versionId?: true
+    name?: true
+    description?: true
+    createdAt?: true
+  }
+
+  export type VersionTagCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    versionId?: true
+    name?: true
+    description?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type VersionTagAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VersionTag to aggregate.
+     */
+    where?: VersionTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VersionTags to fetch.
+     */
+    orderBy?: VersionTagOrderByWithRelationInput | VersionTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: VersionTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VersionTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VersionTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned VersionTags
+    **/
+    _count?: true | VersionTagCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: VersionTagMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: VersionTagMaxAggregateInputType
+  }
+
+  export type GetVersionTagAggregateType<T extends VersionTagAggregateArgs> = {
+        [P in keyof T & keyof AggregateVersionTag]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVersionTag[P]>
+      : GetScalarType<T[P], AggregateVersionTag[P]>
+  }
+
+
+
+
+  export type VersionTagGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VersionTagWhereInput
+    orderBy?: VersionTagOrderByWithAggregationInput | VersionTagOrderByWithAggregationInput[]
+    by: VersionTagScalarFieldEnum[] | VersionTagScalarFieldEnum
+    having?: VersionTagScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: VersionTagCountAggregateInputType | true
+    _min?: VersionTagMinAggregateInputType
+    _max?: VersionTagMaxAggregateInputType
+  }
+
+  export type VersionTagGroupByOutputType = {
+    id: string
+    projectId: string
+    versionId: string
+    name: string
+    description: string | null
+    createdAt: Date
+    _count: VersionTagCountAggregateOutputType | null
+    _min: VersionTagMinAggregateOutputType | null
+    _max: VersionTagMaxAggregateOutputType | null
+  }
+
+  type GetVersionTagGroupByPayload<T extends VersionTagGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<VersionTagGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof VersionTagGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], VersionTagGroupByOutputType[P]>
+            : GetScalarType<T[P], VersionTagGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type VersionTagSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    versionId?: boolean
+    name?: boolean
+    description?: boolean
+    createdAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    version?: boolean | EnvVersionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["versionTag"]>
+
+  export type VersionTagSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    versionId?: boolean
+    name?: boolean
+    description?: boolean
+    createdAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    version?: boolean | EnvVersionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["versionTag"]>
+
+  export type VersionTagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    versionId?: boolean
+    name?: boolean
+    description?: boolean
+    createdAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    version?: boolean | EnvVersionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["versionTag"]>
+
+  export type VersionTagSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    versionId?: boolean
+    name?: boolean
+    description?: boolean
+    createdAt?: boolean
+  }
+
+  export type VersionTagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "versionId" | "name" | "description" | "createdAt", ExtArgs["result"]["versionTag"]>
+  export type VersionTagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    version?: boolean | EnvVersionDefaultArgs<ExtArgs>
+  }
+  export type VersionTagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    version?: boolean | EnvVersionDefaultArgs<ExtArgs>
+  }
+  export type VersionTagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    version?: boolean | EnvVersionDefaultArgs<ExtArgs>
+  }
+
+  export type $VersionTagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "VersionTag"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+      version: Prisma.$EnvVersionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      versionId: string
+      name: string
+      description: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["versionTag"]>
+    composites: {}
+  }
+
+  type VersionTagGetPayload<S extends boolean | null | undefined | VersionTagDefaultArgs> = $Result.GetResult<Prisma.$VersionTagPayload, S>
+
+  type VersionTagCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<VersionTagFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: VersionTagCountAggregateInputType | true
+    }
+
+  export interface VersionTagDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['VersionTag'], meta: { name: 'VersionTag' } }
+    /**
+     * Find zero or one VersionTag that matches the filter.
+     * @param {VersionTagFindUniqueArgs} args - Arguments to find a VersionTag
+     * @example
+     * // Get one VersionTag
+     * const versionTag = await prisma.versionTag.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends VersionTagFindUniqueArgs>(args: SelectSubset<T, VersionTagFindUniqueArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one VersionTag that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {VersionTagFindUniqueOrThrowArgs} args - Arguments to find a VersionTag
+     * @example
+     * // Get one VersionTag
+     * const versionTag = await prisma.versionTag.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends VersionTagFindUniqueOrThrowArgs>(args: SelectSubset<T, VersionTagFindUniqueOrThrowArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first VersionTag that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VersionTagFindFirstArgs} args - Arguments to find a VersionTag
+     * @example
+     * // Get one VersionTag
+     * const versionTag = await prisma.versionTag.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends VersionTagFindFirstArgs>(args?: SelectSubset<T, VersionTagFindFirstArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first VersionTag that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VersionTagFindFirstOrThrowArgs} args - Arguments to find a VersionTag
+     * @example
+     * // Get one VersionTag
+     * const versionTag = await prisma.versionTag.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends VersionTagFindFirstOrThrowArgs>(args?: SelectSubset<T, VersionTagFindFirstOrThrowArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more VersionTags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VersionTagFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all VersionTags
+     * const versionTags = await prisma.versionTag.findMany()
+     * 
+     * // Get first 10 VersionTags
+     * const versionTags = await prisma.versionTag.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const versionTagWithIdOnly = await prisma.versionTag.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends VersionTagFindManyArgs>(args?: SelectSubset<T, VersionTagFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a VersionTag.
+     * @param {VersionTagCreateArgs} args - Arguments to create a VersionTag.
+     * @example
+     * // Create one VersionTag
+     * const VersionTag = await prisma.versionTag.create({
+     *   data: {
+     *     // ... data to create a VersionTag
+     *   }
+     * })
+     * 
+     */
+    create<T extends VersionTagCreateArgs>(args: SelectSubset<T, VersionTagCreateArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many VersionTags.
+     * @param {VersionTagCreateManyArgs} args - Arguments to create many VersionTags.
+     * @example
+     * // Create many VersionTags
+     * const versionTag = await prisma.versionTag.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends VersionTagCreateManyArgs>(args?: SelectSubset<T, VersionTagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many VersionTags and returns the data saved in the database.
+     * @param {VersionTagCreateManyAndReturnArgs} args - Arguments to create many VersionTags.
+     * @example
+     * // Create many VersionTags
+     * const versionTag = await prisma.versionTag.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many VersionTags and only return the `id`
+     * const versionTagWithIdOnly = await prisma.versionTag.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends VersionTagCreateManyAndReturnArgs>(args?: SelectSubset<T, VersionTagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a VersionTag.
+     * @param {VersionTagDeleteArgs} args - Arguments to delete one VersionTag.
+     * @example
+     * // Delete one VersionTag
+     * const VersionTag = await prisma.versionTag.delete({
+     *   where: {
+     *     // ... filter to delete one VersionTag
+     *   }
+     * })
+     * 
+     */
+    delete<T extends VersionTagDeleteArgs>(args: SelectSubset<T, VersionTagDeleteArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one VersionTag.
+     * @param {VersionTagUpdateArgs} args - Arguments to update one VersionTag.
+     * @example
+     * // Update one VersionTag
+     * const versionTag = await prisma.versionTag.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends VersionTagUpdateArgs>(args: SelectSubset<T, VersionTagUpdateArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more VersionTags.
+     * @param {VersionTagDeleteManyArgs} args - Arguments to filter VersionTags to delete.
+     * @example
+     * // Delete a few VersionTags
+     * const { count } = await prisma.versionTag.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends VersionTagDeleteManyArgs>(args?: SelectSubset<T, VersionTagDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VersionTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VersionTagUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many VersionTags
+     * const versionTag = await prisma.versionTag.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends VersionTagUpdateManyArgs>(args: SelectSubset<T, VersionTagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VersionTags and returns the data updated in the database.
+     * @param {VersionTagUpdateManyAndReturnArgs} args - Arguments to update many VersionTags.
+     * @example
+     * // Update many VersionTags
+     * const versionTag = await prisma.versionTag.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more VersionTags and only return the `id`
+     * const versionTagWithIdOnly = await prisma.versionTag.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends VersionTagUpdateManyAndReturnArgs>(args: SelectSubset<T, VersionTagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one VersionTag.
+     * @param {VersionTagUpsertArgs} args - Arguments to update or create a VersionTag.
+     * @example
+     * // Update or create a VersionTag
+     * const versionTag = await prisma.versionTag.upsert({
+     *   create: {
+     *     // ... data to create a VersionTag
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the VersionTag we want to update
+     *   }
+     * })
+     */
+    upsert<T extends VersionTagUpsertArgs>(args: SelectSubset<T, VersionTagUpsertArgs<ExtArgs>>): Prisma__VersionTagClient<$Result.GetResult<Prisma.$VersionTagPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of VersionTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VersionTagCountArgs} args - Arguments to filter VersionTags to count.
+     * @example
+     * // Count the number of VersionTags
+     * const count = await prisma.versionTag.count({
+     *   where: {
+     *     // ... the filter for the VersionTags we want to count
+     *   }
+     * })
+    **/
+    count<T extends VersionTagCountArgs>(
+      args?: Subset<T, VersionTagCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], VersionTagCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a VersionTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VersionTagAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends VersionTagAggregateArgs>(args: Subset<T, VersionTagAggregateArgs>): Prisma.PrismaPromise<GetVersionTagAggregateType<T>>
+
+    /**
+     * Group by VersionTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VersionTagGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends VersionTagGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: VersionTagGroupByArgs['orderBy'] }
+        : { orderBy?: VersionTagGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, VersionTagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVersionTagGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the VersionTag model
+   */
+  readonly fields: VersionTagFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for VersionTag.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__VersionTagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    version<T extends EnvVersionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EnvVersionDefaultArgs<ExtArgs>>): Prisma__EnvVersionClient<$Result.GetResult<Prisma.$EnvVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the VersionTag model
+   */
+  interface VersionTagFieldRefs {
+    readonly id: FieldRef<"VersionTag", 'String'>
+    readonly projectId: FieldRef<"VersionTag", 'String'>
+    readonly versionId: FieldRef<"VersionTag", 'String'>
+    readonly name: FieldRef<"VersionTag", 'String'>
+    readonly description: FieldRef<"VersionTag", 'String'>
+    readonly createdAt: FieldRef<"VersionTag", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * VersionTag findUnique
+   */
+  export type VersionTagFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * Filter, which VersionTag to fetch.
+     */
+    where: VersionTagWhereUniqueInput
+  }
+
+  /**
+   * VersionTag findUniqueOrThrow
+   */
+  export type VersionTagFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * Filter, which VersionTag to fetch.
+     */
+    where: VersionTagWhereUniqueInput
+  }
+
+  /**
+   * VersionTag findFirst
+   */
+  export type VersionTagFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * Filter, which VersionTag to fetch.
+     */
+    where?: VersionTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VersionTags to fetch.
+     */
+    orderBy?: VersionTagOrderByWithRelationInput | VersionTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VersionTags.
+     */
+    cursor?: VersionTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VersionTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VersionTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VersionTags.
+     */
+    distinct?: VersionTagScalarFieldEnum | VersionTagScalarFieldEnum[]
+  }
+
+  /**
+   * VersionTag findFirstOrThrow
+   */
+  export type VersionTagFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * Filter, which VersionTag to fetch.
+     */
+    where?: VersionTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VersionTags to fetch.
+     */
+    orderBy?: VersionTagOrderByWithRelationInput | VersionTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VersionTags.
+     */
+    cursor?: VersionTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VersionTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VersionTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VersionTags.
+     */
+    distinct?: VersionTagScalarFieldEnum | VersionTagScalarFieldEnum[]
+  }
+
+  /**
+   * VersionTag findMany
+   */
+  export type VersionTagFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * Filter, which VersionTags to fetch.
+     */
+    where?: VersionTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VersionTags to fetch.
+     */
+    orderBy?: VersionTagOrderByWithRelationInput | VersionTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing VersionTags.
+     */
+    cursor?: VersionTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VersionTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VersionTags.
+     */
+    skip?: number
+    distinct?: VersionTagScalarFieldEnum | VersionTagScalarFieldEnum[]
+  }
+
+  /**
+   * VersionTag create
+   */
+  export type VersionTagCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * The data needed to create a VersionTag.
+     */
+    data: XOR<VersionTagCreateInput, VersionTagUncheckedCreateInput>
+  }
+
+  /**
+   * VersionTag createMany
+   */
+  export type VersionTagCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many VersionTags.
+     */
+    data: VersionTagCreateManyInput | VersionTagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * VersionTag createManyAndReturn
+   */
+  export type VersionTagCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * The data used to create many VersionTags.
+     */
+    data: VersionTagCreateManyInput | VersionTagCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VersionTag update
+   */
+  export type VersionTagUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * The data needed to update a VersionTag.
+     */
+    data: XOR<VersionTagUpdateInput, VersionTagUncheckedUpdateInput>
+    /**
+     * Choose, which VersionTag to update.
+     */
+    where: VersionTagWhereUniqueInput
+  }
+
+  /**
+   * VersionTag updateMany
+   */
+  export type VersionTagUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update VersionTags.
+     */
+    data: XOR<VersionTagUpdateManyMutationInput, VersionTagUncheckedUpdateManyInput>
+    /**
+     * Filter which VersionTags to update
+     */
+    where?: VersionTagWhereInput
+    /**
+     * Limit how many VersionTags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * VersionTag updateManyAndReturn
+   */
+  export type VersionTagUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * The data used to update VersionTags.
+     */
+    data: XOR<VersionTagUpdateManyMutationInput, VersionTagUncheckedUpdateManyInput>
+    /**
+     * Filter which VersionTags to update
+     */
+    where?: VersionTagWhereInput
+    /**
+     * Limit how many VersionTags to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VersionTag upsert
+   */
+  export type VersionTagUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * The filter to search for the VersionTag to update in case it exists.
+     */
+    where: VersionTagWhereUniqueInput
+    /**
+     * In case the VersionTag found by the `where` argument doesn't exist, create a new VersionTag with this data.
+     */
+    create: XOR<VersionTagCreateInput, VersionTagUncheckedCreateInput>
+    /**
+     * In case the VersionTag was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<VersionTagUpdateInput, VersionTagUncheckedUpdateInput>
+  }
+
+  /**
+   * VersionTag delete
+   */
+  export type VersionTagDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
+    /**
+     * Filter which VersionTag to delete.
+     */
+    where: VersionTagWhereUniqueInput
+  }
+
+  /**
+   * VersionTag deleteMany
+   */
+  export type VersionTagDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VersionTags to delete
+     */
+    where?: VersionTagWhereInput
+    /**
+     * Limit how many VersionTags to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * VersionTag without action
+   */
+  export type VersionTagDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VersionTag
+     */
+    select?: VersionTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the VersionTag
+     */
+    omit?: VersionTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VersionTagInclude<ExtArgs> | null
   }
 
 
@@ -10744,6 +12012,18 @@ export namespace Prisma {
   };
 
   export type EnvVersionScalarFieldEnum = (typeof EnvVersionScalarFieldEnum)[keyof typeof EnvVersionScalarFieldEnum]
+
+
+  export const VersionTagScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    versionId: 'versionId',
+    name: 'name',
+    description: 'description',
+    createdAt: 'createdAt'
+  };
+
+  export type VersionTagScalarFieldEnum = (typeof VersionTagScalarFieldEnum)[keyof typeof VersionTagScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -11245,6 +12525,7 @@ export namespace Prisma {
     havingAccess?: UserListRelationFilter
     ProjectAccess?: ProjectAccessListRelationFilter
     versions?: EnvVersionListRelationFilter
+    VersionTag?: VersionTagListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -11261,6 +12542,7 @@ export namespace Prisma {
     havingAccess?: UserOrderByRelationAggregateInput
     ProjectAccess?: ProjectAccessOrderByRelationAggregateInput
     versions?: EnvVersionOrderByRelationAggregateInput
+    VersionTag?: VersionTagOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -11281,6 +12563,7 @@ export namespace Prisma {
     havingAccess?: UserListRelationFilter
     ProjectAccess?: ProjectAccessListRelationFilter
     versions?: EnvVersionListRelationFilter
+    VersionTag?: VersionTagListRelationFilter
   }, "id" | "userId_name">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -11331,16 +12614,16 @@ export namespace Prisma {
   }
 
   export type ProjectAccessWhereUniqueInput = Prisma.AtLeast<{
+    userId?: string
     projectId_userId?: ProjectAccessProjectIdUserIdCompoundUniqueInput
     AND?: ProjectAccessWhereInput | ProjectAccessWhereInput[]
     OR?: ProjectAccessWhereInput[]
     NOT?: ProjectAccessWhereInput | ProjectAccessWhereInput[]
     projectId?: StringFilter<"ProjectAccess"> | string
-    userId?: StringFilter<"ProjectAccess"> | string
     assignedAt?: DateTimeFilter<"ProjectAccess"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "projectId_userId">
+  }, "projectId_userId" | "userId">
 
   export type ProjectAccessOrderByWithAggregationInput = {
     projectId?: SortOrder
@@ -11374,6 +12657,7 @@ export namespace Prisma {
     branch?: StringFilter<"EnvVersion"> | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    VersionTag?: VersionTagListRelationFilter
   }
 
   export type EnvVersionOrderByWithRelationInput = {
@@ -11387,6 +12671,7 @@ export namespace Prisma {
     branch?: SortOrder
     project?: ProjectOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
+    VersionTag?: VersionTagOrderByRelationAggregateInput
   }
 
   export type EnvVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -11403,6 +12688,7 @@ export namespace Prisma {
     branch?: StringFilter<"EnvVersion"> | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    VersionTag?: VersionTagListRelationFilter
   }, "id">
 
   export type EnvVersionOrderByWithAggregationInput = {
@@ -11431,6 +12717,69 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"EnvVersion"> | string | null
     changes?: JsonNullableWithAggregatesFilter<"EnvVersion">
     branch?: StringWithAggregatesFilter<"EnvVersion"> | string
+  }
+
+  export type VersionTagWhereInput = {
+    AND?: VersionTagWhereInput | VersionTagWhereInput[]
+    OR?: VersionTagWhereInput[]
+    NOT?: VersionTagWhereInput | VersionTagWhereInput[]
+    id?: StringFilter<"VersionTag"> | string
+    projectId?: StringFilter<"VersionTag"> | string
+    versionId?: StringFilter<"VersionTag"> | string
+    name?: StringFilter<"VersionTag"> | string
+    description?: StringNullableFilter<"VersionTag"> | string | null
+    createdAt?: DateTimeFilter<"VersionTag"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    version?: XOR<EnvVersionScalarRelationFilter, EnvVersionWhereInput>
+  }
+
+  export type VersionTagOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    versionId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+    version?: EnvVersionOrderByWithRelationInput
+  }
+
+  export type VersionTagWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: VersionTagWhereInput | VersionTagWhereInput[]
+    OR?: VersionTagWhereInput[]
+    NOT?: VersionTagWhereInput | VersionTagWhereInput[]
+    projectId?: StringFilter<"VersionTag"> | string
+    versionId?: StringFilter<"VersionTag"> | string
+    name?: StringFilter<"VersionTag"> | string
+    description?: StringNullableFilter<"VersionTag"> | string | null
+    createdAt?: DateTimeFilter<"VersionTag"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    version?: XOR<EnvVersionScalarRelationFilter, EnvVersionWhereInput>
+  }, "id">
+
+  export type VersionTagOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    versionId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: VersionTagCountOrderByAggregateInput
+    _max?: VersionTagMaxOrderByAggregateInput
+    _min?: VersionTagMinOrderByAggregateInput
+  }
+
+  export type VersionTagScalarWhereWithAggregatesInput = {
+    AND?: VersionTagScalarWhereWithAggregatesInput | VersionTagScalarWhereWithAggregatesInput[]
+    OR?: VersionTagScalarWhereWithAggregatesInput[]
+    NOT?: VersionTagScalarWhereWithAggregatesInput | VersionTagScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"VersionTag"> | string
+    projectId?: StringWithAggregatesFilter<"VersionTag"> | string
+    versionId?: StringWithAggregatesFilter<"VersionTag"> | string
+    name?: StringWithAggregatesFilter<"VersionTag"> | string
+    description?: StringNullableWithAggregatesFilter<"VersionTag"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"VersionTag"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -11852,6 +13201,7 @@ export namespace Prisma {
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -11866,6 +13216,7 @@ export namespace Prisma {
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessUncheckedCreateNestedManyWithoutProjectInput
     versions?: EnvVersionUncheckedCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -11880,6 +13231,7 @@ export namespace Prisma {
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -11894,6 +13246,7 @@ export namespace Prisma {
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUncheckedUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUncheckedUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -11976,6 +13329,7 @@ export namespace Prisma {
     branch?: string
     project: ProjectCreateNestedOneWithoutVersionsInput
     user: UserCreateNestedOneWithoutEnvVersionInput
+    VersionTag?: VersionTagCreateNestedManyWithoutVersionInput
   }
 
   export type EnvVersionUncheckedCreateInput = {
@@ -11987,6 +13341,7 @@ export namespace Prisma {
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: string
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutVersionInput
   }
 
   export type EnvVersionUpdateInput = {
@@ -11998,6 +13353,7 @@ export namespace Prisma {
     branch?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutVersionsNestedInput
     user?: UserUpdateOneRequiredWithoutEnvVersionNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutVersionNestedInput
   }
 
   export type EnvVersionUncheckedUpdateInput = {
@@ -12009,6 +13365,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: StringFieldUpdateOperationsInput | string
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutVersionNestedInput
   }
 
   export type EnvVersionCreateManyInput = {
@@ -12040,6 +13397,67 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type VersionTagCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+    project: ProjectCreateNestedOneWithoutVersionTagInput
+    version: EnvVersionCreateNestedOneWithoutVersionTagInput
+  }
+
+  export type VersionTagUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    versionId: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+  }
+
+  export type VersionTagUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutVersionTagNestedInput
+    version?: EnvVersionUpdateOneRequiredWithoutVersionTagNestedInput
+  }
+
+  export type VersionTagUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    versionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VersionTagCreateManyInput = {
+    id?: string
+    projectId: string
+    versionId: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+  }
+
+  export type VersionTagUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VersionTagUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    versionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -12437,7 +13855,17 @@ export namespace Prisma {
     none?: UserWhereInput
   }
 
+  export type VersionTagListRelationFilter = {
+    every?: VersionTagWhereInput
+    some?: VersionTagWhereInput
+    none?: VersionTagWhereInput
+  }
+
   export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type VersionTagOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -12607,6 +14035,38 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type EnvVersionScalarRelationFilter = {
+    is?: EnvVersionWhereInput
+    isNot?: EnvVersionWhereInput
+  }
+
+  export type VersionTagCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    versionId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type VersionTagMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    versionId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type VersionTagMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    versionId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {
@@ -13035,6 +14495,13 @@ export namespace Prisma {
     connect?: EnvVersionWhereUniqueInput | EnvVersionWhereUniqueInput[]
   }
 
+  export type VersionTagCreateNestedManyWithoutProjectInput = {
+    create?: XOR<VersionTagCreateWithoutProjectInput, VersionTagUncheckedCreateWithoutProjectInput> | VersionTagCreateWithoutProjectInput[] | VersionTagUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutProjectInput | VersionTagCreateOrConnectWithoutProjectInput[]
+    createMany?: VersionTagCreateManyProjectInputEnvelope
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutAccessToProjectsInput = {
     create?: XOR<UserCreateWithoutAccessToProjectsInput, UserUncheckedCreateWithoutAccessToProjectsInput> | UserCreateWithoutAccessToProjectsInput[] | UserUncheckedCreateWithoutAccessToProjectsInput[]
     connectOrCreate?: UserCreateOrConnectWithoutAccessToProjectsInput | UserCreateOrConnectWithoutAccessToProjectsInput[]
@@ -13053,6 +14520,13 @@ export namespace Prisma {
     connectOrCreate?: EnvVersionCreateOrConnectWithoutProjectInput | EnvVersionCreateOrConnectWithoutProjectInput[]
     createMany?: EnvVersionCreateManyProjectInputEnvelope
     connect?: EnvVersionWhereUniqueInput | EnvVersionWhereUniqueInput[]
+  }
+
+  export type VersionTagUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<VersionTagCreateWithoutProjectInput, VersionTagUncheckedCreateWithoutProjectInput> | VersionTagCreateWithoutProjectInput[] | VersionTagUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutProjectInput | VersionTagCreateOrConnectWithoutProjectInput[]
+    createMany?: VersionTagCreateManyProjectInputEnvelope
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutOwnedProjectsNestedInput = {
@@ -13112,6 +14586,20 @@ export namespace Prisma {
     deleteMany?: EnvVersionScalarWhereInput | EnvVersionScalarWhereInput[]
   }
 
+  export type VersionTagUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<VersionTagCreateWithoutProjectInput, VersionTagUncheckedCreateWithoutProjectInput> | VersionTagCreateWithoutProjectInput[] | VersionTagUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutProjectInput | VersionTagCreateOrConnectWithoutProjectInput[]
+    upsert?: VersionTagUpsertWithWhereUniqueWithoutProjectInput | VersionTagUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: VersionTagCreateManyProjectInputEnvelope
+    set?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    disconnect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    delete?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    update?: VersionTagUpdateWithWhereUniqueWithoutProjectInput | VersionTagUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: VersionTagUpdateManyWithWhereWithoutProjectInput | VersionTagUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: VersionTagScalarWhereInput | VersionTagScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput = {
     create?: XOR<UserCreateWithoutAccessToProjectsInput, UserUncheckedCreateWithoutAccessToProjectsInput> | UserCreateWithoutAccessToProjectsInput[] | UserUncheckedCreateWithoutAccessToProjectsInput[]
     connectOrCreate?: UserCreateOrConnectWithoutAccessToProjectsInput | UserCreateOrConnectWithoutAccessToProjectsInput[]
@@ -13151,6 +14639,20 @@ export namespace Prisma {
     update?: EnvVersionUpdateWithWhereUniqueWithoutProjectInput | EnvVersionUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: EnvVersionUpdateManyWithWhereWithoutProjectInput | EnvVersionUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: EnvVersionScalarWhereInput | EnvVersionScalarWhereInput[]
+  }
+
+  export type VersionTagUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<VersionTagCreateWithoutProjectInput, VersionTagUncheckedCreateWithoutProjectInput> | VersionTagCreateWithoutProjectInput[] | VersionTagUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutProjectInput | VersionTagCreateOrConnectWithoutProjectInput[]
+    upsert?: VersionTagUpsertWithWhereUniqueWithoutProjectInput | VersionTagUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: VersionTagCreateManyProjectInputEnvelope
+    set?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    disconnect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    delete?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    update?: VersionTagUpdateWithWhereUniqueWithoutProjectInput | VersionTagUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: VersionTagUpdateManyWithWhereWithoutProjectInput | VersionTagUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: VersionTagScalarWhereInput | VersionTagScalarWhereInput[]
   }
 
   export type ProjectCreateNestedOneWithoutProjectAccessInput = {
@@ -13193,6 +14695,20 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type VersionTagCreateNestedManyWithoutVersionInput = {
+    create?: XOR<VersionTagCreateWithoutVersionInput, VersionTagUncheckedCreateWithoutVersionInput> | VersionTagCreateWithoutVersionInput[] | VersionTagUncheckedCreateWithoutVersionInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutVersionInput | VersionTagCreateOrConnectWithoutVersionInput[]
+    createMany?: VersionTagCreateManyVersionInputEnvelope
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+  }
+
+  export type VersionTagUncheckedCreateNestedManyWithoutVersionInput = {
+    create?: XOR<VersionTagCreateWithoutVersionInput, VersionTagUncheckedCreateWithoutVersionInput> | VersionTagCreateWithoutVersionInput[] | VersionTagUncheckedCreateWithoutVersionInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutVersionInput | VersionTagCreateOrConnectWithoutVersionInput[]
+    createMany?: VersionTagCreateManyVersionInputEnvelope
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+  }
+
   export type ProjectUpdateOneRequiredWithoutVersionsNestedInput = {
     create?: XOR<ProjectCreateWithoutVersionsInput, ProjectUncheckedCreateWithoutVersionsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutVersionsInput
@@ -13207,6 +14723,62 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutEnvVersionInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEnvVersionInput, UserUpdateWithoutEnvVersionInput>, UserUncheckedUpdateWithoutEnvVersionInput>
+  }
+
+  export type VersionTagUpdateManyWithoutVersionNestedInput = {
+    create?: XOR<VersionTagCreateWithoutVersionInput, VersionTagUncheckedCreateWithoutVersionInput> | VersionTagCreateWithoutVersionInput[] | VersionTagUncheckedCreateWithoutVersionInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutVersionInput | VersionTagCreateOrConnectWithoutVersionInput[]
+    upsert?: VersionTagUpsertWithWhereUniqueWithoutVersionInput | VersionTagUpsertWithWhereUniqueWithoutVersionInput[]
+    createMany?: VersionTagCreateManyVersionInputEnvelope
+    set?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    disconnect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    delete?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    update?: VersionTagUpdateWithWhereUniqueWithoutVersionInput | VersionTagUpdateWithWhereUniqueWithoutVersionInput[]
+    updateMany?: VersionTagUpdateManyWithWhereWithoutVersionInput | VersionTagUpdateManyWithWhereWithoutVersionInput[]
+    deleteMany?: VersionTagScalarWhereInput | VersionTagScalarWhereInput[]
+  }
+
+  export type VersionTagUncheckedUpdateManyWithoutVersionNestedInput = {
+    create?: XOR<VersionTagCreateWithoutVersionInput, VersionTagUncheckedCreateWithoutVersionInput> | VersionTagCreateWithoutVersionInput[] | VersionTagUncheckedCreateWithoutVersionInput[]
+    connectOrCreate?: VersionTagCreateOrConnectWithoutVersionInput | VersionTagCreateOrConnectWithoutVersionInput[]
+    upsert?: VersionTagUpsertWithWhereUniqueWithoutVersionInput | VersionTagUpsertWithWhereUniqueWithoutVersionInput[]
+    createMany?: VersionTagCreateManyVersionInputEnvelope
+    set?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    disconnect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    delete?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    connect?: VersionTagWhereUniqueInput | VersionTagWhereUniqueInput[]
+    update?: VersionTagUpdateWithWhereUniqueWithoutVersionInput | VersionTagUpdateWithWhereUniqueWithoutVersionInput[]
+    updateMany?: VersionTagUpdateManyWithWhereWithoutVersionInput | VersionTagUpdateManyWithWhereWithoutVersionInput[]
+    deleteMany?: VersionTagScalarWhereInput | VersionTagScalarWhereInput[]
+  }
+
+  export type ProjectCreateNestedOneWithoutVersionTagInput = {
+    create?: XOR<ProjectCreateWithoutVersionTagInput, ProjectUncheckedCreateWithoutVersionTagInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutVersionTagInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type EnvVersionCreateNestedOneWithoutVersionTagInput = {
+    create?: XOR<EnvVersionCreateWithoutVersionTagInput, EnvVersionUncheckedCreateWithoutVersionTagInput>
+    connectOrCreate?: EnvVersionCreateOrConnectWithoutVersionTagInput
+    connect?: EnvVersionWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutVersionTagNestedInput = {
+    create?: XOR<ProjectCreateWithoutVersionTagInput, ProjectUncheckedCreateWithoutVersionTagInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutVersionTagInput
+    upsert?: ProjectUpsertWithoutVersionTagInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutVersionTagInput, ProjectUpdateWithoutVersionTagInput>, ProjectUncheckedUpdateWithoutVersionTagInput>
+  }
+
+  export type EnvVersionUpdateOneRequiredWithoutVersionTagNestedInput = {
+    create?: XOR<EnvVersionCreateWithoutVersionTagInput, EnvVersionUncheckedCreateWithoutVersionTagInput>
+    connectOrCreate?: EnvVersionCreateOrConnectWithoutVersionTagInput
+    upsert?: EnvVersionUpsertWithoutVersionTagInput
+    connect?: EnvVersionWhereUniqueInput
+    update?: XOR<XOR<EnvVersionUpdateToOneWithWhereWithoutVersionTagInput, EnvVersionUpdateWithoutVersionTagInput>, EnvVersionUncheckedUpdateWithoutVersionTagInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -13509,6 +15081,7 @@ export namespace Prisma {
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -13522,6 +15095,7 @@ export namespace Prisma {
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessUncheckedCreateNestedManyWithoutProjectInput
     versions?: EnvVersionUncheckedCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -13565,6 +15139,7 @@ export namespace Prisma {
     device: DeviceCreateNestedOneWithoutProjectInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutHavingAccessInput = {
@@ -13578,6 +15153,7 @@ export namespace Prisma {
     createdAt?: Date | string
     ProjectAccess?: ProjectAccessUncheckedCreateNestedManyWithoutProjectInput
     versions?: EnvVersionUncheckedCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutHavingAccessInput = {
@@ -13593,6 +15169,7 @@ export namespace Prisma {
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: string
     project: ProjectCreateNestedOneWithoutVersionsInput
+    VersionTag?: VersionTagCreateNestedManyWithoutVersionInput
   }
 
   export type EnvVersionUncheckedCreateWithoutUserInput = {
@@ -13603,6 +15180,7 @@ export namespace Prisma {
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: string
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutVersionInput
   }
 
   export type EnvVersionCreateOrConnectWithoutUserInput = {
@@ -14016,6 +15594,7 @@ export namespace Prisma {
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutDeviceInput = {
@@ -14029,6 +15608,7 @@ export namespace Prisma {
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessUncheckedCreateNestedManyWithoutProjectInput
     versions?: EnvVersionUncheckedCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutDeviceInput = {
@@ -14223,6 +15803,7 @@ export namespace Prisma {
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: string
     user: UserCreateNestedOneWithoutEnvVersionInput
+    VersionTag?: VersionTagCreateNestedManyWithoutVersionInput
   }
 
   export type EnvVersionUncheckedCreateWithoutProjectInput = {
@@ -14233,6 +15814,7 @@ export namespace Prisma {
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: string
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutVersionInput
   }
 
   export type EnvVersionCreateOrConnectWithoutProjectInput = {
@@ -14242,6 +15824,32 @@ export namespace Prisma {
 
   export type EnvVersionCreateManyProjectInputEnvelope = {
     data: EnvVersionCreateManyProjectInput | EnvVersionCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type VersionTagCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+    version: EnvVersionCreateNestedOneWithoutVersionTagInput
+  }
+
+  export type VersionTagUncheckedCreateWithoutProjectInput = {
+    id?: string
+    versionId: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+  }
+
+  export type VersionTagCreateOrConnectWithoutProjectInput = {
+    where: VersionTagWhereUniqueInput
+    create: XOR<VersionTagCreateWithoutProjectInput, VersionTagUncheckedCreateWithoutProjectInput>
+  }
+
+  export type VersionTagCreateManyProjectInputEnvelope = {
+    data: VersionTagCreateManyProjectInput | VersionTagCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -14376,6 +15984,34 @@ export namespace Prisma {
     data: XOR<EnvVersionUpdateManyMutationInput, EnvVersionUncheckedUpdateManyWithoutProjectInput>
   }
 
+  export type VersionTagUpsertWithWhereUniqueWithoutProjectInput = {
+    where: VersionTagWhereUniqueInput
+    update: XOR<VersionTagUpdateWithoutProjectInput, VersionTagUncheckedUpdateWithoutProjectInput>
+    create: XOR<VersionTagCreateWithoutProjectInput, VersionTagUncheckedCreateWithoutProjectInput>
+  }
+
+  export type VersionTagUpdateWithWhereUniqueWithoutProjectInput = {
+    where: VersionTagWhereUniqueInput
+    data: XOR<VersionTagUpdateWithoutProjectInput, VersionTagUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type VersionTagUpdateManyWithWhereWithoutProjectInput = {
+    where: VersionTagScalarWhereInput
+    data: XOR<VersionTagUpdateManyMutationInput, VersionTagUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type VersionTagScalarWhereInput = {
+    AND?: VersionTagScalarWhereInput | VersionTagScalarWhereInput[]
+    OR?: VersionTagScalarWhereInput[]
+    NOT?: VersionTagScalarWhereInput | VersionTagScalarWhereInput[]
+    id?: StringFilter<"VersionTag"> | string
+    projectId?: StringFilter<"VersionTag"> | string
+    versionId?: StringFilter<"VersionTag"> | string
+    name?: StringFilter<"VersionTag"> | string
+    description?: StringNullableFilter<"VersionTag"> | string | null
+    createdAt?: DateTimeFilter<"VersionTag"> | Date | string
+  }
+
   export type ProjectCreateWithoutProjectAccessInput = {
     id?: string
     name: string
@@ -14387,6 +16023,7 @@ export namespace Prisma {
     device: DeviceCreateNestedOneWithoutProjectInput
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutProjectAccessInput = {
@@ -14400,6 +16037,7 @@ export namespace Prisma {
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
     versions?: EnvVersionUncheckedCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutProjectAccessInput = {
@@ -14466,6 +16104,7 @@ export namespace Prisma {
     device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutProjectAccessInput = {
@@ -14479,6 +16118,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
     versions?: EnvVersionUncheckedUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutProjectAccessInput = {
@@ -14535,6 +16175,7 @@ export namespace Prisma {
     device: DeviceCreateNestedOneWithoutProjectInput
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutVersionsInput = {
@@ -14548,6 +16189,7 @@ export namespace Prisma {
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessUncheckedCreateNestedManyWithoutProjectInput
+    VersionTag?: VersionTagUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutVersionsInput = {
@@ -14592,6 +16234,32 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutEnvVersionInput, UserUncheckedCreateWithoutEnvVersionInput>
   }
 
+  export type VersionTagCreateWithoutVersionInput = {
+    id?: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+    project: ProjectCreateNestedOneWithoutVersionTagInput
+  }
+
+  export type VersionTagUncheckedCreateWithoutVersionInput = {
+    id?: string
+    projectId: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+  }
+
+  export type VersionTagCreateOrConnectWithoutVersionInput = {
+    where: VersionTagWhereUniqueInput
+    create: XOR<VersionTagCreateWithoutVersionInput, VersionTagUncheckedCreateWithoutVersionInput>
+  }
+
+  export type VersionTagCreateManyVersionInputEnvelope = {
+    data: VersionTagCreateManyVersionInput | VersionTagCreateManyVersionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProjectUpsertWithoutVersionsInput = {
     update: XOR<ProjectUpdateWithoutVersionsInput, ProjectUncheckedUpdateWithoutVersionsInput>
     create: XOR<ProjectCreateWithoutVersionsInput, ProjectUncheckedCreateWithoutVersionsInput>
@@ -14614,6 +16282,7 @@ export namespace Prisma {
     device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutVersionsInput = {
@@ -14627,6 +16296,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUncheckedUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutEnvVersionInput = {
@@ -14670,6 +16340,154 @@ export namespace Prisma {
     ownedProjects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     projectAccess?: ProjectAccessUncheckedUpdateManyWithoutUserNestedInput
     accessToProjects?: ProjectUncheckedUpdateManyWithoutHavingAccessNestedInput
+  }
+
+  export type VersionTagUpsertWithWhereUniqueWithoutVersionInput = {
+    where: VersionTagWhereUniqueInput
+    update: XOR<VersionTagUpdateWithoutVersionInput, VersionTagUncheckedUpdateWithoutVersionInput>
+    create: XOR<VersionTagCreateWithoutVersionInput, VersionTagUncheckedCreateWithoutVersionInput>
+  }
+
+  export type VersionTagUpdateWithWhereUniqueWithoutVersionInput = {
+    where: VersionTagWhereUniqueInput
+    data: XOR<VersionTagUpdateWithoutVersionInput, VersionTagUncheckedUpdateWithoutVersionInput>
+  }
+
+  export type VersionTagUpdateManyWithWhereWithoutVersionInput = {
+    where: VersionTagScalarWhereInput
+    data: XOR<VersionTagUpdateManyMutationInput, VersionTagUncheckedUpdateManyWithoutVersionInput>
+  }
+
+  export type ProjectCreateWithoutVersionTagInput = {
+    id?: string
+    name: string
+    key?: string
+    content?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutOwnedProjectsInput
+    device: DeviceCreateNestedOneWithoutProjectInput
+    havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
+    ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
+    versions?: EnvVersionCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutVersionTagInput = {
+    id?: string
+    name: string
+    userId: string
+    key?: string
+    deviceId: string
+    content?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
+    ProjectAccess?: ProjectAccessUncheckedCreateNestedManyWithoutProjectInput
+    versions?: EnvVersionUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutVersionTagInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutVersionTagInput, ProjectUncheckedCreateWithoutVersionTagInput>
+  }
+
+  export type EnvVersionCreateWithoutVersionTagInput = {
+    id?: string
+    content: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    description?: string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
+    project: ProjectCreateNestedOneWithoutVersionsInput
+    user: UserCreateNestedOneWithoutEnvVersionInput
+  }
+
+  export type EnvVersionUncheckedCreateWithoutVersionTagInput = {
+    id?: string
+    projectId: string
+    content: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    createdBy: string
+    description?: string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: string
+  }
+
+  export type EnvVersionCreateOrConnectWithoutVersionTagInput = {
+    where: EnvVersionWhereUniqueInput
+    create: XOR<EnvVersionCreateWithoutVersionTagInput, EnvVersionUncheckedCreateWithoutVersionTagInput>
+  }
+
+  export type ProjectUpsertWithoutVersionTagInput = {
+    update: XOR<ProjectUpdateWithoutVersionTagInput, ProjectUncheckedUpdateWithoutVersionTagInput>
+    create: XOR<ProjectCreateWithoutVersionTagInput, ProjectUncheckedCreateWithoutVersionTagInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutVersionTagInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutVersionTagInput, ProjectUncheckedUpdateWithoutVersionTagInput>
+  }
+
+  export type ProjectUpdateWithoutVersionTagInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    content?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
+    device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
+    havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
+    ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
+    versions?: EnvVersionUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutVersionTagInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    deviceId?: StringFieldUpdateOperationsInput | string
+    content?: NullableJsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
+    ProjectAccess?: ProjectAccessUncheckedUpdateManyWithoutProjectNestedInput
+    versions?: EnvVersionUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type EnvVersionUpsertWithoutVersionTagInput = {
+    update: XOR<EnvVersionUpdateWithoutVersionTagInput, EnvVersionUncheckedUpdateWithoutVersionTagInput>
+    create: XOR<EnvVersionCreateWithoutVersionTagInput, EnvVersionUncheckedCreateWithoutVersionTagInput>
+    where?: EnvVersionWhereInput
+  }
+
+  export type EnvVersionUpdateToOneWithWhereWithoutVersionTagInput = {
+    where?: EnvVersionWhereInput
+    data: XOR<EnvVersionUpdateWithoutVersionTagInput, EnvVersionUncheckedUpdateWithoutVersionTagInput>
+  }
+
+  export type EnvVersionUpdateWithoutVersionTagInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
+    project?: ProjectUpdateOneRequiredWithoutVersionsNestedInput
+    user?: UserUpdateOneRequiredWithoutEnvVersionNestedInput
+  }
+
+  export type EnvVersionUncheckedUpdateWithoutVersionTagInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    content?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    changes?: NullableJsonNullValueInput | InputJsonValue
+    branch?: StringFieldUpdateOperationsInput | string
   }
 
   export type SessionCreateManyUserInput = {
@@ -14838,6 +16656,7 @@ export namespace Prisma {
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -14851,6 +16670,7 @@ export namespace Prisma {
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUncheckedUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUncheckedUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -14889,6 +16709,7 @@ export namespace Prisma {
     device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutHavingAccessInput = {
@@ -14902,6 +16723,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ProjectAccess?: ProjectAccessUncheckedUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUncheckedUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutHavingAccessInput = {
@@ -14923,6 +16745,7 @@ export namespace Prisma {
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutVersionsNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutVersionNestedInput
   }
 
   export type EnvVersionUncheckedUpdateWithoutUserInput = {
@@ -14933,6 +16756,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: StringFieldUpdateOperationsInput | string
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutVersionNestedInput
   }
 
   export type EnvVersionUncheckedUpdateManyWithoutUserInput = {
@@ -14966,6 +16790,7 @@ export namespace Prisma {
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutDeviceInput = {
@@ -14979,6 +16804,7 @@ export namespace Prisma {
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUncheckedUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUncheckedUpdateManyWithoutProjectNestedInput
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutDeviceInput = {
@@ -15004,6 +16830,14 @@ export namespace Prisma {
     description?: string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: string
+  }
+
+  export type VersionTagCreateManyProjectInput = {
+    id?: string
+    versionId: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
   }
 
   export type UserUpdateWithoutAccessToProjectsInput = {
@@ -15071,6 +16905,7 @@ export namespace Prisma {
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: StringFieldUpdateOperationsInput | string
     user?: UserUpdateOneRequiredWithoutEnvVersionNestedInput
+    VersionTag?: VersionTagUpdateManyWithoutVersionNestedInput
   }
 
   export type EnvVersionUncheckedUpdateWithoutProjectInput = {
@@ -15081,6 +16916,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: StringFieldUpdateOperationsInput | string
+    VersionTag?: VersionTagUncheckedUpdateManyWithoutVersionNestedInput
   }
 
   export type EnvVersionUncheckedUpdateManyWithoutProjectInput = {
@@ -15091,6 +16927,62 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     changes?: NullableJsonNullValueInput | InputJsonValue
     branch?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type VersionTagUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: EnvVersionUpdateOneRequiredWithoutVersionTagNestedInput
+  }
+
+  export type VersionTagUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VersionTagUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    versionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VersionTagCreateManyVersionInput = {
+    id?: string
+    projectId: string
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+  }
+
+  export type VersionTagUpdateWithoutVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutVersionTagNestedInput
+  }
+
+  export type VersionTagUncheckedUpdateWithoutVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VersionTagUncheckedUpdateManyWithoutVersionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

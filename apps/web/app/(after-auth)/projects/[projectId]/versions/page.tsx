@@ -42,6 +42,8 @@ import {
   SelectValue,
 } from "@nvii/ui/components/select";
 import { Badge } from "@nvii/ui/components/badge";
+import { useProjects } from "@/components/projects-provider";
+import { useSession } from "@/provider/session";
 
 interface Version {
   id: string;
@@ -93,8 +95,8 @@ interface VersionAnalyticsData {
 }
 
 export default function VersionsPage() {
-  const params = useParams();
-  const projectId = params.projectId as string;
+  const { projectId } = useParams();
+  const { user } = useSession();
 
   const [versions, setVersions] = useState<Version[]>([]);
   const [analytics, setAnalytics] = useState<VersionAnalyticsData | null>(null);
@@ -103,101 +105,32 @@ export default function VersionsPage() {
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "changes">("date");
   const [activeTab, setActiveTab] = useState("history");
+  const { getProjectVersions } = useProjects();
 
-  // Mock data - replace with actual API calls
   useEffect(() => {
-    const fetchVersions = async () => {
+    const handleFetch = async () => {
       setIsLoading(true);
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const data = await getProjectVersions(
+          projectId as string,
+          user.id as string
+        );
 
-        const mockVersions: Version[] = [
-          {
-            id: "v1234567890abcdef",
-            description: "Added new API endpoints",
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            changes: {
-              added: ["API_BASE_URL", "API_TIMEOUT"],
-              modified: ["DATABASE_URL"],
-              deleted: [],
-            },
-            user: {
-              name: "John Doe",
-              email: "john@example.com",
-            },
-            tags: ["v1.2.0", "production"],
-            isCurrent: true,
-          },
-          {
-            id: "v0987654321fedcba",
-            description: "Database migration updates",
-            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-            changes: {
-              added: ["MIGRATION_PATH"],
-              modified: ["DATABASE_URL", "DB_POOL_SIZE"],
-              deleted: ["OLD_DB_CONFIG"],
-            },
-            user: {
-              name: "Jane Smith",
-              email: "jane@example.com",
-            },
-            tags: ["stable"],
-            isCurrent: false,
-          },
-        ];
+        if (!data) {
+          toast.error("Cannot fetch env versions at the moment.");
+          return;
+        }
 
-        const mockAnalytics: VersionAnalyticsData = {
-          changeFrequency: [
-            { date: "2024-01-01", changes: 5, versions: 2 },
-            { date: "2024-01-02", changes: 3, versions: 1 },
-            { date: "2024-01-03", changes: 8, versions: 3 },
-          ],
-          mostChangedVariables: [
-            {
-              variable: "DATABASE_URL",
-              changeCount: 12,
-              lastChanged: new Date(),
-            },
-            { variable: "API_KEY", changeCount: 8, lastChanged: new Date() },
-          ],
-          userActivity: [
-            {
-              user: { name: "John Doe", email: "john@example.com" },
-              versions: 5,
-              lastActivity: new Date(),
-            },
-            {
-              user: { name: "Jane Smith", email: "jane@example.com" },
-              versions: 3,
-              lastActivity: new Date(),
-            },
-          ],
-          versionStats: {
-            total: 25,
-            thisWeek: 4,
-            thisMonth: 12,
-            averagePerDay: 1.2,
-          },
-          changeTypes: {
-            added: 45,
-            modified: 32,
-            deleted: 18,
-          },
-        };
-
-        setVersions(mockVersions);
-        setAnalytics(mockAnalytics);
+        setVersions(data);
       } catch (error) {
-        toast.error("Failed to load versions");
-        console.error("Error fetching versions:", error);
+        toast.error("An error occurred loading env versions.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchVersions();
-  }, [projectId]);
+    handleFetch();
+  }, [getProjectVersions, user.id, projectId]);
 
   const handleRollback = async (versionId: string) => {
     // Implement rollback logic
@@ -212,7 +145,7 @@ export default function VersionsPage() {
   const handleCreateBranch = async (
     versionId: string,
     branchName: string,
-    description?: string,
+    description?: string
   ) => {
     // Implement branch creation logic
     console.log("Creating branch:", branchName, "from version:", versionId);
@@ -259,7 +192,7 @@ export default function VersionsPage() {
   });
 
   const uniqueUsers = Array.from(
-    new Set(versions.map((v) => v.user.email)),
+    new Set(versions.map((v) => v.user.email))
   ).filter(Boolean);
 
   return (
@@ -400,11 +333,11 @@ export default function VersionsPage() {
                           {version.isCurrent && (
                             <Badge variant="default">Current</Badge>
                           )}
-                          {version.tags.map((tag) => (
+                          {/* {version.tags.map((tag) => (
                             <Badge key={tag} variant="secondary">
                               {tag}
                             </Badge>
-                          ))}
+                          ))} */}
                         </div>
 
                         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
@@ -453,7 +386,7 @@ export default function VersionsPage() {
 
                       <VersionActions
                         version={version}
-                        projectId={projectId}
+                        projectId={projectId as string}
                         onRollback={handleRollback}
                         onTag={handleCreateTag}
                         onBranch={handleCreateBranch}
@@ -470,7 +403,7 @@ export default function VersionsPage() {
 
         <TabsContent value="analytics" className="space-y-6">
           <VersionAnalytics
-            projectId={projectId}
+            projectId={projectId as string}
             analytics={analytics}
             isLoading={isLoading}
             onRefresh={() => window.location.reload()}

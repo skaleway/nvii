@@ -65,7 +65,7 @@ export const projectsApi = {
 
   create: async (
     project: CreateProjectInput,
-    userId: string,
+    userId: string
   ): Promise<Project> => {
     const response = await fetch(`${API_BASE}/projects/${userId}`, {
       method: "POST",
@@ -126,10 +126,10 @@ export const projectApi = {
 
   versions: async (
     projectId: string,
-    userId: string,
+    userId: string
   ): Promise<EnvVersion[]> => {
     const response = await fetch(
-      `${API_BASE}/projects/${userId}/${projectId}/versions`,
+      `${API_BASE}/projects/${userId}/${projectId}/versions`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch project versions");
@@ -156,7 +156,7 @@ export type ProjectAccess = {
 export const projectAccessApi = {
   list: async (projectId: string, userId: string): Promise<ProjectAccess[]> => {
     const response = await fetch(
-      `${API_BASE}/projects/${userId}/${projectId}/access`,
+      `${API_BASE}/projects/${userId}/${projectId}/access`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch project access");
@@ -167,7 +167,7 @@ export const projectAccessApi = {
   add: async (
     projectId: string,
     userEmail: string,
-    userId: string,
+    userId: string
   ): Promise<ProjectAccess> => {
     const response = await fetch(
       `${API_BASE}/projects/${userId}/${projectId}/access`,
@@ -176,13 +176,14 @@ export const projectAccessApi = {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userEmail }),
-      },
+        body: JSON.stringify({ email: userEmail }),
+      }
     );
     if (!response.ok) {
-      throw new Error("Failed to add project access");
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.error || "Failed to add project access");
     }
-    return response.json();
+    return await response.json();
   },
 
   remove: async (projectId: string, userIdToRemove: string): Promise<void> => {
@@ -190,7 +191,7 @@ export const projectAccessApi = {
       `${API_BASE}/projects/${userIdToRemove}/${projectId}/access/${userIdToRemove}`,
       {
         method: "DELETE",
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to remove project access");
@@ -212,7 +213,7 @@ export const versionApi = {
   // Get a specific version
   get: async (projectId: string, versionId: string): Promise<VersionInfo> => {
     const response = await fetch(
-      `${API_BASE}/projects/${projectId}/versions/${versionId}`,
+      `${API_BASE}/projects/${projectId}/versions/${versionId}`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch version");
@@ -223,7 +224,7 @@ export const versionApi = {
   // Create a new version
   create: async (
     projectId: string,
-    description?: string,
+    description?: string
   ): Promise<VersionInfo> => {
     const response = await fetch(`${API_BASE}/projects/${projectId}/versions`, {
       method: "POST",
@@ -241,13 +242,13 @@ export const versionApi = {
   // Rollback to a specific version
   rollback: async (
     projectId: string,
-    versionId: string,
+    versionId: string
   ): Promise<VersionInfo> => {
     const response = await fetch(
       `${API_BASE}/projects/${projectId}/versions/${versionId}/rollback`,
       {
         method: "POST",
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to rollback version");
@@ -261,7 +262,7 @@ export const versionApi = {
       `${API_BASE}/projects/${projectId}/versions/${versionId}`,
       {
         method: "DELETE",
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to delete version");
@@ -272,10 +273,10 @@ export const versionApi = {
   compare: async (
     projectId: string,
     version1Id: string,
-    version2Id: string,
+    version2Id: string
   ): Promise<any> => {
     const response = await fetch(
-      `${API_BASE}/projects/${projectId}/versions/compare?v1=${version1Id}&v2=${version2Id}`,
+      `${API_BASE}/projects/${projectId}/versions/compare?v1=${version1Id}&v2=${version2Id}`
     );
     if (!response.ok) {
       throw new Error("Failed to compare versions");
@@ -287,10 +288,10 @@ export const versionApi = {
   export: async (
     projectId: string,
     versionId: string,
-    format: "json" | "env" = "env",
+    format: "json" | "env" = "env"
   ): Promise<string> => {
     const response = await fetch(
-      `${API_BASE}/projects/${projectId}/versions/${versionId}/export?format=${format}`,
+      `${API_BASE}/projects/${projectId}/versions/${versionId}/export?format=${format}`
     );
     if (!response.ok) {
       throw new Error("Failed to export version");
@@ -314,7 +315,7 @@ export const versionTagApi = {
   create: async (
     projectId: string,
     versionId: string,
-    tagName: string,
+    tagName: string
   ): Promise<VersionTag> => {
     const response = await fetch(
       `${API_BASE}/projects/${projectId}/versions/${versionId}/tags`,
@@ -324,7 +325,7 @@ export const versionTagApi = {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ name: tagName }),
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to create tag");
@@ -338,7 +339,7 @@ export const versionTagApi = {
       `${API_BASE}/projects/${projectId}/tags/${tagId}`,
       {
         method: "DELETE",
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to delete tag");
@@ -362,7 +363,7 @@ export const versionBranchApi = {
     projectId: string,
     baseVersionId: string,
     branchName: string,
-    description?: string,
+    description?: string
   ): Promise<VersionBranch> => {
     const response = await fetch(`${API_BASE}/projects/${projectId}/branches`, {
       method: "POST",
@@ -383,7 +384,7 @@ export const versionBranchApi = {
       `${API_BASE}/projects/${projectId}/branches/${branchId}`,
       {
         method: "DELETE",
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to delete branch");

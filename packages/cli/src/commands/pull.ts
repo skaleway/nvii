@@ -15,6 +15,9 @@ import path, { join } from "path";
 import { Project } from "@nvii/db";
 import inquirer from "inquirer";
 import { argv } from "process";
+import { detectConflicts, promptConflictResolution, resolveConflicts, mergeEnvironments } from "../lib/conflict";
+import { generateDiff, DiffResult } from "@nvii/env-helpers";
+import { fetchVersions, VersionWithUser } from "@nvii/env-helpers";
 
 const DOT_ENV_FILE = ".env";
 
@@ -95,13 +98,34 @@ export async function pullRemoteChanges() {
       userConfig.userId,
     );
 
-    const values = await writeEnvFile(decryptedEnv);
+    // Detect conflicts and handle them
+    const conflicts = detectConflicts(existingEnv, decryptedEnv);
+    let finalContent = decryptedEnv;
+    
+    if (conflicts.length > 0) {
+      console.log(pc.yellow(`\n⚠️  Found ${conflicts.length} conflict(s) between local and remote versions.`));
+      const resolution = await promptConflictResolution(conflicts);
+      finalContent = resolveConflicts(existingEnv, decryptedEnv, resolution);
+    } else {
+      finalContent = mergeEnvironments(existingEnv, decryptedEnv);
+    }
+
+    // Calculate diff for change summary
+    const diff = generateDiff(existingEnv, finalContent);
+    const changesSummary = {
+      added: diff.added,
+      modified: diff.updated.map(([key, { old, new: newValue }]) => ({ key, original: old, value: newValue })),
+      removed: diff.removed
+    };
+
+    const values = await writeEnvFile(finalContent);
     if (!values) {
       console.error(pc.red("\nOops an unexpected error occurred."));
       process.exit(1);
     }
+    
     // log change summary
-    if (changedEnvs.length > 0) {
+    if (changesSummary.added.length > 0 || changesSummary.modified.length > 0 || changesSummary.removed.length > 0) {
       console.log(
         pc.bold(
           `\n📜 Change summary for project: ${pc.cyan(`${project.name} - ${project.id}`)}`,

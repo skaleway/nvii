@@ -23,6 +23,7 @@ import { Loader2, Plus, Users, X } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 import { useProjects } from "./projects-provider";
+import { Badge } from "@nvii/ui/components/badge";
 
 function UserAvatar({
   user,
@@ -192,13 +193,18 @@ export function ProjectAccessManager({
                         </p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemove(user.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+
+                    {user.id === userId ? (
+                      <Badge variant="secondary">Admin</Badge>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemove(user.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
