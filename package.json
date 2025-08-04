@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
-    "@nvii/env-helpers": "workspace*",
+    "@nvii/env-helpers": "workspace:*",
     "@prisma/client": "^6.9.0",
     "next-auth": "^4.24.11"
   }

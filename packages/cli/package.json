@@ -1,10 +1,17 @@
 {
   "name": "@nvii/cli",
-  "version": "0.0.1",
-  "description": "Nvii CLI",
+  "version": "1.0.0",
+  "description": "Secure environment variable management CLI for modern development teams",
+  "keywords": ["environment", "variables", "env", "cli", "security", "encryption", "development"],
+  "homepage": "https://nvii.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nvii/nvii.git",
+    "directory": "packages/cli"
+  },
   "main": "./dist/index.js",
   "bin": {
-    "envi": "./dist/index.js"
+    "nvii": "./dist/index.js"
   },
   "types": "./dist/index.d.ts",
   "module": "./dist/index.mjs",

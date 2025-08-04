@@ -2,14 +2,14 @@ import {
   getCurrentUserFromDb,
   getCurrentUserFromSession,
 } from "@/lib/current-user";
-import { ErrorResponse, Response } from "@/lib/response";
-import { db, Project, ProjectAccess } from "@nvii/db";
-import { decryptEnvValues } from "@/lib/encryption";
+import { ErrorResponse } from "@/lib/response";
+import { db, Project } from "@nvii/db";
 import { calculateChanges } from "@/lib/version-helpers";
 import { NextResponse } from "next/server";
 import { User } from "better-auth";
 import { headers } from "next/headers";
 import { AuthUser, validateCliAuth } from "../route";
+import { decryptEnv } from "@/lib/actions/decrypt";
 
 export async function GET(
   _: Request,
@@ -62,7 +62,12 @@ export async function GET(
       return ErrorResponse("Project not found", 404);
     }
 
-    return NextResponse.json(project);
+    const decryptedContent = await decryptEnv(
+      project.content as Record<string, string>,
+      userId,
+    );
+
+    return NextResponse.json({ ...project, content: decryptedContent });
   } catch (error) {
     console.error("[PROJECT_GET]", error);
     return ErrorResponse("Internal Server Error", 500);
@@ -160,7 +165,7 @@ export async function PATCH(
       project: {
         ...project,
         content: project.content
-          ? decryptEnvValues(project.content as Record<string, string>, user.id)
+          ? await decryptEnv(project.content as Record<string, string>, user.id)
           : null,
       },
       version,
@@ -203,19 +208,6 @@ export async function DELETE(
     const project = await db.project.findUnique({
       where: {
         id: projectId,
-        OR: [
-          { userId: userId },
-          {
-            ProjectAccess: {
-              some: {
-                userId: userId,
-              },
-            },
-          },
-        ],
-      },
-      include: {
-        ProjectAccess: true,
       },
     });
 
@@ -242,12 +234,6 @@ export async function DELETE(
   }
 }
 
-const canDeleteProject = (
-  project: Project & { ProjectAccess: ProjectAccess[] },
-  user: User,
-) => {
-  return (
-    project.userId === user.id ||
-    project.ProjectAccess.some((access) => access.userId === user.id)
-  );
+const canDeleteProject = (project: Project, user: User) => {
+  return project.userId === user.id;
 };

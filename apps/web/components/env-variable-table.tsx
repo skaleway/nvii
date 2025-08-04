@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@nvii/ui/components/dropdown-menu";
 import { Input } from "@nvii/ui/components/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -34,10 +35,13 @@ import { useState } from "react";
 
 interface EnvVariableTableProps {
   environment: Record<string, string>;
+  isLoading?: boolean;
 }
 
-export function EnvVariableTable({ environment }: EnvVariableTableProps) {
-  console.log(environment);
+export function EnvVariableTable({
+  environment,
+  isLoading = false,
+}: EnvVariableTableProps) {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [variables, setVariables] = useState<Variable[]>(() =>
@@ -64,6 +68,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
   };
 
   const toggleEditing = (id: string) => {
+    toggleVisibility(id);
     setVariables((prevVars) =>
       prevVars.map((variable) =>
         variable.id === id
@@ -117,6 +122,50 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="rounded-md border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[30%]">Key</TableHead>
+              <TableHead className="w-[40%]">Value</TableHead>
+              <TableHead className="w-[10%]">Status</TableHead>
+              <TableHead className="w-[10%] text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
+                <TableCell>
+                  <Skeleton className="h-4 w-24" />
+                  {i % 3 === 0 && (
+                    <div className="mt-2 flex gap-1">
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-32" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-16" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border bg-card">
       <Table>
@@ -155,6 +204,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
                     type={variable.isVisible ? "text" : "password"}
                     value={variable.value}
                     onChange={(e) => updateValue(variable.id, e.target.value)}
+                    autoFocus
                     className="font-mono text-sm"
                   />
                 ) : (

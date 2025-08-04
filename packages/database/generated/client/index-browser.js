@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.12.0
- * Query Engine version: 8047c96bbd92db98a2abc7c9323ce77c02c89dbc
+ * Prisma Client JS version: 6.13.0
+ * Query Engine version: 361e86d0ea4987e9f53a565309b3eed797a6bcbd
  */
 Prisma.prismaVersion = {
-  client: "6.12.0",
-  engine: "8047c96bbd92db98a2abc7c9323ce77c02c89dbc"
+  client: "6.13.0",
+  engine: "361e86d0ea4987e9f53a565309b3eed797a6bcbd"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -202,6 +202,15 @@ exports.Prisma.EnvVersionScalarFieldEnum = {
   branch: 'branch'
 };
 
+exports.Prisma.VersionTagScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  versionId: 'versionId',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -241,7 +250,8 @@ exports.Prisma.ModelName = {
   Device: 'Device',
   Project: 'Project',
   ProjectAccess: 'ProjectAccess',
-  EnvVersion: 'EnvVersion'
+  EnvVersion: 'EnvVersion',
+  VersionTag: 'VersionTag'
 };
 
 /**
