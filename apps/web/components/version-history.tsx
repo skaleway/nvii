@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader } from "@nvii/ui/components/card";
 import { History } from "lucide-react";
 import { useProjects } from "./projects-provider";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface Version {
   id: string;
@@ -149,6 +150,11 @@ export function VersionHistory({ userId, projectId }: VersionHistoryProps) {
             </div>
           )}
         </ScrollArea>
+        <Button asChild variant="outline" className="mt-4" size="sm">
+          <Link href={`/projects/${projectId}/versions`}>
+            View more details
+          </Link>
+        </Button>
       </DialogContent>
     </Dialog>
   );

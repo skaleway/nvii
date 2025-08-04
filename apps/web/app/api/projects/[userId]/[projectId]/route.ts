@@ -64,7 +64,7 @@ export async function GET(
 
     const decryptedContent = await decryptEnv(
       project.content as Record<string, string>,
-      userId,
+      project.id,
     );
 
     return NextResponse.json({ ...project, content: decryptedContent });
