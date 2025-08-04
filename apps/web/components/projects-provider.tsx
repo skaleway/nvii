@@ -14,6 +14,7 @@ import {
   CreateProjectInput,
   projectAccessApi,
   ProjectAccess,
+  projectApi,
 } from "../lib/api-client";
 import { Project } from "../types/project";
 import { useSession } from "@/provider/session";
@@ -87,7 +88,7 @@ function ProjectsProviderInner({
     queryKey: ["projects"],
     queryFn: projectsApi.list,
     staleTime: Infinity,
-    gcTime: 0,
+    gcTime: 500,
   });
 
   // Add project mutation

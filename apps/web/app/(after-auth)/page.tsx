@@ -66,7 +66,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {isLoading || isRefetchingProjects ? (
+        {isLoading ? (
           <>
             <StatusCardSkeleton />
             <StatusCardSkeleton />

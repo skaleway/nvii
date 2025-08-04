@@ -73,6 +73,18 @@ export const projectsApi = {
   },
 };
 
+export const projectApi = {
+  get: async (projectId: string, userId: string): Promise<Project> => {
+    const response = await fetch(`${API_BASE}/projects/${userId}/${projectId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch project");
+    }
+    const data = await response.json();
+
+    return data;
+  },
+};
+
 export type ProjectAccessUser = {
   id: string;
   name: string | null;
