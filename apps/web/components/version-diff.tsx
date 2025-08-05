@@ -222,7 +222,10 @@ export function VersionDiff({
               {diffItems.map((item, index) => (
                 <Card
                   key={index}
-                  className={cn("border-l-4", getTypeColor(item.type))}
+                  className={cn(
+                    "border-l-4 text-black",
+                    getTypeColor(item.type),
+                  )}
                 >
                   <CardContent className="p-4">
                     <div className="space-y-2">
