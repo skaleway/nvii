@@ -19,6 +19,7 @@ model User {
   image            String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  optsCode         String?
   sessions         Session[]
   accounts         Account[]
   Device           Device[]
@@ -87,16 +88,17 @@ model Device {
 }
 
 model Project {
-  id        String   @id @default(cuid())
-  name      String
-  userId    String
-  key       String   @default(cuid())
-  user      User     @relation("ProjectOwner", fields: [userId], references: [id], onDelete: Cascade)
-  deviceId  String
-  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-  content   Json?
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  userId      String
+  key         String   @default(cuid())
+  user        User     @relation("ProjectOwner", fields: [userId], references: [id], onDelete: Cascade)
+  deviceId    String?
+  device      Device?  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  content     Json?
+  description String?
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 
   havingAccess  User[]          @relation("ProjectAccess")
   ProjectAccess ProjectAccess[]
@@ -112,7 +114,7 @@ model ProjectAccess {
   project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId  String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String   @unique
+  userId     String
   assignedAt DateTime @default(now())
 
   @@id([projectId, userId])

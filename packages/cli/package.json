@@ -1,8 +1,16 @@
 {
   "name": "@nvii/cli",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Secure environment variable management CLI for modern development teams",
-  "keywords": ["environment", "variables", "env", "cli", "security", "encryption", "development"],
+  "keywords": [
+    "environment",
+    "variables",
+    "env",
+    "cli",
+    "security",
+    "encryption",
+    "development"
+  ],
   "homepage": "https://nvii.dev",
   "repository": {
     "type": "git",

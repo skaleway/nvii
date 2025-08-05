@@ -47,6 +47,10 @@ export async function createProject() {
       process.exit(1);
     }
 
+    const projectDescription = await promptUser(
+      "Enter project description (optional):",
+    );
+
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
@@ -86,6 +90,7 @@ export async function createProject() {
       name: projectName,
       content: encryptedEnvs,
       deviceId: userConfig.deviceId,
+      description: projectDescription,
     });
 
     const projectId = response.data.data.id;

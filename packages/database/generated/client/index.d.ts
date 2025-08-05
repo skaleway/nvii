@@ -1832,6 +1832,7 @@ export namespace Prisma {
     image: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    optsCode: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1842,6 +1843,7 @@ export namespace Prisma {
     image: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    optsCode: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1852,6 +1854,7 @@ export namespace Prisma {
     image: number
     createdAt: number
     updatedAt: number
+    optsCode: number
     _all: number
   }
 
@@ -1864,6 +1867,7 @@ export namespace Prisma {
     image?: true
     createdAt?: true
     updatedAt?: true
+    optsCode?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1874,6 +1878,7 @@ export namespace Prisma {
     image?: true
     createdAt?: true
     updatedAt?: true
+    optsCode?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1884,6 +1889,7 @@ export namespace Prisma {
     image?: true
     createdAt?: true
     updatedAt?: true
+    optsCode?: true
     _all?: true
   }
 
@@ -1967,6 +1973,7 @@ export namespace Prisma {
     image: string | null
     createdAt: Date
     updatedAt: Date
+    optsCode: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -1994,6 +2001,7 @@ export namespace Prisma {
     image?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    optsCode?: boolean
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     Device?: boolean | User$DeviceArgs<ExtArgs>
@@ -2012,6 +2020,7 @@ export namespace Prisma {
     image?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    optsCode?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2022,6 +2031,7 @@ export namespace Prisma {
     image?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    optsCode?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2032,9 +2042,10 @@ export namespace Prisma {
     image?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    optsCode?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "optsCode", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
@@ -2067,6 +2078,7 @@ export namespace Prisma {
       image: string | null
       createdAt: Date
       updatedAt: Date
+      optsCode: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2504,6 +2516,7 @@ export namespace Prisma {
     readonly image: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly optsCode: FieldRef<"User", 'String'>
   }
     
 
@@ -7449,6 +7462,7 @@ export namespace Prisma {
     userId: string | null
     key: string | null
     deviceId: string | null
+    description: string | null
     updatedAt: Date | null
     createdAt: Date | null
   }
@@ -7459,6 +7473,7 @@ export namespace Prisma {
     userId: string | null
     key: string | null
     deviceId: string | null
+    description: string | null
     updatedAt: Date | null
     createdAt: Date | null
   }
@@ -7470,6 +7485,7 @@ export namespace Prisma {
     key: number
     deviceId: number
     content: number
+    description: number
     updatedAt: number
     createdAt: number
     _all: number
@@ -7482,6 +7498,7 @@ export namespace Prisma {
     userId?: true
     key?: true
     deviceId?: true
+    description?: true
     updatedAt?: true
     createdAt?: true
   }
@@ -7492,6 +7509,7 @@ export namespace Prisma {
     userId?: true
     key?: true
     deviceId?: true
+    description?: true
     updatedAt?: true
     createdAt?: true
   }
@@ -7503,6 +7521,7 @@ export namespace Prisma {
     key?: true
     deviceId?: true
     content?: true
+    description?: true
     updatedAt?: true
     createdAt?: true
     _all?: true
@@ -7585,8 +7604,9 @@ export namespace Prisma {
     name: string
     userId: string
     key: string
-    deviceId: string
+    deviceId: string | null
     content: JsonValue | null
+    description: string | null
     updatedAt: Date
     createdAt: Date
     _count: ProjectCountAggregateOutputType | null
@@ -7615,10 +7635,11 @@ export namespace Prisma {
     key?: boolean
     deviceId?: boolean
     content?: boolean
+    description?: boolean
     updatedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    device?: boolean | DeviceDefaultArgs<ExtArgs>
+    device?: boolean | Project$deviceArgs<ExtArgs>
     havingAccess?: boolean | Project$havingAccessArgs<ExtArgs>
     ProjectAccess?: boolean | Project$ProjectAccessArgs<ExtArgs>
     versions?: boolean | Project$versionsArgs<ExtArgs>
@@ -7633,10 +7654,11 @@ export namespace Prisma {
     key?: boolean
     deviceId?: boolean
     content?: boolean
+    description?: boolean
     updatedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    device?: boolean | DeviceDefaultArgs<ExtArgs>
+    device?: boolean | Project$deviceArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -7646,10 +7668,11 @@ export namespace Prisma {
     key?: boolean
     deviceId?: boolean
     content?: boolean
+    description?: boolean
     updatedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    device?: boolean | DeviceDefaultArgs<ExtArgs>
+    device?: boolean | Project$deviceArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectScalar = {
@@ -7659,14 +7682,15 @@ export namespace Prisma {
     key?: boolean
     deviceId?: boolean
     content?: boolean
+    description?: boolean
     updatedAt?: boolean
     createdAt?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "userId" | "key" | "deviceId" | "content" | "updatedAt" | "createdAt", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "userId" | "key" | "deviceId" | "content" | "description" | "updatedAt" | "createdAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    device?: boolean | DeviceDefaultArgs<ExtArgs>
+    device?: boolean | Project$deviceArgs<ExtArgs>
     havingAccess?: boolean | Project$havingAccessArgs<ExtArgs>
     ProjectAccess?: boolean | Project$ProjectAccessArgs<ExtArgs>
     versions?: boolean | Project$versionsArgs<ExtArgs>
@@ -7675,18 +7699,18 @@ export namespace Prisma {
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    device?: boolean | DeviceDefaultArgs<ExtArgs>
+    device?: boolean | Project$deviceArgs<ExtArgs>
   }
   export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    device?: boolean | DeviceDefaultArgs<ExtArgs>
+    device?: boolean | Project$deviceArgs<ExtArgs>
   }
 
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
-      device: Prisma.$DevicePayload<ExtArgs>
+      device: Prisma.$DevicePayload<ExtArgs> | null
       havingAccess: Prisma.$UserPayload<ExtArgs>[]
       ProjectAccess: Prisma.$ProjectAccessPayload<ExtArgs>[]
       versions: Prisma.$EnvVersionPayload<ExtArgs>[]
@@ -7697,8 +7721,9 @@ export namespace Prisma {
       name: string
       userId: string
       key: string
-      deviceId: string
+      deviceId: string | null
       content: Prisma.JsonValue | null
+      description: string | null
       updatedAt: Date
       createdAt: Date
     }, ExtArgs["result"]["project"]>
@@ -8096,7 +8121,7 @@ export namespace Prisma {
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    device<T extends DeviceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DeviceDefaultArgs<ExtArgs>>): Prisma__DeviceClient<$Result.GetResult<Prisma.$DevicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    device<T extends Project$deviceArgs<ExtArgs> = {}>(args?: Subset<T, Project$deviceArgs<ExtArgs>>): Prisma__DeviceClient<$Result.GetResult<Prisma.$DevicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     havingAccess<T extends Project$havingAccessArgs<ExtArgs> = {}>(args?: Subset<T, Project$havingAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ProjectAccess<T extends Project$ProjectAccessArgs<ExtArgs> = {}>(args?: Subset<T, Project$ProjectAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     versions<T extends Project$versionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnvVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -8136,6 +8161,7 @@ export namespace Prisma {
     readonly key: FieldRef<"Project", 'String'>
     readonly deviceId: FieldRef<"Project", 'String'>
     readonly content: FieldRef<"Project", 'Json'>
+    readonly description: FieldRef<"Project", 'String'>
     readonly updatedAt: FieldRef<"Project", 'DateTime'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
   }
@@ -8531,6 +8557,25 @@ export namespace Prisma {
      * Limit how many Projects to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Project.device
+   */
+  export type Project$deviceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Device
+     */
+    select?: DeviceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Device
+     */
+    omit?: DeviceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DeviceInclude<ExtArgs> | null
+    where?: DeviceWhereInput
   }
 
   /**
@@ -11915,7 +11960,8 @@ export namespace Prisma {
     emailVerified: 'emailVerified',
     image: 'image',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    optsCode: 'optsCode'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -11984,6 +12030,7 @@ export namespace Prisma {
     key: 'key',
     deviceId: 'deviceId',
     content: 'content',
+    description: 'description',
     updatedAt: 'updatedAt',
     createdAt: 'createdAt'
   };
@@ -12156,6 +12203,7 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    optsCode?: StringNullableFilter<"User"> | string | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     Device?: DeviceListRelationFilter
@@ -12173,6 +12221,7 @@ export namespace Prisma {
     image?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    optsCode?: SortOrderInput | SortOrder
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     Device?: DeviceOrderByRelationAggregateInput
@@ -12193,6 +12242,7 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    optsCode?: StringNullableFilter<"User"> | string | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     Device?: DeviceListRelationFilter
@@ -12210,6 +12260,7 @@ export namespace Prisma {
     image?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    optsCode?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -12226,6 +12277,7 @@ export namespace Prisma {
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    optsCode?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type SessionWhereInput = {
@@ -12516,12 +12568,13 @@ export namespace Prisma {
     name?: StringFilter<"Project"> | string
     userId?: StringFilter<"Project"> | string
     key?: StringFilter<"Project"> | string
-    deviceId?: StringFilter<"Project"> | string
+    deviceId?: StringNullableFilter<"Project"> | string | null
     content?: JsonNullableFilter<"Project">
+    description?: StringNullableFilter<"Project"> | string | null
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    device?: XOR<DeviceScalarRelationFilter, DeviceWhereInput>
+    device?: XOR<DeviceNullableScalarRelationFilter, DeviceWhereInput> | null
     havingAccess?: UserListRelationFilter
     ProjectAccess?: ProjectAccessListRelationFilter
     versions?: EnvVersionListRelationFilter
@@ -12533,8 +12586,9 @@ export namespace Prisma {
     name?: SortOrder
     userId?: SortOrder
     key?: SortOrder
-    deviceId?: SortOrder
+    deviceId?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -12554,12 +12608,13 @@ export namespace Prisma {
     name?: StringFilter<"Project"> | string
     userId?: StringFilter<"Project"> | string
     key?: StringFilter<"Project"> | string
-    deviceId?: StringFilter<"Project"> | string
+    deviceId?: StringNullableFilter<"Project"> | string | null
     content?: JsonNullableFilter<"Project">
+    description?: StringNullableFilter<"Project"> | string | null
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    device?: XOR<DeviceScalarRelationFilter, DeviceWhereInput>
+    device?: XOR<DeviceNullableScalarRelationFilter, DeviceWhereInput> | null
     havingAccess?: UserListRelationFilter
     ProjectAccess?: ProjectAccessListRelationFilter
     versions?: EnvVersionListRelationFilter
@@ -12571,8 +12626,9 @@ export namespace Prisma {
     name?: SortOrder
     userId?: SortOrder
     key?: SortOrder
-    deviceId?: SortOrder
+    deviceId?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     createdAt?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
@@ -12588,8 +12644,9 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Project"> | string
     userId?: StringWithAggregatesFilter<"Project"> | string
     key?: StringWithAggregatesFilter<"Project"> | string
-    deviceId?: StringWithAggregatesFilter<"Project"> | string
+    deviceId?: StringNullableWithAggregatesFilter<"Project"> | string | null
     content?: JsonNullableWithAggregatesFilter<"Project">
+    description?: StringNullableWithAggregatesFilter<"Project"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
   }
@@ -12614,16 +12671,16 @@ export namespace Prisma {
   }
 
   export type ProjectAccessWhereUniqueInput = Prisma.AtLeast<{
-    userId?: string
     projectId_userId?: ProjectAccessProjectIdUserIdCompoundUniqueInput
     AND?: ProjectAccessWhereInput | ProjectAccessWhereInput[]
     OR?: ProjectAccessWhereInput[]
     NOT?: ProjectAccessWhereInput | ProjectAccessWhereInput[]
     projectId?: StringFilter<"ProjectAccess"> | string
+    userId?: StringFilter<"ProjectAccess"> | string
     assignedAt?: DateTimeFilter<"ProjectAccess"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "projectId_userId" | "userId">
+  }, "projectId_userId">
 
   export type ProjectAccessOrderByWithAggregationInput = {
     projectId?: SortOrder
@@ -12790,6 +12847,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     Device?: DeviceCreateNestedManyWithoutUserInput
@@ -12807,6 +12865,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     Device?: DeviceUncheckedCreateNestedManyWithoutUserInput
@@ -12824,6 +12883,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     Device?: DeviceUpdateManyWithoutUserNestedInput
@@ -12841,6 +12901,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     Device?: DeviceUncheckedUpdateManyWithoutUserNestedInput
@@ -12858,6 +12919,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -12868,6 +12930,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -12878,6 +12941,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SessionCreateInput = {
@@ -13194,10 +13258,11 @@ export namespace Prisma {
     name: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutOwnedProjectsInput
-    device: DeviceCreateNestedOneWithoutProjectInput
+    device?: DeviceCreateNestedOneWithoutProjectInput
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
@@ -13209,8 +13274,9 @@ export namespace Prisma {
     name: string
     userId: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
@@ -13224,10 +13290,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
-    device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
+    device?: DeviceUpdateOneWithoutProjectNestedInput
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
@@ -13239,8 +13306,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
@@ -13254,8 +13322,9 @@ export namespace Prisma {
     name: string
     userId: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
   }
@@ -13265,6 +13334,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13274,8 +13344,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13579,6 +13650,7 @@ export namespace Prisma {
     image?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    optsCode?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -13589,6 +13661,7 @@ export namespace Prisma {
     image?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    optsCode?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -13599,6 +13672,7 @@ export namespace Prisma {
     image?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    optsCode?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -13844,9 +13918,9 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type DeviceScalarRelationFilter = {
-    is?: DeviceWhereInput
-    isNot?: DeviceWhereInput
+  export type DeviceNullableScalarRelationFilter = {
+    is?: DeviceWhereInput | null
+    isNot?: DeviceWhereInput | null
   }
 
   export type UserListRelationFilter = {
@@ -13881,6 +13955,7 @@ export namespace Prisma {
     key?: SortOrder
     deviceId?: SortOrder
     content?: SortOrder
+    description?: SortOrder
     updatedAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -13891,6 +13966,7 @@ export namespace Prisma {
     userId?: SortOrder
     key?: SortOrder
     deviceId?: SortOrder
+    description?: SortOrder
     updatedAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -13901,6 +13977,7 @@ export namespace Prisma {
     userId?: SortOrder
     key?: SortOrder
     deviceId?: SortOrder
+    description?: SortOrder
     updatedAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -14537,10 +14614,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedProjectsInput, UserUpdateWithoutOwnedProjectsInput>, UserUncheckedUpdateWithoutOwnedProjectsInput>
   }
 
-  export type DeviceUpdateOneRequiredWithoutProjectNestedInput = {
+  export type DeviceUpdateOneWithoutProjectNestedInput = {
     create?: XOR<DeviceCreateWithoutProjectInput, DeviceUncheckedCreateWithoutProjectInput>
     connectOrCreate?: DeviceCreateOrConnectWithoutProjectInput
     upsert?: DeviceUpsertWithoutProjectInput
+    disconnect?: DeviceWhereInput | boolean
+    delete?: DeviceWhereInput | boolean
     connect?: DeviceWhereUniqueInput
     update?: XOR<XOR<DeviceUpdateToOneWithWhereWithoutProjectInput, DeviceUpdateWithoutProjectInput>, DeviceUncheckedUpdateWithoutProjectInput>
   }
@@ -15075,9 +15154,10 @@ export namespace Prisma {
     name: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
-    device: DeviceCreateNestedOneWithoutProjectInput
+    device?: DeviceCreateNestedOneWithoutProjectInput
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
@@ -15088,8 +15168,9 @@ export namespace Prisma {
     id?: string
     name: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
@@ -15133,10 +15214,11 @@ export namespace Prisma {
     name: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutOwnedProjectsInput
-    device: DeviceCreateNestedOneWithoutProjectInput
+    device?: DeviceCreateNestedOneWithoutProjectInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
     VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
@@ -15147,8 +15229,9 @@ export namespace Prisma {
     name: string
     userId: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     ProjectAccess?: ProjectAccessUncheckedCreateNestedManyWithoutProjectInput
@@ -15309,8 +15392,9 @@ export namespace Prisma {
     name?: StringFilter<"Project"> | string
     userId?: StringFilter<"Project"> | string
     key?: StringFilter<"Project"> | string
-    deviceId?: StringFilter<"Project"> | string
+    deviceId?: StringNullableFilter<"Project"> | string | null
     content?: JsonNullableFilter<"Project">
+    description?: StringNullableFilter<"Project"> | string | null
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
   }
@@ -15394,6 +15478,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     Device?: DeviceCreateNestedManyWithoutUserInput
     ownedProjects?: ProjectCreateNestedManyWithoutUserInput
@@ -15410,6 +15495,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     Device?: DeviceUncheckedCreateNestedManyWithoutUserInput
     ownedProjects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -15442,6 +15528,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     Device?: DeviceUpdateManyWithoutUserNestedInput
     ownedProjects?: ProjectUpdateManyWithoutUserNestedInput
@@ -15458,6 +15545,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     Device?: DeviceUncheckedUpdateManyWithoutUserNestedInput
     ownedProjects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -15474,6 +15562,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     Device?: DeviceCreateNestedManyWithoutUserInput
     ownedProjects?: ProjectCreateNestedManyWithoutUserInput
@@ -15490,6 +15579,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     Device?: DeviceUncheckedCreateNestedManyWithoutUserInput
     ownedProjects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -15522,6 +15612,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     Device?: DeviceUpdateManyWithoutUserNestedInput
     ownedProjects?: ProjectUpdateManyWithoutUserNestedInput
@@ -15538,6 +15629,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     Device?: DeviceUncheckedUpdateManyWithoutUserNestedInput
     ownedProjects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -15554,6 +15646,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     ownedProjects?: ProjectCreateNestedManyWithoutUserInput
@@ -15570,6 +15663,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     ownedProjects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -15588,6 +15682,7 @@ export namespace Prisma {
     name: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutOwnedProjectsInput
@@ -15603,6 +15698,7 @@ export namespace Prisma {
     userId: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
@@ -15640,6 +15736,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     ownedProjects?: ProjectUpdateManyWithoutUserNestedInput
@@ -15656,6 +15753,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     ownedProjects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -15688,6 +15786,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     Device?: DeviceCreateNestedManyWithoutUserInput
@@ -15704,6 +15803,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     Device?: DeviceUncheckedCreateNestedManyWithoutUserInput
@@ -15746,6 +15846,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     Device?: DeviceCreateNestedManyWithoutUserInput
@@ -15762,6 +15863,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     Device?: DeviceUncheckedCreateNestedManyWithoutUserInput
@@ -15872,6 +15974,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     Device?: DeviceUpdateManyWithoutUserNestedInput
@@ -15888,6 +15991,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     Device?: DeviceUncheckedUpdateManyWithoutUserNestedInput
@@ -15950,6 +16054,7 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    optsCode?: StringNullableFilter<"User"> | string | null
   }
 
   export type ProjectAccessUpsertWithWhereUniqueWithoutProjectInput = {
@@ -16017,10 +16122,11 @@ export namespace Prisma {
     name: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutOwnedProjectsInput
-    device: DeviceCreateNestedOneWithoutProjectInput
+    device?: DeviceCreateNestedOneWithoutProjectInput
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
     VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
@@ -16031,8 +16137,9 @@ export namespace Prisma {
     name: string
     userId: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
@@ -16053,6 +16160,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     Device?: DeviceCreateNestedManyWithoutUserInput
@@ -16069,6 +16177,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     Device?: DeviceUncheckedCreateNestedManyWithoutUserInput
@@ -16098,10 +16207,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
-    device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
+    device?: DeviceUpdateOneWithoutProjectNestedInput
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
     VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
@@ -16112,8 +16222,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
@@ -16140,6 +16251,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     Device?: DeviceUpdateManyWithoutUserNestedInput
@@ -16156,6 +16268,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     Device?: DeviceUncheckedUpdateManyWithoutUserNestedInput
@@ -16169,10 +16282,11 @@ export namespace Prisma {
     name: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutOwnedProjectsInput
-    device: DeviceCreateNestedOneWithoutProjectInput
+    device?: DeviceCreateNestedOneWithoutProjectInput
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     VersionTag?: VersionTagCreateNestedManyWithoutProjectInput
@@ -16183,8 +16297,9 @@ export namespace Prisma {
     name: string
     userId: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
@@ -16205,6 +16320,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     Device?: DeviceCreateNestedManyWithoutUserInput
@@ -16221,6 +16337,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    optsCode?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     Device?: DeviceUncheckedCreateNestedManyWithoutUserInput
@@ -16276,10 +16393,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
-    device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
+    device?: DeviceUpdateOneWithoutProjectNestedInput
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
@@ -16290,8 +16408,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
@@ -16318,6 +16437,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     Device?: DeviceUpdateManyWithoutUserNestedInput
@@ -16334,6 +16454,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     Device?: DeviceUncheckedUpdateManyWithoutUserNestedInput
@@ -16363,10 +16484,11 @@ export namespace Prisma {
     name: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutOwnedProjectsInput
-    device: DeviceCreateNestedOneWithoutProjectInput
+    device?: DeviceCreateNestedOneWithoutProjectInput
     havingAccess?: UserCreateNestedManyWithoutAccessToProjectsInput
     ProjectAccess?: ProjectAccessCreateNestedManyWithoutProjectInput
     versions?: EnvVersionCreateNestedManyWithoutProjectInput
@@ -16377,8 +16499,9 @@ export namespace Prisma {
     name: string
     userId: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
     havingAccess?: UserUncheckedCreateNestedManyWithoutAccessToProjectsInput
@@ -16434,10 +16557,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
-    device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
+    device?: DeviceUpdateOneWithoutProjectNestedInput
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
@@ -16448,8 +16572,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
@@ -16526,8 +16651,9 @@ export namespace Prisma {
     id?: string
     name: string
     key?: string
-    deviceId: string
+    deviceId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
   }
@@ -16650,9 +16776,10 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
+    device?: DeviceUpdateOneWithoutProjectNestedInput
     havingAccess?: UserUpdateManyWithoutAccessToProjectsNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
@@ -16663,8 +16790,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
@@ -16677,8 +16805,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16703,10 +16832,11 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
-    device?: DeviceUpdateOneRequiredWithoutProjectNestedInput
+    device?: DeviceUpdateOneWithoutProjectNestedInput
     ProjectAccess?: ProjectAccessUpdateManyWithoutProjectNestedInput
     versions?: EnvVersionUpdateManyWithoutProjectNestedInput
     VersionTag?: VersionTagUpdateManyWithoutProjectNestedInput
@@ -16717,8 +16847,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ProjectAccess?: ProjectAccessUncheckedUpdateManyWithoutProjectNestedInput
@@ -16731,8 +16862,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    deviceId?: StringFieldUpdateOperationsInput | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16775,6 +16907,7 @@ export namespace Prisma {
     userId: string
     key?: string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: string | null
     updatedAt?: Date | string
     createdAt?: Date | string
   }
@@ -16784,6 +16917,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOwnedProjectsNestedInput
@@ -16799,6 +16933,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     havingAccess?: UserUncheckedUpdateManyWithoutAccessToProjectsNestedInput
@@ -16813,6 +16948,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     content?: NullableJsonNullValueInput | InputJsonValue
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16848,6 +16984,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     Device?: DeviceUpdateManyWithoutUserNestedInput
@@ -16864,6 +17001,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     Device?: DeviceUncheckedUpdateManyWithoutUserNestedInput
@@ -16880,6 +17018,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    optsCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProjectAccessUpdateWithoutProjectInput = {

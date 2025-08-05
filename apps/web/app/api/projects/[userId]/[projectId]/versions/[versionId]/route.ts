@@ -5,24 +5,24 @@ import { NextResponse } from "next/server";
 import { decryptEnvValues } from "@/lib/encryption";
 import { headers } from "next/headers";
 import { AuthUser, validateCliAuth } from "../../../route";
+import { decryptEnv } from "@/lib/actions/decrypt";
 
 // Get all versions for a project
 export async function GET(
   request: Request,
   {
     params,
-  }: { params: { userId: string; projectId: string; versionId: string } },
+  }: {
+    params: Promise<{ userId: string; projectId: string; versionId: string }>;
+  },
 ): Promise<NextResponse> {
   try {
     const { userId } = await params;
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
+    const cliUser = await validateCliAuth(headersList);
 
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -31,24 +31,49 @@ export async function GET(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const { projectId, versionId } = await params;
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
-    const { projectId, versionId } = await params;
-    const user = cliUser || webUser;
 
+    // find for the project
+    const project = await db.project.findFirst({
+      where: {
+        id: projectId,
+      },
+    });
+    if (!project) {
+      return ErrorResponse("Unauthorized", 401);
+    }
     // Verify user has access to the project
     const version = await db.envVersion.findFirst({
       where: {
         id: versionId,
         projectId,
       },
+      select: {
+        user: true,
+        projectId: true,
+        id: true,
+        changes: true,
+        content: true,
+        createdAt: true,
+        createdBy: true,
+        description: true,
+        VersionTag: true,
+      },
     });
 
     if (!version) {
       return ErrorResponse("Project not found or unauthorized", 404);
     }
-    return NextResponse.json(version);
+
+    const decryptedContent = await decryptEnv(
+      version.content as Record<string, string>,
+      project.userId,
+    );
+    return NextResponse.json({ ...version, content: decryptedContent });
   } catch (error) {
     console.error("[VERSIONS_GET]", error);
     return ErrorResponse("Internal Server Error", 500);

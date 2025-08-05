@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@nvii/ui/components/select";
 import { Label } from "@nvii/ui/components/label";
+import { VersionActions } from "@/components/version-actions";
 
 interface VersionInfo {
   id: string;
@@ -231,13 +232,13 @@ export default function VersionComparePage() {
     return (
       <div className="container mx-auto py-6 space-y-6 max-w-7xl">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="h-4 bg-gray-200 rounded w-1/2" />
+          <div className="h-8 bg-gray-600 rounded w-1/3" />
+          <div className="h-4 bg-gray-600 rounded w-1/2" />
           <div className="grid grid-cols-2 gap-4">
-            <div className="h-32 bg-gray-200 rounded" />
-            <div className="h-32 bg-gray-200 rounded" />
+            <div className="h-32 bg-gray-600 rounded" />
+            <div className="h-32 bg-gray-600 rounded" />
           </div>
-          <div className="h-64 bg-gray-200 rounded" />
+          <div className="h-64 bg-gray-600 rounded" />
         </div>
       </div>
     );
@@ -246,26 +247,14 @@ export default function VersionComparePage() {
   return (
     <div className="container mx-auto py-6 space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col justify-between w-full">
+        <div className="flex items-center space-x-4 w-full justify-between">
           <Link href={`/projects/${projectId}/versions`}>
             <Button variant="ghost" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Versions
             </Button>
           </Link>
-          <div>
-            <h1 className="text-3xl font-bold flex items-center space-x-2">
-              <GitCompare className="h-8 w-8" />
-              <span>Compare Versions</span>
-            </h1>
-            <p className="text-muted-foreground">
-              Compare environment variables between different versions
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -274,6 +263,16 @@ export default function VersionComparePage() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
+        </div>
+
+        <div className="mt-4">
+          <h1 className="text-3xl font-bold flex items-center space-x-2">
+            <GitCompare className="h-8 w-8" />
+            <span>Compare Versions</span>
+          </h1>
+          <p className="text-muted-foreground">
+            Compare environment variables between different versions
+          </p>
         </div>
       </div>
 
@@ -293,7 +292,7 @@ export default function VersionComparePage() {
                 <SelectContent>
                   {versions.map((version) => (
                     <SelectItem key={version.id} value={version.id}>
-                      <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
                         <span className="font-medium">
                           {version.description ||
                             `Version ${version.id.slice(0, 8)}`}
@@ -320,7 +319,7 @@ export default function VersionComparePage() {
                 <SelectContent>
                   {versions.map((version) => (
                     <SelectItem key={version.id} value={version.id}>
-                      <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
                         <span className="font-medium">
                           {version.description ||
                             `Version ${version.id.slice(0, 8)}`}

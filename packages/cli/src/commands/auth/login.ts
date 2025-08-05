@@ -69,6 +69,18 @@ export async function login() {
           res.end();
           reject(new UserCancellationError("Login process cancelled by user."));
         } else {
+          // validate the code from the browser
+          const isValidCode = parsedUrl.query.authCode === code;
+          if (!isValidCode) {
+            console.log(
+              pc.yellow(
+                "Login failed. Use a valid url, refresh your browser and try again.",
+              ),
+            );
+            res.writeHead(400);
+            res.end();
+            return;
+          }
           res.writeHead(200);
           res.end();
           resolve(parsedUrl.query as Record<string, string>);
@@ -76,6 +88,7 @@ export async function login() {
       } else {
         res.writeHead(405);
         res.end();
+        reject(new UserCancellationError("Login process failed."));
       }
     });
   });
@@ -98,7 +111,7 @@ export async function login() {
   try {
     const authData = await authPromise;
     spinner.stop();
-    const d = await writeToConfigFile(authData);
+    await writeToConfigFile(authData);
     console.log(pc.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${FILENAME}\n`);
     server.close();

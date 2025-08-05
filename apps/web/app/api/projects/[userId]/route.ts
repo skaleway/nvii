@@ -63,11 +63,8 @@ export const GET = async (
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
+    const cliUser = await validateCliAuth(headersList);
 
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -75,19 +72,19 @@ export const GET = async (
     if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
-
-    if (cliUser?.id !== userId) {
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
     const projects = await db.project.findMany({
       where: {
         OR: [
-          { userId: userId },
+          { userId: user.id },
           {
             ProjectAccess: {
               some: {
-                userId: userId,
+                userId: user.id,
               },
             },
           },
@@ -120,11 +117,8 @@ export const POST = async (
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
+    const cliUser = await validateCliAuth(headersList);
 
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -133,18 +127,18 @@ export const POST = async (
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const user = webUser || cliUser;
+
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
-
-    const user = webUser || cliUser;
 
     const body = await request.json();
 
     // check for duplicate project names
     const existingProject = await db.project.findFirst({
       where: {
-        userId: user.id,
+        userId: user?.id,
         name: body.name,
       },
     });
@@ -157,7 +151,7 @@ export const POST = async (
     }
 
     const authenticatedUser = await db.user.findUnique({
-      where: { id: user.id },
+      where: { id: user?.id },
     });
 
     if (!authenticatedUser) {
@@ -169,7 +163,8 @@ export const POST = async (
         userId: authenticatedUser.id,
       },
     });
-    if (!authenticatedUserDeviceId) {
+    if (!authenticatedUserDeviceId && cliUser) {
+      // block only cli requests with no device ids
       return ErrorResponse("Unauthorized", 401);
     }
 
@@ -178,8 +173,9 @@ export const POST = async (
         data: {
           userId,
           name: body.name,
-          deviceId: body.deviceId ?? authenticatedUserDeviceId.id,
+          deviceId: authenticatedUserDeviceId?.id ?? undefined,
           content: body.content,
+          description: body.description ?? "",
         },
       });
 
@@ -200,7 +196,7 @@ export const POST = async (
             modified: [],
             deleted: [],
           },
-          createdBy: user.id,
+          createdBy: user?.id as string,
         },
       });
 

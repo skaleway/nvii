@@ -16,11 +16,7 @@ export async function GET(
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
-
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
+    const cliUser = await validateCliAuth(headersList);
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -29,22 +25,22 @@ export async function GET(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const { projectId } = await params;
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
-    const { projectId } = await params;
-    const user = cliUser || webUser;
 
     // Verify user has access to the project
     const project = await db.project.findUnique({
       where: {
         id: projectId,
         OR: [
-          { userId: userId },
+          { userId: user.id },
           {
             ProjectAccess: {
               some: {
-                userId: userId,
+                userId: user.id,
               },
             },
           },
@@ -91,11 +87,7 @@ export async function POST(
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
-
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
+    const cliUser = await validateCliAuth(headersList);
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -104,11 +96,12 @@ export async function POST(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const { projectId } = await params;
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
-    const { projectId } = await params;
-    const user = cliUser || webUser;
+
     const body = await request.json();
     const { content, description, changes } = body;
 

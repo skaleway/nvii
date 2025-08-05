@@ -7,7 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { projectApi } from "@/lib/api-client";
 import { useSession } from "@/provider/session";
 import { Project } from "@/types/project";
-// import { EnvVersion } from "@nvii/db";
 import { Badge } from "@nvii/ui/components/badge";
 import {
   Breadcrumb,
@@ -141,6 +140,7 @@ export default function ProjectPage() {
         <ProjectAccessManager
           projectId={project?.id as string}
           userId={user.id}
+          projectUserId={project.userId}
         />
       </div>
 
@@ -174,6 +174,8 @@ export default function ProjectPage() {
 
       <EnvVariableTable
         environment={project?.content as unknown as Record<string, string>}
+        projectUserId={project.userId}
+        userId={user.id}
       />
     </div>
   );

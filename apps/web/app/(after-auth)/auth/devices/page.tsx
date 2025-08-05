@@ -73,7 +73,22 @@ export default function Page() {
   }) {
     setLoading(true);
     try {
-      const req = await fetch("/api/envicible", {
+      // validate the code first
+      const data = await fetch("/api/nvii/opts", {
+        method: "POST",
+        body: JSON.stringify({ code: opts.code }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const updatedUser = await data.json();
+
+      if (!data.ok) {
+        throw new Error(`HTTP error! status: ${data.status}`);
+      }
+
+      const req = await fetch("/api/nvii", {
         method: "POST",
         body: JSON.stringify(opts),
         headers: {
@@ -88,19 +103,26 @@ export default function Page() {
       const res = await req.json();
 
       console.log(res);
-
       try {
         const redirectUrl = new URL(res.redirect);
+        redirectUrl.searchParams.append("authCode", opts.code as string);
         redirectUrl.searchParams.append("code", res.code);
         redirectUrl.searchParams.append("key", res.key);
         redirectUrl.searchParams.append("userId", res.userId);
         redirectUrl.searchParams.append("deviceId", res.id);
-        redirectUrl.searchParams.append("username", res.username);
-        redirectUrl.searchParams.append("email", res.email);
+        redirectUrl.searchParams.append("username", updatedUser.username);
+        redirectUrl.searchParams.append("email", updatedUser.email);
 
         const redirectUrlString = redirectUrl.toString();
 
-        await fetch(redirectUrlString);
+        const cliServerRes = await fetch(redirectUrlString);
+
+        if (cliServerRes.status === 400) {
+          toast.error(
+            "Invalid opts code. Copy and paste the url displayed in your terminal.",
+          );
+          return;
+        }
 
         setLoading(false);
         setSuccess(true);
@@ -167,11 +189,9 @@ export default function Page() {
         </div>
         <div>
           <div className="grid grid-flow-col gap-1 pt-6 leading-none lg:gap-3 auto-cols-auto">
-            {code
-              ?.split("")
-              .map((char, i) => (
-                <CodeCharacter char={char} key={`${char}-${i}`} />
-              ))}
+            {code?.split("").map((char, i) => (
+              <CodeCharacter char={char} key={`${char}-${i}`} />
+            ))}
           </div>
           <div className="flex justify-center pt-6">
             <div className="flex items-center">

@@ -71,7 +71,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <Link href={`/projects/${project.id}`}>
-            <h3 className="font-semibold leading-none tracking-tight hover:text-primary">
+            <h3 className="font-semibold leading-none tracking-tight">
               {project.name}
               {isSharedProject && (
                 <span className="ml-2 text-xs text-muted-foreground">

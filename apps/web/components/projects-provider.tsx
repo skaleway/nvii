@@ -45,6 +45,11 @@ type ProjectsContextType = {
     projectId: string,
     userId: string,
   ) => Promise<EnvVersion[]>;
+  getProjectVersion: (
+    projectId: string,
+    userId: string,
+    versionId: string,
+  ) => Promise<EnvVersion>;
 };
 
 const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
@@ -185,6 +190,17 @@ function ProjectsProviderInner({
     [],
   );
 
+  const getProjectVersion = React.useCallback(
+    async (
+      projectId: string,
+      userId: string,
+      versionId: string,
+    ): Promise<EnvVersion> => {
+      return await projectApi.version(projectId, userId, versionId);
+    },
+    [],
+  );
+
   const addProjectAccess = React.useCallback(
     async (projectId: string, userEmail: string, userId: string) => {
       await addProjectAccessMutation.mutateAsync({
@@ -220,6 +236,7 @@ function ProjectsProviderInner({
         isRefetchingProjects,
         refetchProjects,
         getProjectVersions,
+        getProjectVersion,
       }}
     >
       {children}
