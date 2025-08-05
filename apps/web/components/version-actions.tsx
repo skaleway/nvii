@@ -17,6 +17,7 @@ import {
   Download,
   Copy,
   Clock,
+  InspectIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@nvii/ui/components/badge";
@@ -43,6 +44,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@nvii/ui/components/alert-dialog";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface VersionInfo {
   id: string;
@@ -87,6 +90,7 @@ export function VersionActions({
   const [branchName, setBranchName] = useState("");
   const [branchDescription, setBranchDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const pathName = usePathname();
 
   const handleRollback = async () => {
     if (!onRollback) return;
@@ -226,6 +230,10 @@ export function VersionActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem>
+            <InspectIcon className="mr-2 h-4 w-4" />
+            <Link href={`${pathName}/${version.id}`}>Review Version</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsTagDialogOpen(true)}>
             <Tag className="mr-2 h-4 w-4" />
             Create Tag

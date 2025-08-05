@@ -20,11 +20,7 @@ export async function GET(
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
-
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
+    const cliUser = await validateCliAuth(headersList);
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -33,7 +29,8 @@ export async function GET(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
     const { projectId } = await params;
@@ -43,11 +40,11 @@ export async function GET(
       where: {
         id: projectId,
         OR: [
-          { userId: userId },
+          { userId: user.id },
           {
             ProjectAccess: {
               some: {
-                userId: userId,
+                userId: user.id,
               },
             },
           },
@@ -64,7 +61,7 @@ export async function GET(
 
     const decryptedContent = await decryptEnv(
       project.content as Record<string, string>,
-      project.id,
+      project.userId,
     );
 
     return NextResponse.json({ ...project, content: decryptedContent });
@@ -83,11 +80,7 @@ export async function PATCH(
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
-
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
+    const cliUser = await validateCliAuth(headersList);
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -96,11 +89,11 @@ export async function PATCH(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const { projectId } = await params;
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
-    const { projectId } = await params;
-    const user = cliUser || webUser;
 
     const existingProject = await db.project.findUnique({
       where: {
@@ -187,11 +180,7 @@ export async function DELETE(
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
-
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
+    const cliUser = await validateCliAuth(headersList);
     // read web request headers
     const webUser = await getCurrentUserFromDb();
 
@@ -200,11 +189,10 @@ export async function DELETE(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
-    const user = cliUser || webUser;
-
     const project = await db.project.findUnique({
       where: {
         id: projectId,

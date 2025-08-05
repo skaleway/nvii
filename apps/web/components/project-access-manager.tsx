@@ -62,9 +62,11 @@ function UserAvatar({
 export function ProjectAccessManager({
   projectId,
   userId,
+  projectUserId,
 }: {
   projectId: string;
   userId: string;
+  projectUserId: string;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [email, setEmail] = React.useState("");
@@ -83,7 +85,7 @@ export function ProjectAccessManager({
       console.error("Failed to load users:", error);
       toast.error("Failed to load users with access");
     }
-  }, [projectId, getProjectAccess]);
+  }, [projectId, getProjectAccess, userId]);
 
   React.useEffect(() => {
     loadUsers();
@@ -194,13 +196,14 @@ export function ProjectAccessManager({
                       </div>
                     </div>
 
-                    {user.id === userId ? (
+                    {user.id === projectUserId ? (
                       <Badge variant="secondary">Admin</Badge>
                     ) : (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleRemove(user.id)}
+                        disabled={userId !== projectUserId}
                       >
                         <X className="h-4 w-4" />
                       </Button>

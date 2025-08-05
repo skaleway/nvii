@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { id, redirect, code } = await request.json();
+  const { code } = await request.json();
 
   try {
     const session = await auth.api.getSession({
@@ -14,39 +14,40 @@ export async function POST(request: Request) {
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!id || !redirect || !code)
+    if (!code || code.trim().length === 0)
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
       );
 
-    let user = await db.user.findUnique({
+    const user = await db.user.findUnique({
       where: {
         id: session.user.id,
       },
     });
 
-    const deviceExist = await db.device.findFirst({
-      where: {
-        userId: session.user.id,
-      },
-    });
-
-    if (deviceExist) {
-      return NextResponse.json({ ...deviceExist, redirect }, { status: 200 });
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const device = await db.device.create({
+    const updatedUser = await db.user.update({
+      where: {
+        id: user.id,
+      },
       data: {
-        userId: session.user.id,
-        code: code as string,
+        optsCode: code,
       },
     });
+
+    if (!updatedUser) {
+      return NextResponse.json(
+        { error: "Error updating user data" },
+        { status: 401 },
+      );
+    }
 
     return NextResponse.json(
       {
-        ...device,
-        redirect,
         code,
         username: session.user.name,
         email: session.user.email,

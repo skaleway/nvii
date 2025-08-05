@@ -94,25 +94,14 @@ export function VersionDiff({
     deleted: diffItems.filter((item) => item.type === "deleted").length,
   };
 
-  const getTypeIcon = (type: DiffItem["type"]) => {
-    switch (type) {
-      case "added":
-        return <Plus className="h-4 w-4 text-green-600" />;
-      case "deleted":
-        return <Minus className="h-4 w-4 text-red-600" />;
-      case "modified":
-        return <Edit className="h-4 w-4 text-blue-600" />;
-    }
-  };
-
   const getTypeColor = (type: DiffItem["type"]) => {
     switch (type) {
       case "added":
-        return "bg-green-50 border-green-200";
+        return "bg-green-200 bg-opacity-60";
       case "deleted":
-        return "bg-red-50 border-red-200";
+        return "bg-red-200 bg-opacity-60";
       case "modified":
-        return "bg-blue-50 border-blue-200";
+        return "bg-blue-200 bg-opacity-60";
     }
   };
 
@@ -140,7 +129,6 @@ export function VersionDiff({
           </Button>
         </div>
       </div>
-
       {/* Version headers */}
       <div className="grid grid-cols-2 gap-4">
         <Card>
@@ -175,7 +163,7 @@ export function VersionDiff({
           </CardHeader>
         </Card>
       </div>
-
+      border-blue-200
       {/* View mode tabs */}
       <Tabs
         value={viewMode}
@@ -192,17 +180,19 @@ export function VersionDiff({
               {diffItems.map((item, index) => (
                 <Card
                   key={index}
-                  className={cn("border-l-4", getTypeColor(item.type))}
+                  className={cn(
+                    "border-l-4 text-black",
+                    getTypeColor(item.type),
+                  )}
                 >
                   <CardContent className="p-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
-                          {getTypeIcon(item.type)}
                           <code className="text-sm font-mono">{item.key}</code>
                         </div>
                         {item.oldValue && (
-                          <div className="bg-gray-50 p-2 rounded text-sm font-mono break-all">
+                          <div className="bg-inherit p-2 rounded text-sm font-mono break-all">
                             {item.oldValue}
                           </div>
                         )}
@@ -210,11 +200,10 @@ export function VersionDiff({
 
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
-                          {getTypeIcon(item.type)}
                           <code className="text-sm font-mono">{item.key}</code>
                         </div>
                         {item.newValue && (
-                          <div className="bg-gray-50 p-2 rounded text-sm font-mono break-all">
+                          <div className="bg-inherit bg-opacity-40 p-2 rounded text-sm font-mono break-all">
                             {item.newValue}
                           </div>
                         )}
@@ -233,12 +222,14 @@ export function VersionDiff({
               {diffItems.map((item, index) => (
                 <Card
                   key={index}
-                  className={cn("border-l-4", getTypeColor(item.type))}
+                  className={cn(
+                    "border-l-4 text-black",
+                    getTypeColor(item.type),
+                  )}
                 >
                   <CardContent className="p-4">
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
-                        {getTypeIcon(item.type)}
                         <code className="text-sm font-mono font-semibold">
                           {item.key}
                         </code>

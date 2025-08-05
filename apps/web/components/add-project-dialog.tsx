@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Textarea } from "./ui/textarea";
 
 const projectSchema = z.object({
   name: z.string().min(2, {
@@ -60,7 +61,7 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
     try {
       const projectData = {
         name: data.name,
-        description: "",
+        description: data.description as string,
         status: "valid" as const,
         key: crypto.randomUUID(),
         content: {},
@@ -109,6 +110,25 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
                   <FormLabel>Project Name</FormLabel>
                   <FormControl>
                     <Input placeholder="My Awesome Project" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              // @ts-expect-error - react-hook-form types are not compatible with react 19
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Description (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={1}
+                      placeholder="My awesome project for facebook envs..."
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

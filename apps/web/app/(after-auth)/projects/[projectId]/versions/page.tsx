@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 
 import { VersionHistory } from "@/components/version-history";
@@ -17,6 +17,7 @@ import {
   History,
   BarChart3,
   ArrowUpDown,
+  ArrowLeft,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
@@ -44,6 +45,7 @@ import {
 import { Badge } from "@nvii/ui/components/badge";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
+import { EnvVersion } from "@nvii/db";
 
 interface Version {
   id: string;
@@ -105,7 +107,33 @@ export default function VersionsPage() {
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "changes">("date");
   const [activeTab, setActiveTab] = useState("history");
-  const { getProjectVersions } = useProjects();
+  const {
+    getProjectVersions,
+    getProjectAccess,
+    addProjectAccess,
+    removeProjectAccess,
+  } = useProjects();
+
+  const [users, setUsers] = useState<
+    Array<{ id: string; email: string | null; name: string | null }>
+  >([]);
+
+  const loadUsers = useCallback(async () => {
+    try {
+      const projectAccess = await getProjectAccess(
+        projectId as string,
+        user.id,
+      );
+      setUsers(projectAccess.map((access) => access.user));
+    } catch (error) {
+      console.error("Failed to load users:", error);
+      toast.error("Failed to load users with access");
+    }
+  }, [projectId, getProjectAccess, user.id]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
 
   useEffect(() => {
     const handleFetch = async () => {
@@ -113,7 +141,7 @@ export default function VersionsPage() {
       try {
         const data = await getProjectVersions(
           projectId as string,
-          user.id as string
+          user.id as string,
         );
 
         if (!data) {
@@ -121,7 +149,7 @@ export default function VersionsPage() {
           return;
         }
 
-        setVersions(data);
+        setVersions(data as Version[] & EnvVersion[]);
       } catch (error) {
         toast.error("An error occurred loading env versions.");
       } finally {
@@ -145,7 +173,7 @@ export default function VersionsPage() {
   const handleCreateBranch = async (
     versionId: string,
     branchName: string,
-    description?: string
+    description?: string,
   ) => {
     // Implement branch creation logic
     console.log("Creating branch:", branchName, "from version:", versionId);
@@ -191,20 +219,16 @@ export default function VersionsPage() {
     }
   });
 
-  const uniqueUsers = Array.from(
-    new Set(versions.map((v) => v.user.email))
-  ).filter(Boolean);
-
   return (
     <div className="container mx-auto py-6 space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Version History</h1>
-          <p className="text-muted-foreground">
-            Track and manage your environment variable versions
-          </p>
-        </div>
+      <div className="flex items-center justify-between mt-4">
+        <Link href={`/projects/${projectId}`}>
+          <Button variant="ghost" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to explorer
+          </Button>
+        </Link>
 
         <div className="flex items-center space-x-2">
           <Link href={`/projects/${projectId}/versions/compare`}>
@@ -214,6 +238,12 @@ export default function VersionsPage() {
             </Button>
           </Link>
         </div>
+      </div>
+      <div>
+        <h1 className="text-3xl font-bold">Version History</h1>
+        <p className="text-muted-foreground">
+          Track and manage your environment variable versions
+        </p>
       </div>
 
       {/* Tabs */}
@@ -256,9 +286,9 @@ export default function VersionsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Users</SelectItem>
-                    {uniqueUsers.map((email) => (
-                      <SelectItem key={email} value={email!}>
-                        {email}
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.email!}>
+                        {user.email}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -291,9 +321,9 @@ export default function VersionsPage() {
                   <Card key={i}>
                     <CardContent className="p-6">
                       <div className="space-y-3">
-                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                        <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
-                        <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2" />
+                        <div className="h-4 bg-gray-600 rounded animate-pulse" />
+                        <div className="h-3 bg-gray-600 rounded animate-pulse w-2/3" />
+                        <div className="h-3 bg-gray-600 rounded animate-pulse w-1/2" />
                       </div>
                     </CardContent>
                   </Card>
@@ -351,9 +381,12 @@ export default function VersionsPage() {
                             })}
                           </span>
                           <span>•</span>
-                          <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                          <Badge
+                            variant={"outline"}
+                            className="text-xs text-gray-100 px-2 py-1 rounded"
+                          >
                             {version.id.slice(0, 8)}
-                          </code>
+                          </Badge>
                         </div>
 
                         {version.changes && (

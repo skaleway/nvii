@@ -47,7 +47,9 @@ export function Header() {
                 href={item.href}
                 className={cn(
                   "text-sm text-muted-foreground hover:text-foreground transition-colors",
-                  pathname === item.href ? "text-primary font-semibold" : "",
+                  pathname === item.href
+                    ? "text-primary font-semibold hover:text-primary"
+                    : "",
                 )}
               >
                 {item.label}

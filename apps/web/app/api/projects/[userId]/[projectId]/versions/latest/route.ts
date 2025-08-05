@@ -15,11 +15,8 @@ export async function GET(
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
-    let cliUser = await validateCliAuth(headersList);
+    const cliUser = await validateCliAuth(headersList);
 
-    if (!cliUser) {
-      cliUser = (await getCurrentUserFromSession()) as AuthUser | null;
-    }
     // read web request headers
     const webUser = await getCurrentUserFromSession();
 
@@ -28,12 +25,11 @@ export async function GET(
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (cliUser?.id !== userId) {
+    const { projectId } = await params;
+    const user = webUser || cliUser;
+    if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
-    const { projectId } = await params;
-    const user = cliUser || webUser;
-
     // Verify user has access to the project
     const project = await db.envVersion.findFirst({
       where: {

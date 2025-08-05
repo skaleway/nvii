@@ -36,11 +36,15 @@ import { useState } from "react";
 interface EnvVariableTableProps {
   environment: Record<string, string>;
   isLoading?: boolean;
+  projectUserId: string;
+  userId: string;
 }
 
 export function EnvVariableTable({
   environment,
   isLoading = false,
+  userId,
+  projectUserId,
 }: EnvVariableTableProps) {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -304,11 +308,16 @@ export function EnvVariableTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View History</DropdownMenuItem>
-                      <DropdownMenuItem>Sync Variable</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
-                        Delete Variable
-                      </DropdownMenuItem>
+                      {/* <DropdownMenuItem asChild>
+                        <Link href={`${pathName}/${version.id}`}>
+                          View History
+                        </Link>
+                      </DropdownMenuItem> */}
+                      {projectUserId === userId && (
+                        <DropdownMenuItem className="text-destructive">
+                          Delete Variable
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
