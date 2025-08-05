@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { VersionDiff } from "@/components/version-diff";
@@ -22,6 +22,9 @@ import {
 } from "@nvii/ui/components/select";
 import { Label } from "@nvii/ui/components/label";
 import { VersionActions } from "@/components/version-actions";
+import { useProjects } from "@/components/projects-provider";
+import { useSession } from "@/provider/session";
+import { EnvVersion } from "@nvii/db";
 
 interface VersionInfo {
   id: string;
@@ -35,11 +38,17 @@ interface VersionInfo {
 }
 
 export default function VersionComparePage() {
-  const params = useParams();
+  const { projectId } = useParams();
   const searchParams = useSearchParams();
-  const projectId = params.projectId as string;
+  const { user } = useSession();
 
   const [versions, setVersions] = useState<VersionInfo[]>([]);
+  const { getProjectVersions, getProjectAccess } = useProjects();
+
+  const [users, setUsers] = useState<
+    Array<{ id: string; email: string | null; name: string | null }>
+  >([]);
+
   const [leftVersionId, setLeftVersionId] = useState<string>(
     searchParams.get("left") || "",
   );
@@ -50,83 +59,59 @@ export default function VersionComparePage() {
   const [rightVersion, setRightVersion] = useState<VersionInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadUsers = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const projectAccess = await getProjectAccess(
+        projectId as string,
+        user.id,
+      );
+      setUsers(projectAccess.map((access) => access.user));
+    } catch (error) {
+      console.error("Failed to load users:", error);
+      toast.error("Failed to load users with access");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [projectId, getProjectAccess, user.id]);
+
   useEffect(() => {
-    const fetchVersions = async () => {
+    loadUsers();
+  }, [loadUsers]);
+
+  useEffect(() => {
+    const handleFetch = async () => {
       setIsLoading(true);
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const data = await getProjectVersions(
+          projectId as string,
+          user.id as string,
+        );
 
-        const mockVersions: VersionInfo[] = [
-          {
-            id: "v1234567890abcdef",
-            description: "Added new API endpoints",
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            user: {
-              name: "John Doe",
-              email: "john@example.com",
-            },
-            content: {
-              DATABASE_URL: "postgresql://user:pass@localhost:5432/nvii",
-              API_BASE_URL: "https://api.nvii.dev",
-              API_TIMEOUT: "30000",
-              JWT_SECRET: "***hidden***",
-              REDIS_URL: "redis://localhost:6379",
-              NODE_ENV: "production",
-            },
-          },
-          {
-            id: "v0987654321fedcba",
-            description: "Database migration updates",
-            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-            user: {
-              name: "Jane Smith",
-              email: "jane@example.com",
-            },
-            content: {
-              DATABASE_URL: "postgresql://user:pass@localhost:5432/old_nvii",
-              JWT_SECRET: "***hidden***",
-              REDIS_URL: "redis://localhost:6379",
-              NODE_ENV: "development",
-              OLD_API_URL: "https://old-api.nvii.dev",
-              DB_POOL_SIZE: "10",
-            },
-          },
-          {
-            id: "v1111222233334444",
-            description: "Initial configuration",
-            createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-            user: {
-              name: "Admin User",
-              email: "admin@example.com",
-            },
-            content: {
-              DATABASE_URL: "postgresql://user:pass@localhost:5432/initial",
-              JWT_SECRET: "***hidden***",
-              NODE_ENV: "development",
-            },
-          },
-        ];
-
-        setVersions(mockVersions);
-
-        // Set default versions if not provided in URL
-        if (!leftVersionId && mockVersions.length > 1) {
-          setLeftVersionId(mockVersions[1].id);
+        if (!data) {
+          toast.error("Cannot fetch env versions at the moment.");
+          return;
         }
-        if (!rightVersionId && mockVersions.length > 0) {
-          setRightVersionId(mockVersions[0].id);
+
+        if (!data) return;
+        console.log({ data });
+        setVersions(data as VersionInfo[] & EnvVersion[]);
+        // Set default versions if not provided in URL
+        if (data.length > 1) {
+          setLeftVersionId(data[1]?.id);
+        }
+        if (data.length > 0) {
+          setRightVersionId(data[0]?.id);
         }
       } catch (error) {
-        toast.error("Failed to load versions");
-        console.error("Error fetching versions:", error);
+        toast.error("An error occurred loading env versions.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchVersions();
-  }, [projectId]);
+    handleFetch();
+  }, [getProjectVersions, user.id, projectId]);
 
   useEffect(() => {
     if (leftVersionId) {
@@ -190,12 +175,12 @@ export default function VersionComparePage() {
       ``,
       `Left Version: ${left.id}`,
       `Description: ${left.description || "No description"}`,
-      `Created: ${left.createdAt.toISOString()}`,
+      `Created: ${new Date(left.createdAt).toISOString()}`,
       `By: ${left.user.name || left.user.email}`,
       ``,
       `Right Version: ${right.id}`,
       `Description: ${right.description || "No description"}`,
-      `Created: ${right.createdAt.toISOString()}`,
+      `Created: ${new Date(right.createdAt).toISOString()}`,
       `By: ${right.user.name || right.user.email}`,
       ``,
       `Changes:`,
@@ -277,74 +262,66 @@ export default function VersionComparePage() {
       </div>
 
       {/* Version Selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Select Versions to Compare</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Left Version (Base)</Label>
-              <Select value={leftVersionId} onValueChange={setLeftVersionId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select base version" />
-                </SelectTrigger>
-                <SelectContent>
-                  {versions.map((version) => (
-                    <SelectItem key={version.id} value={version.id}>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">
-                          {version.description ||
-                            `Version ${version.id.slice(0, 8)}`}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {version.createdAt.toLocaleDateString()} •{" "}
-                          {version.user.name || version.user.email}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Left Version (Base)</Label>
+          <Select value={leftVersionId} onValueChange={setLeftVersionId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select base version" />
+            </SelectTrigger>
+            <SelectContent>
+              {versions.map((version) => (
+                <SelectItem key={version.id} value={version.id}>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">
+                      {version.description ||
+                        `Version ${version.id.slice(0, 8)}`}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(version.createdAt).toLocaleDateString()} •{" "}
+                      {version.user.name || version.user.email}
+                    </span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Right Version (Compare)
-              </label>
-              <Select value={rightVersionId} onValueChange={setRightVersionId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select version to compare" />
-                </SelectTrigger>
-                <SelectContent>
-                  {versions.map((version) => (
-                    <SelectItem key={version.id} value={version.id}>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">
-                          {version.description ||
-                            `Version ${version.id.slice(0, 8)}`}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {version.createdAt.toLocaleDateString()} •{" "}
-                          {version.user.name || version.user.email}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Right Version (Compare)</label>
+          <Select value={rightVersionId} onValueChange={setRightVersionId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select version to compare" />
+            </SelectTrigger>
+            <SelectContent>
+              {versions &&
+                versions.map((version) => (
+                  <SelectItem key={version.id} value={version.id}>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">
+                        {version.description ||
+                          `Version ${version.id.slice(0, 8)}`}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(version.createdAt).toLocaleDateString()} •{" "}
+                        {version.user.name || version.user.email}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-          {leftVersionId === rightVersionId && leftVersionId && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">
-                Please select two different versions to compare.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {leftVersionId === rightVersionId && leftVersionId && (
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            Please select two different versions to compare.
+          </p>
+        </div>
+      )}
 
       {/* Comparison Results */}
       {canCompare ? (

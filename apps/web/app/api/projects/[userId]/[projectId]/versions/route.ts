@@ -1,10 +1,11 @@
 import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
-import { db } from "@nvii/db";
+import { db, EnvVersion } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { decryptEnvValues } from "@/lib/encryption";
 import { headers } from "next/headers";
 import { AuthUser, validateCliAuth } from "../../route";
+import { decryptEnv } from "@/lib/actions/decrypt";
 
 // Get all versions for a project
 export async function GET(
@@ -70,7 +71,24 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(versions);
+    const decryptedVersions: unknown[] = [];
+    const handleDecrypt = async () => {
+      versions.map(async (item) => {
+        const decryptedContent = await decryptEnv(
+          item.content as Record<string, string>,
+          project.userId,
+        );
+
+        decryptedVersions.push({
+          ...item,
+          content: decryptedContent,
+        });
+      });
+    };
+
+    await handleDecrypt();
+
+    return NextResponse.json(decryptedVersions);
   } catch (error) {
     console.error("[VERSIONS_GET]", error);
     return ErrorResponse("Internal Server Error", 500);

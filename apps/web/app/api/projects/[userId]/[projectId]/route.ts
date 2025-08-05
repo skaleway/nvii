@@ -10,6 +10,7 @@ import { User } from "better-auth";
 import { headers } from "next/headers";
 import { AuthUser, validateCliAuth } from "../route";
 import { decryptEnv } from "@/lib/actions/decrypt";
+import { encryptEnvValues } from "@nvii/env-helpers";
 
 export async function GET(
   _: Request,
@@ -99,7 +100,6 @@ export async function PATCH(
       where: {
         id: projectId,
         OR: [
-          { userId: userId },
           {
             ProjectAccess: {
               some: {
@@ -119,25 +119,28 @@ export async function PATCH(
     const { content, description } = body;
 
     // Calculate changes between old and new content
-    const changes = calculateChanges(
-      existingProject.content as Record<string, string> | null,
-      content,
+    const decryptedExistingEnv = await decryptEnv(
+      existingProject.content as Record<string, string>,
+      existingProject.userId,
     );
+    const changes = calculateChanges(decryptedExistingEnv, content);
 
     // Create new version and update project in a transaction
+
+    const encryptedEnvs = encryptEnvValues(content, existingProject.userId);
     const [project, version] = await db.$transaction([
       db.project.update({
         where: {
           id: projectId,
         },
         data: {
-          content,
+          content: encryptedEnvs,
         },
       }),
       db.envVersion.create({
         data: {
           projectId,
-          content,
+          content: encryptedEnvs,
           description: description || "Updated environment variables",
           changes: JSON.parse(JSON.stringify(changes)),
           createdBy: user.id,
@@ -158,7 +161,10 @@ export async function PATCH(
       project: {
         ...project,
         content: project.content
-          ? await decryptEnv(project.content as Record<string, string>, user.id)
+          ? await decryptEnv(
+              project.content as Record<string, string>,
+              existingProject.userId,
+            )
           : null,
       },
       version,

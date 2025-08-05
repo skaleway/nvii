@@ -100,19 +100,14 @@ export default function VersionsPage() {
   const { projectId } = useParams();
   const { user } = useSession();
 
-  const [versions, setVersions] = useState<Version[]>([]);
   const [analytics, setAnalytics] = useState<VersionAnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "changes">("date");
   const [activeTab, setActiveTab] = useState("history");
-  const {
-    getProjectVersions,
-    getProjectAccess,
-    addProjectAccess,
-    removeProjectAccess,
-  } = useProjects();
+  const [versions, setVersions] = useState<Version[]>([]);
+  const { getProjectVersions, getProjectAccess } = useProjects();
 
   const [users, setUsers] = useState<
     Array<{ id: string; email: string | null; name: string | null }>

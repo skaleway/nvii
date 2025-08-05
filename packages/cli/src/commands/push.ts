@@ -1,5 +1,4 @@
 import {
-  encryptEnvValues,
   getConfiguredClient,
   isLogedIn,
   readConfigFile,
@@ -57,13 +56,11 @@ export async function pushLatestChanges() {
       },
     ]);
 
-    const encryptedEnvs = encryptEnvValues(localEnvs, userConfig.userId);
-
     const client = await getConfiguredClient();
     const response = await client.patch(
       `/projects/${userConfig.userId}/${projectId}`,
       {
-        content: encryptedEnvs,
+        content: localEnvs,
         description,
       },
     );
@@ -78,15 +75,16 @@ export async function pushLatestChanges() {
 
     if (version.changes) {
       console.log(pc.bold("Change summary:"));
-      const { added, updated, removed } = version.changes;
+      // console.log({ cha: version.changes });
+      const { added, modified, deleted } = version.changes;
       if (added?.length > 0) {
         console.log(pc.green(`  Added:   ${added.join(", ")}`));
       }
-      if (updated?.length > 0) {
-        console.log(pc.yellow(`  Updated: ${updated.join(", ")}`));
+      if (modified?.length > 0) {
+        console.log(pc.yellow(`  Updated: ${modified.join(", ")}`));
       }
-      if (removed?.length > 0) {
-        console.log(pc.red(`  Removed: ${removed.join(", ")}`));
+      if (deleted?.length > 0) {
+        console.log(pc.red(`  Removed: ${deleted.join(", ")}`));
       }
     }
   } catch (error: Error | any) {
