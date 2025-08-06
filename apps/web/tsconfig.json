@@ -5,7 +5,7 @@
     "paths": {
       "@/*": ["./*"],
       "@nvii/ui/*": ["../../packages/ui/src/*"],
-      "Envi-data": ["./.Envi/"]
+      "Envi-data": ["./.nvii/"]
     },
     "plugins": [
       {

@@ -1,10 +1,8 @@
 import { Project } from "@nvii/db";
 import {
-  decryptEnvValues,
   getConfiguredClient,
   isLogedIn,
   readConfigFile,
-  readEnvFile,
   writeProjectConfig,
 } from "@nvii/env-helpers";
 import { existsSync, promises as fs, mkdirSync, writeFileSync } from "fs";
@@ -59,8 +57,8 @@ export async function linkProject() {
     }
 
     const currentDir = process.cwd();
-    const enviDirPath = path.join(currentDir, ".envi");
-    const enviFilePath = path.join(enviDirPath, "envi.json");
+    const enviDirPath = path.join(currentDir, ".nvii");
+    const enviFilePath = path.join(enviDirPath, "nvii.json");
 
     // create project config file path and .env if they don't exist
     if (!existsSync(enviDirPath)) {

@@ -145,6 +145,38 @@ export default function VersionsPage() {
         }
 
         setVersions(data as Version[] & EnvVersion[]);
+        // (data as Version[] & EnvVersion[]).map((item) =>{
+        //   const changeFrequency = {
+        //     date: item.createdAt,
+        //     changes: item.changes,
+        //     versions: data.length,
+        //   };
+
+        //  const  mostChangedVariables = {
+        //     variable: string;
+        //     changeCount: item.changes.
+        //     lastChanged: Date;
+        //   }
+        //   const userActivity = {
+        //     user: {
+        //       name: item.user.name,
+        //       email: item.user.email
+        //     }
+        //     versions: item.
+        //     lastActivity: Date;
+        //   }
+        //   versionStats: {
+        //     total: number;
+        //     thisWeek: number;
+        //     thisMonth: number;
+        //     averagePerDay: number;
+        //   }
+        //   changeTypes: {
+        //     added: number;
+        //     modified: number;
+        //     deleted: number;
+        //   }
+        // })
       } catch (error) {
         toast.error("An error occurred loading env versions.");
       } finally {
@@ -432,7 +464,7 @@ export default function VersionsPage() {
         <TabsContent value="analytics" className="space-y-6">
           <VersionAnalytics
             projectId={projectId as string}
-            analytics={analytics}
+            analytics={analytics as VersionAnalyticsData}
             isLoading={isLoading}
             onRefresh={() => window.location.reload()}
           />

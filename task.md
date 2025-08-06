@@ -55,7 +55,7 @@ This document outlines all tasks required to implement a complete version contro
 #### **Core Version Control Commands**
 
 - [ ] **Implement `pull.ts`** - Fetch and decrypt environment variables
-  - [x] Read `.envi` file for project configuration
+  - [x] Read `.nvii` file for project configuration
   - [x] Fetch latest version from API
   - [x] Decrypt environment variables
   - [x] Handle conflicts with existing `.env`

@@ -9,6 +9,7 @@ import pc from "picocolors";
 import { login } from "./auth/login";
 import { EnvVersion } from "@nvii/db";
 import inquirer from "inquirer";
+import { linkProject } from "./link";
 
 export async function pushLatestChanges() {
   try {
@@ -23,14 +24,19 @@ export async function pushLatestChanges() {
       console.log(pc.red("No user ID found. Please log in again.")); // Should not happen if logged in, but good practice
       return;
     }
-    const config = await readProjectConfig();
+    let config = await readProjectConfig();
+    if (!config) {
+      await linkProject();
+    }
+    config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .envi folder currently. Try again."),
+        pc.red(
+          "An error occurred reading local .nvii folder currently. Try again.",
+        ),
       );
       process.exit(1);
     }
-
     const projectId = config.projectId;
     if (!projectId) {
       console.error(

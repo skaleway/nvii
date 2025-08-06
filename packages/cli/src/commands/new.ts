@@ -12,7 +12,7 @@ import pc from "picocolors";
 import { login } from "./auth/login";
 import { unlinkProject } from "./unlink";
 
-const ENV_FILE = ".envi";
+const ENV_FILE = ".nvii";
 
 /**
  * Prompts the user with a question using inquirer.
@@ -76,7 +76,7 @@ export async function createProject() {
       ]);
 
       if (!createNewProject) {
-        console.log(pc.yellow("Skipping .envi directory clean up."));
+        console.log(pc.yellow("Skipping .nvii directory clean up."));
         return;
       }
     }

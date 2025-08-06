@@ -1,6 +1,6 @@
-.envi
+.nvii
 
 dist
 .turbo
 nodemon.json
-.envi/
+.nvii/

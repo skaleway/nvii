@@ -62,7 +62,7 @@ export async function unlinkProject() {
     if (!result) {
       console.log(
         pc.yellow(
-          "Oops. An error occurred deleting the local .envi directory. You can delete it manually.",
+          "Oops. An error occurred deleting the local .nvii directory. You can delete it manually.",
         ),
       );
       process.exit(1);
