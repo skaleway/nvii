@@ -10,6 +10,9 @@ import {
   Plus,
   Minus,
   Edit,
+  FileText,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { Badge } from "@nvii/ui/components/badge";
 import { Button } from "@nvii/ui/components/button";
@@ -53,233 +56,186 @@ interface VersionDiffProps {
   onCopy?: () => void;
 }
 
+interface DiffLine {
+  type: "added" | "deleted" | "unchanged";
+  content: string;
+  lineNumber?: number;
+}
+
+interface FileDiff {
+  fileName: string;
+  lines: DiffLine[];
+}
+
 export function VersionDiff({
   leftVersion,
   rightVersion,
   onExport,
   onCopy,
 }: VersionDiffProps) {
-  const [viewMode, setViewMode] = useState<"side-by-side" | "inline">(
-    "side-by-side",
-  );
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Calculate differences
-  const calculateDiff = (): DiffItem[] => {
-    const diff: DiffItem[] = [];
+  const calculateFileDiff = (): FileDiff => {
+    const lines: DiffLine[] = [];
     const allKeys = new Set([
       ...Object.keys(leftVersion.content),
       ...Object.keys(rightVersion.content),
     ]);
 
-    for (const key of allKeys) {
+    let lineNumber = 1;
+    for (const key of Array.from(allKeys).sort()) {
       const oldValue = leftVersion.content[key];
       const newValue = rightVersion.content[key];
 
       if (!oldValue && newValue) {
-        diff.push({ key, newValue, type: "added" });
+        lines.push({
+          type: "added",
+          content: `${key}=${newValue}`,
+          lineNumber: lineNumber++,
+        });
       } else if (oldValue && !newValue) {
-        diff.push({ key, oldValue, type: "deleted" });
+        lines.push({
+          type: "deleted",
+          content: `${key}=${oldValue}`,
+          lineNumber: lineNumber++,
+        });
       } else if (oldValue !== newValue) {
-        diff.push({ key, oldValue, newValue, type: "modified" });
+        lines.push({
+          type: "deleted",
+          content: `${key}=${oldValue}`,
+          lineNumber: lineNumber++,
+        });
+        lines.push({
+          type: "added",
+          content: `${key}=${newValue}`,
+          lineNumber: lineNumber++,
+        });
+      } else {
+        lines.push({
+          type: "unchanged",
+          content: `${key}=${oldValue}`,
+          lineNumber: lineNumber++,
+        });
       }
     }
 
-    return diff.sort((a, b) => a.key.localeCompare(b.key));
+    return { fileName: ".env", lines };
   };
 
-  const diffItems = calculateDiff();
+  const fileDiff = calculateFileDiff();
   const stats = {
-    added: diffItems.filter((item) => item.type === "added").length,
-    modified: diffItems.filter((item) => item.type === "modified").length,
-    deleted: diffItems.filter((item) => item.type === "deleted").length,
-  };
-
-  const getTypeColor = (type: DiffItem["type"]) => {
-    switch (type) {
-      case "added":
-        return "bg-green-200 bg-opacity-60";
-      case "deleted":
-        return "bg-red-200 bg-opacity-60";
-      case "modified":
-        return "bg-blue-200 bg-opacity-60";
-    }
+    added: fileDiff.lines.filter((line) => line.type === "added").length,
+    deleted: fileDiff.lines.filter((line) => line.type === "deleted").length,
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header with version info and actions */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h2 className="text-2xl font-bold">Version Comparison</h2>
+    <div className="border border-background/80 rounded-lg overflow-hidden bg-background">
+      {/* File Header */}
+      <div
+        className="flex items-center justify-between px-4 py-3 bg-background border-b border-muted/80 cursor-pointer hover:bg-background/30"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center space-x-3">
+          {isExpanded ? (
+            <ChevronDown className="h-4 w-4 text-gray-600" />
+          ) : (
+            <ChevronRight className="h-4 w-4 text-gray-600" />
+          )}
+          <FileText className="h-4 w-4 text-gray-600" />
+          <span className="font-medium text-gray-100">.env</span>
           <div className="flex items-center space-x-2">
-            <Badge variant="outline">{stats.added} added</Badge>
-            <Badge variant="outline">{stats.modified} modified</Badge>
-            <Badge variant="outline">{stats.deleted} deleted</Badge>
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-400 bg-opacity-15 text-green-500">
+              +{stats.added}
+            </span>
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-rose-400 bg-opacity-15 text-red-500">
+              -{stats.deleted}
+            </span>
           </div>
         </div>
-
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" onClick={onCopy}>
-            <Copy className="mr-2 h-4 w-4" />
-            Copy Diff
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCopy?.();
+            }}
+            className="h-8 px-3 text-xs"
+          >
+            <Copy className="mr-1 h-3 w-3" />
+            Copy
           </Button>
-          <Button variant="outline" size="sm" onClick={onExport}>
-            <Download className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onExport?.();
+            }}
+            className="h-8 px-3 text-xs"
+          >
+            <Download className="mr-1 h-3 w-3" />
             Export
           </Button>
         </div>
       </div>
-      {/* Version headers */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">
-              <ArrowLeft className="mr-2 h-4 w-4 inline" />
-              Version {leftVersion.id.slice(0, 8)}
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">
-              {leftVersion.description || "No description"}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              by {leftVersion.user.name || leftVersion.user.email} •{" "}
-              {leftVersion.createdAt.toLocaleDateString()}
-            </p>
-          </CardHeader>
-        </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">
-              <ArrowRight className="mr-2 h-4 w-4 inline" />
-              Version {rightVersion.id.slice(0, 8)}
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">
-              {rightVersion.description || "No description"}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              by {rightVersion.user.name || rightVersion.user.email} •{" "}
-              {rightVersion.createdAt.toLocaleDateString()}
-            </p>
-          </CardHeader>
-        </Card>
-      </div>
-      border-blue-200
-      {/* View mode tabs */}
-      <Tabs
-        value={viewMode}
-        onValueChange={(value) => setViewMode(value as typeof viewMode)}
-      >
-        <TabsList>
-          <TabsTrigger value="side-by-side">Side by Side</TabsTrigger>
-          <TabsTrigger value="inline">Inline</TabsTrigger>
-        </TabsList>
+      {/* Diff Content */}
+      {isExpanded && (
+        <div className="overflow-hidden">
+          <ScrollArea className="h-auto">
+            <table className="w-full h-auto text-sm font-mono">
+              <tbody>
+                {fileDiff.lines.map((line, index) => {
+                  const isAdded = line.type === "added";
+                  const isDeleted = line.type === "deleted";
+                  const isUnchanged = line.type === "unchanged";
 
-        <TabsContent value="side-by-side" className="mt-4">
-          <ScrollArea className="h-[600px]">
-            <div className="space-y-2">
-              {diffItems.map((item, index) => (
-                <Card
-                  key={index}
-                  className={cn(
-                    "border-l-4 text-black",
-                    getTypeColor(item.type),
-                  )}
-                >
-                  <CardContent className="p-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <code className="text-sm font-mono">{item.key}</code>
-                        </div>
-                        {item.oldValue && (
-                          <div className="bg-inherit p-2 rounded text-sm font-mono break-all">
-                            {item.oldValue}
-                          </div>
-                        )}
-                      </div>
+                  return (
+                    <tr
+                      key={index}
+                      className={cn(
+                        {
+                          "bg-emerald-400 bg-opacity-15": isAdded,
+                          "bg-rose-400 bg-opacity-15": isDeleted,
+                          "bg-transparent": isUnchanged,
+                        },
+                        "h-10",
+                      )}
+                    >
+                      {/* Line number column */}
+                      <td className="w-12 px-3 py-0.5 text-right text-gray-400 border-r border-border select-none">
+                        <span className="text-xs">{line.lineNumber}</span>
+                      </td>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <code className="text-sm font-mono">{item.key}</code>
-                        </div>
-                        {item.newValue && (
-                          <div className="bg-inherit bg-opacity-40 p-2 rounded text-sm font-mono break-all">
-                            {item.newValue}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      {/* Sign column */}
+                      <td className="w-6 px-2 py-0.5 text-center select-none">
+                        <span
+                          className={cn("text-sm font-bold", {
+                            "text-green-600": isAdded,
+                            "text-red-600": isDeleted,
+                            "text-gray-400": isUnchanged,
+                          })}
+                        >
+                          {isAdded ? "+" : isDeleted ? "-" : " "}
+                        </span>
+                      </td>
+
+                      {/* Content column */}
+                      <td className="px-2 py-0.5 text-gray-300">
+                        <span className="whitespace-pre text-sm">
+                          {line.content}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </ScrollArea>
-        </TabsContent>
-
-        <TabsContent value="inline" className="mt-4">
-          <ScrollArea className="h-[600px]">
-            <div className="space-y-2">
-              {diffItems.map((item, index) => (
-                <Card
-                  key={index}
-                  className={cn(
-                    "border-l-4 text-black",
-                    getTypeColor(item.type),
-                  )}
-                >
-                  <CardContent className="p-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <code className="text-sm font-mono font-semibold">
-                          {item.key}
-                        </code>
-                        <Badge variant="outline" className="text-xs">
-                          {item.type}
-                        </Badge>
-                      </div>
-
-                      {item.type === "modified" && (
-                        <div className="space-y-1">
-                          <div className="flex items-center space-x-2">
-                            <Minus className="h-3 w-3 text-red-600" />
-                            <div className="bg-red-50 p-2 rounded text-sm font-mono break-all flex-1">
-                              {item.oldValue}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Plus className="h-3 w-3 text-green-600" />
-                            <div className="bg-green-50 p-2 rounded text-sm font-mono break-all flex-1">
-                              {item.newValue}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {item.type === "added" && (
-                        <div className="flex items-center space-x-2">
-                          <Plus className="h-3 w-3 text-green-600" />
-                          <div className="bg-green-50 p-2 rounded text-sm font-mono break-all flex-1">
-                            {item.newValue}
-                          </div>
-                        </div>
-                      )}
-
-                      {item.type === "deleted" && (
-                        <div className="flex items-center space-x-2">
-                          <Minus className="h-3 w-3 text-red-600" />
-                          <div className="bg-red-50 p-2 rounded text-sm font-mono break-all flex-1">
-                            {item.oldValue}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
     </div>
   );
 }

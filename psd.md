@@ -34,7 +34,7 @@
 - Use `inquirer` for interactive user prompts.
 - Use `crypto` for AES-256 encryption/decryption.
 - Interact with a remote API (Supabase) for persistence.
-- Store project metadata (e.g., `projectId`) in a `.envi` file in project root.
+- Store project metadata (e.g., `projectId`) in a `.nvii` file in project root.
 - Implement user authentication and authorization.
 - Provide version control for environment variables.
 

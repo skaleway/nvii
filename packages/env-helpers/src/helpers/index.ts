@@ -234,14 +234,14 @@ export interface ProjectConfig {
 }
 
 /**
- * Reads project configuration from .envi/envi.json file
+ * Reads project configuration from .nvii/nvii.json file
  * @returns Promise<ProjectConfig[] | null> The project configurations or null if not found
  */
 export async function readProjectConfig(): Promise<ProjectConfig | null> {
   try {
     const currentDir = process.cwd();
-    const enviDirPath = path.join(currentDir, ".envi");
-    const enviFilePath = path.join(enviDirPath, "envi.json");
+    const enviDirPath = path.join(currentDir, ".nvii");
+    const enviFilePath = path.join(enviDirPath, "nvii.json");
 
     // Check if both directory and file exist
     if (!existsSync(enviDirPath) || !existsSync(enviFilePath)) {
@@ -279,7 +279,7 @@ async function updateGitignore(): Promise<void> {
   try {
     const currentDir = process.cwd();
     const gitignorePath = path.join(currentDir, ".gitignore");
-    const enviEntry = ".envi/";
+    const enviEntry = ".nvii/";
 
     let content = "";
     if (existsSync(gitignorePath)) {
@@ -297,7 +297,7 @@ async function updateGitignore(): Promise<void> {
       }
     }
 
-    // Append .envi/ to .gitignore
+    // Append .nvii/ to .gitignore
     content += `${enviEntry}\n`;
     await fs.writeFile(gitignorePath, content, "utf-8");
     console.log(pc.green("✅ Updated .gitignore to exclude .nvii folder"));
@@ -308,14 +308,14 @@ async function updateGitignore(): Promise<void> {
 }
 
 /**
- * Writes project configuration to .envi/envi.json file
+ * Writes project configuration to .nvii/nvii.json file
  * @param projectId - The project ID to save
  */
 export async function writeProjectConfig(projectId: string): Promise<void> {
   try {
     const currentDir = process.cwd();
-    const enviDirPath = path.join(currentDir, ".envi");
-    const enviFilePath = path.join(enviDirPath, "envi.json");
+    const enviDirPath = path.join(currentDir, ".nvii");
+    const enviFilePath = path.join(enviDirPath, "nvii.json");
 
     if (!existsSync(enviDirPath)) {
       // Create .nvii directory if it doesn't exist
@@ -349,19 +349,19 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
 }
 
 /**
- * Delete project configuration from .envi/envi.json file
+ * Delete project configuration from .nvii/nvii.json file
  * @param projectId - The project ID to unlink
  */
 export async function unlinkProjectConfig(projectId: string): Promise<boolean> {
   let success = false;
   try {
     const currentDir = process.cwd();
-    const enviDirPath = path.join(currentDir, ".envi");
-    const enviFilePath = path.join(enviDirPath, "envi.json");
+    const enviDirPath = path.join(currentDir, ".nvii");
+    const enviFilePath = path.join(enviDirPath, "nvii.json");
 
     // Check if .nvii directory exists
     if (existsSync(enviDirPath)) {
-      // Check if envi.json exists and delete it
+      // Check if nvii.json exists and delete it
       if (existsSync(enviFilePath)) {
         try {
           const config = await readProjectConfig();
@@ -372,12 +372,12 @@ export async function unlinkProjectConfig(projectId: string): Promise<boolean> {
           }
           success = true;
         } catch (error) {
-          console.warn(pc.yellow("Warning: Could not delete envi.json."));
+          console.warn(pc.yellow("Warning: Could not delete nvii.json."));
           return success;
         }
       }
     } else {
-      console.warn(pc.yellow("Warning: .envi directory not found."));
+      console.warn(pc.yellow("Warning: .nvii directory not found."));
       return success;
     }
 

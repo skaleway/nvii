@@ -29,7 +29,7 @@ export async function updateProject() {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .envi folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again."),
       );
       process.exit(1);
     }

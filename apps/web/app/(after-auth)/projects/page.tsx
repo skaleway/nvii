@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@nvii/ui/components/button";
 import {
@@ -17,70 +17,9 @@ import {
   BreadcrumbSeparator,
 } from "@nvii/ui/components/breadcrumb";
 import { Skeleton } from "@nvii/ui/components/skeleton";
-import { Badge } from "@nvii/ui/components/badge";
-import { Input } from "@nvii/ui/components/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@nvii/ui/components/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@nvii/ui/components/tabs";
-import {
-  RefreshCcw,
-  Search,
-  Grid,
-  List,
-  Filter,
-  Calendar,
-  Users,
-  Settings,
-  Eye,
-  Clock,
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Share2,
-  Copy,
-  ExternalLink,
-  Activity,
-  Database,
-} from "lucide-react";
-import { toast } from "sonner";
 import { useSession } from "@/provider/session";
 import { useProjects } from "@/components/projects-provider";
-import { format, formatDistanceToNow } from "date-fns";
-import { cn } from "@nvii/ui/lib/utils";
-import { AddProjectDialog } from "@/components/add-project-dialog";
-import { VersionHistory } from "@/components/version-history";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@nvii/ui/components/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@nvii/ui/components/alert-dialog";
-import { Project } from "@/types/project";
+import { format } from "date-fns";
 
 export default function ProjectsPage() {
   const { projects, isLoading } = useProjects();

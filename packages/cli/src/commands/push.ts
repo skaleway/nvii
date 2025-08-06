@@ -1,5 +1,4 @@
 import {
-  encryptEnvValues,
   getConfiguredClient,
   isLogedIn,
   readConfigFile,
@@ -10,6 +9,7 @@ import pc from "picocolors";
 import { login } from "./auth/login";
 import { EnvVersion } from "@nvii/db";
 import inquirer from "inquirer";
+import { linkProject } from "./link";
 
 export async function pushLatestChanges() {
   try {
@@ -24,14 +24,19 @@ export async function pushLatestChanges() {
       console.log(pc.red("No user ID found. Please log in again.")); // Should not happen if logged in, but good practice
       return;
     }
-    const config = await readProjectConfig();
+    let config = await readProjectConfig();
+    if (!config) {
+      await linkProject();
+    }
+    config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .envi folder currently. Try again."),
+        pc.red(
+          "An error occurred reading local .nvii folder currently. Try again.",
+        ),
       );
       process.exit(1);
     }
-
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
@@ -57,13 +62,11 @@ export async function pushLatestChanges() {
       },
     ]);
 
-    const encryptedEnvs = encryptEnvValues(localEnvs, userConfig.userId);
-
     const client = await getConfiguredClient();
     const response = await client.patch(
       `/projects/${userConfig.userId}/${projectId}`,
       {
-        content: encryptedEnvs,
+        content: localEnvs,
         description,
       },
     );
@@ -78,15 +81,16 @@ export async function pushLatestChanges() {
 
     if (version.changes) {
       console.log(pc.bold("Change summary:"));
-      const { added, updated, removed } = version.changes;
+      // console.log({ cha: version.changes });
+      const { added, modified, deleted } = version.changes;
       if (added?.length > 0) {
         console.log(pc.green(`  Added:   ${added.join(", ")}`));
       }
-      if (updated?.length > 0) {
-        console.log(pc.yellow(`  Updated: ${updated.join(", ")}`));
+      if (modified?.length > 0) {
+        console.log(pc.yellow(`  Updated: ${modified.join(", ")}`));
       }
-      if (removed?.length > 0) {
-        console.log(pc.red(`  Removed: ${removed.join(", ")}`));
+      if (deleted?.length > 0) {
+        console.log(pc.red(`  Removed: ${deleted.join(", ")}`));
       }
     }
   } catch (error: Error | any) {
