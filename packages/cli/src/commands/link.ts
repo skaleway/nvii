@@ -23,12 +23,11 @@ const createEnvFiles = (enviDirPath: string, enviFilePath: string) => {
   console.log("\n");
 };
 
-export async function linkProject() {
+export async function linkProject(args?: { token: string }) {
   let projectId = "";
-  if (process.argv) {
-    const args = process.argv;
-    if (args.includes("-t") || args.includes("--token")) {
-      projectId = args[args.length - 1];
+  if (args) {
+    if (args.token) {
+      projectId = args.token;
     }
   }
   try {
@@ -96,7 +95,7 @@ export async function linkProject() {
     }
 
     createEnvFiles(enviDirPath, enviFilePath);
-    await writeProjectConfig(selectedProject.id);
+    await writeProjectConfig(selectedProject.id, "main");
     console.log(pc.green("Project linked successfully!"));
   } catch (error: Error | any) {
     if (error.response) {

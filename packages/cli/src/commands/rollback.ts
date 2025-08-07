@@ -33,16 +33,14 @@ const skipConfirmationPrompt = async (
   }
 };
 
-export async function rollback() {
+export async function rollback(args?: { version: string; force: boolean }) {
   let versionId = "";
   let skipConfirmation = false;
-  if (process.argv) {
-    const args = process.argv;
-    if (args.includes("-v") || args.includes("--version")) {
-      const index = args.indexOf("-v") || args.indexOf("--version");
-      versionId = args[index + 1];
+  if (args) {
+    if (args.version) {
+      versionId = args.version;
     }
-    if (args.includes("-f") || args.includes("--force")) {
+    if (args.force) {
       skipConfirmation = true;
     }
   }

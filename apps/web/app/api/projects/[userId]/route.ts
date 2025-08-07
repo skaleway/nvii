@@ -177,6 +177,9 @@ export const POST = async (
           content: body.content,
           description: body.description ?? "",
         },
+        include: {
+          branches: true,
+        },
       });
 
       await tx.projectAccess.create({

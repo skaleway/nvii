@@ -231,6 +231,7 @@ export function decryptEnvValues(
  */
 export interface ProjectConfig {
   projectId: string;
+  branch?: string;
   [key: string]: any; // Allow for additional properties
 }
 
@@ -312,7 +313,10 @@ async function updateGitignore(): Promise<void> {
  * Writes project configuration to .nvii/nvii.json file
  * @param projectId - The project ID to save
  */
-export async function writeProjectConfig(projectId: string): Promise<void> {
+export async function writeProjectConfig(
+  projectId: string,
+  brachName?: string,
+): Promise<void> {
   try {
     const currentDir = process.cwd();
     const enviDirPath = path.join(currentDir, ".nvii");
@@ -327,9 +331,13 @@ export async function writeProjectConfig(projectId: string): Promise<void> {
     await updateGitignore();
 
     // Merge new projectId with existing config
-    const updatedConfig = {
+    const updatedConfig: { projectId: string; branch?: string } = {
       projectId,
     };
+
+    if (brachName && brachName.trim() !== "") {
+      updatedConfig.branch = brachName;
+    }
 
     // Write the updated configuration
     await fs.writeFile(

@@ -9,7 +9,40 @@ import pc from "picocolors";
 import { login } from "./auth/login";
 import { Project } from "@nvii/db";
 
-export async function getHistory(options: { limit?: string }) {
+export async function getHistory(args?: {
+  limit: string;
+  oneline: boolean;
+  author: string;
+}) {
+  let limit: number = 0;
+  let oneline = false;
+  let author = "";
+  if (args) {
+    if (args.author) {
+      // validate author email
+
+      author = args.author;
+    }
+
+    if (args.limit) {
+      // validate limit (number only)
+      if (!Number(args.limit)) {
+        console.warn(pc.yellow("Invalid limit (must be of type number)"));
+        process.exit(1);
+      }
+      const limitNumber = Number(args.limit);
+      if (limitNumber <= 0) {
+        console.warn(pc.yellow("Invalid limit (must be at least 1)"));
+        process.exit(1);
+      }
+
+      limit = limitNumber;
+    }
+
+    if (args.oneline) {
+      oneline = true;
+    }
+  }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to view project history."));
@@ -47,7 +80,7 @@ export async function getHistory(options: { limit?: string }) {
     const response = await client.get(
       `/projects/${userConfig.userId}/${projectId}`,
     );
-    const project = response.data as Project;
+    const project = response.data.project as Project;
 
     if (!project) {
       console.log(pc.yellow("No project found for this user or repository."));
@@ -59,15 +92,27 @@ export async function getHistory(options: { limit?: string }) {
       process.exit(1);
     }
 
-    const versions = await fetchVersions(
-      userConfig.userId,
-      projectId,
-      options.limit ? parseInt(options.limit, 10) : undefined,
-    );
+    const versions = await fetchVersions(userConfig.userId, projectId, limit);
 
     if (!versions || versions.length === 0) {
       console.log(pc.yellow("No version history found for this project."));
       return;
+    }
+
+    // Filter by author if specified
+    let filteredVersions = versions;
+    if (author) {
+      filteredVersions = versions.filter(
+        (version) =>
+          version.user.email?.toLowerCase().includes(author.toLowerCase()) ||
+          (version.user.name &&
+            version.user.name.toLowerCase().includes(author.toLowerCase())),
+      );
+
+      if (filteredVersions.length === 0) {
+        console.log(pc.yellow(`No versions found for author: ${author}`));
+        return;
+      }
     }
 
     console.log(
@@ -75,16 +120,38 @@ export async function getHistory(options: { limit?: string }) {
         `\n📜 Version history for project ${pc.cyan(`${project.name} - ${project.id}`)}`,
       ),
     );
-    console.log(pc.dim("--------------------------------------------------"));
-    versions.forEach((version) => {
-      console.log(
-        `${pc.yellow(`version ${version.id}`)} ${pc.dim(`(by ${version.user.name || version.user.email})`)}`,
-      );
-      console.log(`Date:    ${new Date(version.createdAt).toLocaleString()}`);
-      console.log(
-        `Message: ${version.description || pc.dim("No description")}`,
-      );
+
+    if (author) {
+      console.log(pc.dim(`Filtered by author: ${author}`));
+    }
+
+    if (!oneline) {
       console.log(pc.dim("--------------------------------------------------"));
+    }
+
+    filteredVersions.forEach((version) => {
+      if (oneline) {
+        // Compact one-line format
+        const shortId = version.id.substring(0, 8);
+        const author = version.user.name || version.user.email;
+        const date = new Date(version.createdAt).toLocaleDateString();
+        const message = version.description || "No description";
+        console.log(
+          `${pc.yellow(shortId)} ${pc.dim(date)} ${pc.cyan(author)} ${message}`,
+        );
+      } else {
+        // Detailed multi-line format
+        console.log(
+          `${pc.yellow(`version ${version.id}`)} ${pc.dim(`(by ${version.user.name || version.user.email})`)}`,
+        );
+        console.log(`Date:    ${new Date(version.createdAt).toLocaleString()}`);
+        console.log(
+          `Message: ${version.description || pc.dim("No description")}`,
+        );
+        console.log(
+          pc.dim("--------------------------------------------------"),
+        );
+      }
     });
   } catch (error: Error | any) {
     if (error.response) {

@@ -69,22 +69,22 @@ const handleSummary = ({
     );
   }
 };
-export async function pushLatestChanges() {
+export async function pushLatestChanges(args?: {
+  message: string;
+  branch: string;
+  dryRun: boolean;
+}) {
   let message = "";
   let branch = "";
   let dryRun = false;
-  if (process.argv) {
-    const args = process.argv;
-
-    if (args.includes("-m") || args.includes("--message")) {
-      const index = args.indexOf("-m") || args.indexOf("--message");
-      message = args[index + 1];
+  if (args) {
+    if (args.message) {
+      message = args.message;
     }
-    if (args.includes("-b") || args.includes("--branch")) {
-      const index = args.indexOf("-b") || args.indexOf("--branch");
-      branch = args[index + 1];
+    if (args.branch) {
+      branch = args.branch;
     }
-    if (args.includes("-dry") || args.includes("--dry-run")) {
+    if (args.dryRun) {
       dryRun = true;
     }
   }

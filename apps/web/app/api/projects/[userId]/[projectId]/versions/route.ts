@@ -1,19 +1,20 @@
 import { getCurrentUserFromSession } from "@/lib/current-user";
-import { ErrorResponse, Response } from "@/lib/response";
-import { db, EnvVersion } from "@nvii/db";
+import { ErrorResponse } from "@/lib/response";
+import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
-import { decryptEnvValues } from "@/lib/encryption";
 import { headers } from "next/headers";
-import { AuthUser, validateCliAuth } from "../../route";
+import { validateCliAuth } from "../../route";
 import { decryptEnv } from "@/lib/actions/decrypt";
 
 // Get all versions for a project
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
-    const { userId } = await params;
+    const { searchParams } = new URL(request.url);
+    const limit = Number(searchParams.get("limit"));
+
     // read request headers sent from the cli
     const headersList = await headers();
     // validate cli request headers
@@ -69,6 +70,7 @@ export async function GET(
       orderBy: {
         createdAt: "desc",
       },
+      take: limit,
     });
 
     const decryptedVersions: unknown[] = [];

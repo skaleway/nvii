@@ -1,3 +1,4 @@
+import { exportVersion, readEnvFile } from "@nvii/env-helpers";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import pc from "picocolors";
@@ -6,12 +7,40 @@ interface FileError extends Error {
   code?: string;
 }
 
-export async function generateExample() {
+interface VersionInfo {
+  id: string;
+  description: string | null;
+  createdAt: Date;
+  user: {
+    name: string | null;
+    email: string | null;
+  };
+  content: Record<string, string>;
+  tags?: string[];
+}
+
+export async function generateExample(args?: {
+  output: string;
+  format: "env" | "json" | "yaml";
+}) {
+  let outPutPath = "";
+  let resultFormat: "env" | "json" | "yaml" | "" = "";
+
+  if (args) {
+    if (args.format) {
+      resultFormat = args.format;
+    }
+
+    if (args.output) {
+      outPutPath = args.output;
+    }
+  }
+
   try {
     const cwd = process.cwd();
     const envPath = join(cwd, ".env");
     const envLocalPath = join(cwd, ".env.local");
-    const examplePath = join(cwd, ".env.example");
+    const examplePath = join(cwd, outPutPath || ".env.example");
 
     let envContent: string;
     let sourceFile: string;
@@ -28,27 +57,40 @@ export async function generateExample() {
       );
     }
 
-    const exampleContent = envContent
-      .split("\n")
-      .filter((line) => line.trim() !== "")
-      .map((line) => {
-        if (line.startsWith("#")) {
-          return line;
-        }
+    const existingEnvs = await readEnvFile();
+    let newEnvContent = "";
+    let filePath = examplePath;
 
-        const key = line.split("=")[0];
-        if (!key) return null;
+    if (resultFormat && resultFormat.trim() !== "") {
+      const content = { content: existingEnvs };
+      newEnvContent = exportVersion(
+        content as Record<string, string> & VersionInfo,
+        resultFormat,
+      );
+      filePath = `.env.${resultFormat === "env" ? "example" : resultFormat}`;
+    } else {
+      newEnvContent = envContent
+        .split("\n")
+        .filter((line) => line.trim() !== "")
+        .map((line) => {
+          if (line.startsWith("#")) {
+            return line;
+          }
 
-        return `${key}=""`;
-      })
-      .filter(Boolean)
-      .join("\n");
+          const key = line.split("=")[0];
+          if (!key) return null;
 
-    writeFileSync(examplePath, exampleContent);
+          return `${key}=""`;
+        })
+        .filter(Boolean)
+        .join("\n");
+    }
 
-    console.log(pc.green("✓"), "Generated .env.example file successfully!");
+    writeFileSync(filePath, newEnvContent);
+
+    console.log(pc.green("✓"), ` Generated ${filePath} file successfully!`);
     console.log(pc.dim("Source:"), sourceFile);
-    console.log(pc.dim("Location:"), examplePath);
+    console.log(pc.dim("Location:"), filePath);
   } catch (error: Error | any) {
     const fileError = error as FileError;
     if (fileError.code === "ENOENT") {
@@ -57,7 +99,7 @@ export async function generateExample() {
     }
     console.error(
       pc.red("✗"),
-      "Failed to generate .env.example file:",
+      "Failed to generate .env.<format> file:",
       fileError.message,
     );
     process.exit(1);

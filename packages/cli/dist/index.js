@@ -131,8 +131,7 @@ program
 program
     .command("branch")
     .description("Create a new branch from the current or specified version")
-    .argument("[name]", "Branch name")
-    .option("-b, --base <versionId>", "Base version ID to branch from")
+    .option("-n, --name <name>", "Branch name")
     .action(branch_1.createBranch);
 program
     .command("branches")
@@ -141,14 +140,13 @@ program
 program
     .command("checkout")
     .description("Switch to a different branch")
-    .argument("[branch]", "Branch name to switch to")
+    .option("-n, --name <name>", "Branch name to switch to")
     .action(branch_1.switchBranch);
 // Version Tagging Commands
 program
     .command("tag")
     .description("Create a new tag for the current or specified version")
-    .argument("[name]", "Tag name")
-    .option("-v, --version <versionId>", "Version ID to tag")
+    .option("-n, --name <name>", "Tag name to use.")
     .action(tag_1.createTag);
 program
     .command("tags")

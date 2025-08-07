@@ -74,22 +74,22 @@ const handleSummary = ({
     );
   }
 };
-export async function pullRemoteChanges() {
+export async function pullRemoteChanges(args?: {
+  force: string;
+  dryRun: string;
+  branch: string;
+}) {
   let skipResolve = false;
   let branch = "";
   let dryRun = false;
-  if (process.argv) {
-    const args = process.argv;
-
-    if (args.includes("-f") || args.includes("--force")) {
-      const index = args.indexOf("-f") || args.indexOf("--force");
+  if (args) {
+    if (args.force) {
       skipResolve = true;
     }
-    if (args.includes("-b") || args.includes("--branch")) {
-      const index = args.indexOf("-b") || args.indexOf("--branch");
-      branch = args[index + 1];
+    if (args.branch) {
+      branch = args.branch;
     }
-    if (args.includes("-dry") || args.includes("--dry-run")) {
+    if (args.dryRun) {
       dryRun = true;
     }
   }
