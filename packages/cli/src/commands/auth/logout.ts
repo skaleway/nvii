@@ -52,6 +52,14 @@ export async function logout() {
 
     console.log(pc.green("Successfully logged out!"));
   } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nLogout cancelled."));
+      return;
+    }
     console.error(pc.red("Error during logout:"), error.message);
     process.exit(1);
   }

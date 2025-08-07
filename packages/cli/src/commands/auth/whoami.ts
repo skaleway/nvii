@@ -8,6 +8,10 @@ export const whoami = async () => {
 
     console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
   } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
     console.error("Error reading config:", error.message);
     process.exit(1);
   }

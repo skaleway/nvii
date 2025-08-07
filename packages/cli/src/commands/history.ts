@@ -87,6 +87,14 @@ export async function getHistory(options: { limit?: string }) {
       console.log(pc.dim("--------------------------------------------------"));
     });
   } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nHistory log cancelled."));
+      return;
+    }
     console.error(pc.red("\nError fetching history:"), error.message);
     process.exit(1);
   }

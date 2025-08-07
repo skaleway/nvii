@@ -3,20 +3,49 @@ import {
   isLogedIn,
   readConfigFile,
   readProjectConfig,
-  decryptEnvValues,
-  writeProjectConfig,
   writeEnvFile,
 } from "@nvii/env-helpers";
 import { EnvVersion, User } from "@nvii/db";
 import pc from "picocolors";
 import inquirer from "inquirer";
 import { login } from "./auth/login";
-import { join } from "path";
-import { readFileSync, writeFileSync } from "fs";
 
 type VersionWithUser = EnvVersion & { user: Pick<User, "name" | "email"> };
 
+const skipConfirmationPrompt = async (
+  skipConfirmation: boolean,
+  description: string,
+  id: string,
+) => {
+  if (!skipConfirmation) {
+    const { confirmRollback } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "confirmRollback",
+        message: `Are you sure you want to rollback to <${pc.dim(`${description} - id: ${id}`)}>?`,
+      },
+    ]);
+
+    if (!confirmRollback) {
+      console.log(pc.cyan("Skipping rollback..."));
+      process.exit(0);
+    }
+  }
+};
+
 export async function rollback() {
+  let versionId = "";
+  let skipConfirmation = false;
+  if (process.argv) {
+    const args = process.argv;
+    if (args.includes("-v") || args.includes("--version")) {
+      const index = args.indexOf("-v") || args.indexOf("--version");
+      versionId = args[index + 1];
+    }
+    if (args.includes("-f") || args.includes("--force")) {
+      skipConfirmation = true;
+    }
+  }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to roll back."));
@@ -46,6 +75,41 @@ export async function rollback() {
     }
 
     const client = await getConfiguredClient();
+
+    if (versionId && versionId.trim() !== "") {
+      const response = await client.get(
+        `/projects/${userConfig.userId}/${projectId}/versions/${versionId}`,
+      );
+      const version = response.data as EnvVersion;
+
+      if (!version) {
+        console.log(pc.red(`Version with id <${versionId}> not found.`));
+        return;
+      }
+
+      await skipConfirmationPrompt(
+        skipConfirmation,
+        version.description as string,
+        version.id,
+      );
+
+      // 4. Update local .env file
+      console.log(pc.cyan("Updating local .env file..."));
+
+      const values = await writeEnvFile(
+        version?.content as Record<string, string>,
+      );
+      if (!values) {
+        console.error(pc.red("\nOops an unexpected error occurred."));
+        process.exit(1);
+      }
+      console.log(
+        pc.green(
+          "✅ Local .env file has been updated to match the rollback version.",
+        ),
+      );
+      return;
+    }
 
     // 1. Fetch version history
     const versionsResponse = await client.get(
@@ -84,16 +148,18 @@ export async function rollback() {
       return;
     }
 
+    await skipConfirmationPrompt(
+      skipConfirmation,
+      versionToRollback.description as string,
+      versionToRollback.id,
+    );
+
     // 4. Update local .env file
     console.log(pc.cyan("Updating local .env file..."));
 
-    // decrypt envs before comparing
-    const decryptedEnv = decryptEnvValues(
+    const values = await writeEnvFile(
       versionToRollback?.content as Record<string, string>,
-      userConfig.userId,
     );
-
-    const values = await writeEnvFile(decryptedEnv);
     if (!values) {
       console.error(pc.red("\nOops an unexpected error occurred."));
       process.exit(1);
@@ -104,6 +170,14 @@ export async function rollback() {
       ),
     );
   } catch (error: any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nRollback cancelled."));
+      return;
+    }
     console.error(pc.red("\nError during rollback:"), error.message);
     process.exit(1);
   }

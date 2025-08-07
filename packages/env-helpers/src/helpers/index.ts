@@ -10,6 +10,7 @@ export * from "./conflict";
 export * from "./version";
 export * from "./encrypt";
 export * from "./diff";
+export * from "./version-helpers";
 
 export const FILENAME = process.env.FILENAME || ".nvii";
 

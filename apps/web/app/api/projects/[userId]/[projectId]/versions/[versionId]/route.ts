@@ -66,7 +66,7 @@ export async function GET(
     });
 
     if (!version) {
-      return ErrorResponse("Project not found or unauthorized", 404);
+      return ErrorResponse("Version not found or unauthorized", 404);
     }
 
     const decryptedContent = await decryptEnv(

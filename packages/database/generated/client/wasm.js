@@ -198,6 +198,7 @@ exports.Prisma.EnvVersionScalarFieldEnum = {
   projectId: 'projectId',
   content: 'content',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   createdBy: 'createdBy',
   description: 'description',
   changes: 'changes',
@@ -211,6 +212,17 @@ exports.Prisma.VersionTagScalarFieldEnum = {
   name: 'name',
   description: 'description',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.VersionBranchScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  projectId: 'projectId',
+  baseVersionId: 'baseVersionId',
+  isActive: 'isActive',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -253,7 +265,8 @@ exports.Prisma.ModelName = {
   Project: 'Project',
   ProjectAccess: 'ProjectAccess',
   EnvVersion: 'EnvVersion',
-  VersionTag: 'VersionTag'
+  VersionTag: 'VersionTag',
+  VersionBranch: 'VersionBranch'
 };
 
 /**

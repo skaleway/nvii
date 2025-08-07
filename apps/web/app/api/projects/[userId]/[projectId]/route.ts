@@ -4,13 +4,12 @@ import {
 } from "@/lib/current-user";
 import { ErrorResponse } from "@/lib/response";
 import { db, Project } from "@nvii/db";
-import { calculateChanges } from "@/lib/version-helpers";
 import { NextResponse } from "next/server";
 import { User } from "better-auth";
 import { headers } from "next/headers";
 import { AuthUser, validateCliAuth } from "../route";
 import { decryptEnv } from "@/lib/actions/decrypt";
-import { encryptEnvValues } from "@nvii/env-helpers";
+import { calculateChanges, encryptEnvValues } from "@nvii/env-helpers";
 
 export async function GET(
   _: Request,
@@ -37,35 +36,70 @@ export async function GET(
     const { projectId } = await params;
 
     // Verify the user has access to this project
-    const project = await db.project.findUnique({
-      where: {
-        id: projectId,
-        OR: [
-          { userId: user.id },
-          {
-            ProjectAccess: {
-              some: {
-                userId: user.id,
+    const [project, versions] = await db.$transaction([
+      db.project.findUnique({
+        where: {
+          id: projectId,
+          OR: [
+            { userId: user.id },
+            {
+              ProjectAccess: {
+                some: {
+                  userId: user.id,
+                },
               },
             },
+          ],
+        },
+        include: {
+          ProjectAccess: true,
+        },
+      }),
+      db.envVersion.findMany({
+        where: {
+          projectId,
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
           },
-        ],
-      },
-      include: {
-        ProjectAccess: true,
-      },
-    });
+        },
+      }),
+    ]);
 
     if (!project) {
-      return ErrorResponse("Project not found", 404);
+      return ErrorResponse(`Project id <${projectId}> not found.`, 404);
     }
+
+    const decryptedVersions: unknown[] = [];
+    const handleDecrypt = async () => {
+      versions.map(async (item) => {
+        const decryptedContent = await decryptEnv(
+          item.content as Record<string, string>,
+          project.userId,
+        );
+
+        decryptedVersions.push({
+          ...item,
+          content: decryptedContent,
+        });
+      });
+    };
+
+    await handleDecrypt();
 
     const decryptedContent = await decryptEnv(
       project.content as Record<string, string>,
       project.userId,
     );
 
-    return NextResponse.json({ ...project, content: decryptedContent });
+    return NextResponse.json({
+      project: { ...project, content: decryptedContent },
+      versions: decryptedVersions,
+    });
   } catch (error) {
     console.error("[PROJECT_GET]", error);
     return ErrorResponse("Internal Server Error", 500);
@@ -156,21 +190,56 @@ export async function PATCH(
       }),
     ]);
 
-    // Decrypt the content before sending the response
-    const response = {
-      project: {
-        ...project,
-        content: project.content
-          ? await decryptEnv(
-              project.content as Record<string, string>,
-              existingProject.userId,
-            )
-          : null,
+    const versions = await db.envVersion.findMany({
+      where: {
+        projectId: project.userId,
       },
-      version,
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    const decryptedVersions: unknown[] = [];
+    const handleDecrypt = async () => {
+      versions.map(async (item) => {
+        const decryptedContent = await decryptEnv(
+          item.content as Record<string, string>,
+          existingProject.userId,
+        );
+
+        decryptedVersions.push({
+          ...item,
+          content: decryptedContent,
+        });
+      });
     };
 
-    return NextResponse.json(response);
+    await handleDecrypt();
+
+    // Decrypt the content before sending the response
+    const decryptedContent = await decryptEnv(
+      version.content as Record<string, string>,
+      existingProject.userId,
+    );
+
+    const decryptedProjectContent = await decryptEnv(
+      project.content as Record<string, string>,
+      existingProject.userId,
+    );
+
+    return NextResponse.json({
+      version: {
+        ...version,
+        content: decryptedContent,
+      },
+      versions: decryptedVersions,
+      project: { ...project, content: decryptedProjectContent },
+    });
   } catch (error) {
     console.error("[PROJECT_PATCH]", error);
     return ErrorResponse("Internal Server Error", 500);

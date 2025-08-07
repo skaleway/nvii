@@ -116,14 +116,18 @@ export async function login() {
     console.log(`Config saved at: ~/ ${FILENAME}\n`);
     server.close();
     process.exit(0);
-  } catch (error) {
+  } catch (error: Error | any) {
     spinner.stop();
+    server.close();
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
     if (error instanceof UserCancellationError) {
       console.log(pc.yellow("Authentication cancelled.\n"));
     } else {
       console.error(pc.red("Authentication failed:"), error);
     }
-    server.close();
     process.exit(1);
   }
 }

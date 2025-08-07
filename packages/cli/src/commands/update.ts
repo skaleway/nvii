@@ -85,6 +85,14 @@ export async function updateProject() {
       pc.green("✅ Project updated successfully with new .env variables."),
     );
   } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nUpdate cancelled."));
+      return;
+    }
     console.error(pc.red("❌ Error updating project:"), error.message);
     process.exit(1);
   }

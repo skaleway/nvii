@@ -16,6 +16,8 @@ import {
   pushLatestChanges,
   getHistory,
 } from "./commands";
+import { createTag, listTags } from "./commands/tag";
+import { createBranch, listBranches, switchBranch } from "./commands/branch";
 import { rollback } from "./commands/rollback";
 
 const program = new Command();
@@ -113,7 +115,7 @@ program
   )
   .option("-f, --force", "Force pull without conflict resolution prompts")
   .option("-b, --branch <branch>", "Pull from specific branch (default: main)")
-  .option("--dry-run", "Preview changes without applying them")
+  .option("-dry, --dry-run", "Preview changes without applying them")
   .action(pullRemoteChanges);
 
 program
@@ -123,7 +125,7 @@ program
   )
   .option("-m, --message <message>", "Version description message")
   .option("-b, --branch <branch>", "Push to specific branch (default: main)")
-  .option("--dry-run", "Preview changes without uploading")
+  .option("-dry, --dry-run", "Preview changes without uploading")
   .action(pushLatestChanges);
 
 program
@@ -132,7 +134,6 @@ program
   .description(
     "Synchronize local environment file with the latest remote version",
   )
-  .option("-f, --force", "Force update without confirmation")
   .action(updateProject);
 
 // Version Control Commands
@@ -181,5 +182,37 @@ program
   // .alias("verify")
   .description("Verify encryption and decryption functionality")
   .action(testEncryption);
+
+// Branch Management Commands
+program
+  .command("branch")
+  .description("Create a new branch from the current or specified version")
+  .argument("[name]", "Branch name")
+  .option("-b, --base <versionId>", "Base version ID to branch from")
+  .action(createBranch);
+
+program
+  .command("branches")
+  .description("List all branches for the current project")
+  .action(listBranches);
+
+program
+  .command("checkout")
+  .description("Switch to a different branch")
+  .argument("[branch]", "Branch name to switch to")
+  .action(switchBranch);
+
+// Version Tagging Commands
+program
+  .command("tag")
+  .description("Create a new tag for the current or specified version")
+  .argument("[name]", "Tag name")
+  .option("-v, --version <versionId>", "Version ID to tag")
+  .action(createTag);
+
+program
+  .command("tags")
+  .description("List all tags for the current project")
+  .action(listTags);
 
 program.parse(process.argv);

@@ -96,12 +96,13 @@ export async function createProject() {
     const projectId = response.data.data.id;
     await writeProjectConfig(projectId);
   } catch (error: Error | any) {
-    if (error.response && error.response.data && error.response.data.message) {
-      console.error(
-        pc.red("❌ Error creating project:"),
-        error.response.data.message,
-      );
-      process.exit(1);
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nProject create cancelled."));
+      return;
     }
     console.error(pc.red("❌ Error creating project:"), error.message);
     process.exit(1);
