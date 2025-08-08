@@ -150,7 +150,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { content, description } = body;
+    const { content, message } = body;
 
     // Calculate changes between old and new content
     const decryptedExistingEnv = await decryptEnv(
@@ -175,7 +175,7 @@ export async function PATCH(
         data: {
           projectId,
           content: encryptedEnvs,
-          description: description || "Updated environment variables",
+          description: message || "Updated environment variables",
           changes: JSON.parse(JSON.stringify(changes)),
           createdBy: user.id,
         },

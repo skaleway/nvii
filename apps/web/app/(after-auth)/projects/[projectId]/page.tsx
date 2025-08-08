@@ -25,7 +25,7 @@ export default function ProjectPage() {
   const { projectId } = useParams();
   const { user } = useSession();
 
-  const getProject = async (): Promise<Project | null> => {
+  const getProject = async (): Promise<{ project: Project } | null> => {
     try {
       const res = await projectApi.get(projectId as string, user.id);
 
@@ -44,12 +44,12 @@ export default function ProjectPage() {
 
   // Fetch project
   const {
-    data: project,
+    data,
     isPending,
     error,
     refetch: refetchProject,
     isRefetching: isRefetchingProject,
-  } = useQuery<Project | null>({
+  } = useQuery<{ project: Project } | null>({
     queryKey: [`project-${projectId}`],
     queryFn: getProject,
     staleTime: Infinity,
@@ -115,7 +115,7 @@ export default function ProjectPage() {
     );
   }
 
-  if (!project) {
+  if (!data || !data.project) {
     return;
   }
 
@@ -132,15 +132,15 @@ export default function ProjectPage() {
             </BreadcrumbSeparator>
             <BreadcrumbItem>
               <BreadcrumbLink className="capitalize">
-                {project?.name}
+                {data.project?.name}
               </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <ProjectAccessManager
-          projectId={project?.id as string}
+          projectId={data.project?.id as string}
           userId={user.id}
-          projectUserId={project.userId}
+          projectUserId={data.project.userId}
         />
       </div>
 
@@ -148,7 +148,7 @@ export default function ProjectPage() {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold tracking-tight capitalize">
-              {project?.name}
+              {data.project?.name}
             </h1>
             <Badge variant="outline" className="ml-2">
               Development
@@ -173,8 +173,8 @@ export default function ProjectPage() {
       </div>
 
       <EnvVariableTable
-        environment={project?.content as unknown as Record<string, string>}
-        projectUserId={project.userId}
+        environment={data.project?.content as unknown as Record<string, string>}
+        projectUserId={data.project.userId}
         userId={user.id}
       />
     </div>

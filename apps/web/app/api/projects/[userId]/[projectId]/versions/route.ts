@@ -70,7 +70,7 @@ export async function GET(
       orderBy: {
         createdAt: "desc",
       },
-      take: limit,
+      take: limit >= 1 ? limit : 30,
     });
 
     const decryptedVersions: unknown[] = [];

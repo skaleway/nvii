@@ -114,7 +114,10 @@ export const projectsApi = {
 };
 
 export const projectApi = {
-  get: async (projectId: string, userId: string): Promise<Project> => {
+  get: async (
+    projectId: string,
+    userId: string,
+  ): Promise<{ project: Project }> => {
     const response = await fetch(`${API_BASE}/projects/${userId}/${projectId}`);
     if (!response.ok) {
       throw new Error("Failed to fetch project");
