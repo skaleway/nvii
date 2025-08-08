@@ -6,6 +6,9 @@ import {
   AlertTriangle,
   XCircle,
   MoreHorizontal,
+  Trash2,
+  Copy,
+  RefreshCcw,
 } from "lucide-react";
 import { cn } from "@nvii/ui/lib/utils";
 import { Button } from "@nvii/ui/components/button";
@@ -66,6 +69,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
     }
   };
 
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast({
+      title: "Project id copied",
+      description: `Project ${project.name} id copied successfully.`,
+    });
+  };
+
   return (
     <Card className="overflow-hidden transition-all shadow-none">
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
@@ -97,13 +108,21 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <Link href={`/projects/${project.id}`}>Edit Variables</Link>
             </DropdownMenuItem> */}
             <DropdownMenuItem asChild>
-              <Link href="/sync">Sync Variables</Link>
+              <Link href="/sync">
+                <RefreshCcw className="mr-1 h-4 w-4" />
+                Sync Variables
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleCopyId(project.id)}>
+              <Copy className="mr-1 h-4 w-4" />
+              Copy Project Id
             </DropdownMenuItem>
             {!isSharedProject && (
               <DropdownMenuItem
-                className="text-destructive hover:bg-destructive"
+                className="text-destructive hover:text-destructive"
                 onClick={handleDelete}
               >
+                <Trash2 className="mr-1 h-4 w-4" />
                 Delete Project
               </DropdownMenuItem>
             )}

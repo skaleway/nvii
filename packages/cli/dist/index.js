@@ -3,6 +3,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const commands_1 = require("./commands");
+const tag_1 = require("./commands/tag");
+const branch_1 = require("./commands/branch");
 const rollback_1 = require("./commands/rollback");
 const program = new commander_1.Command();
 // Set program information
@@ -76,20 +78,19 @@ program
     .description("Fetch and merge environment variables from the remote repository")
     .option("-f, --force", "Force pull without conflict resolution prompts")
     .option("-b, --branch <branch>", "Pull from specific branch (default: main)")
-    .option("--dry-run", "Preview changes without applying them")
+    .option("-dry, --dry-run", "Preview changes without applying them")
     .action(commands_1.pullRemoteChanges);
 program
     .command("push")
     .description("Upload local environment variable changes and create a new version")
     .option("-m, --message <message>", "Version description message")
     .option("-b, --branch <branch>", "Push to specific branch (default: main)")
-    .option("--dry-run", "Preview changes without uploading")
+    .option("-dry, --dry-run", "Preview changes without uploading")
     .action(commands_1.pushLatestChanges);
 program
     .command("update")
     // .alias("sync")
     .description("Synchronize local environment file with the latest remote version")
-    .option("-f, --force", "Force update without confirmation")
     .action(commands_1.updateProject);
 // Version Control Commands
 program
@@ -126,4 +127,29 @@ program
     // .alias("verify")
     .description("Verify encryption and decryption functionality")
     .action(commands_1.testEncryption);
+// Branch Management Commands
+program
+    .command("branch")
+    .description("Create a new branch from the current or specified version")
+    .option("-n, --name <name>", "Branch name")
+    .action(branch_1.createBranch);
+program
+    .command("branches")
+    .description("List all branches for the current project")
+    .action(branch_1.listBranches);
+program
+    .command("checkout")
+    .description("Switch to a different branch")
+    .option("-n, --name <name>", "Branch name to switch to")
+    .action(branch_1.switchBranch);
+// Version Tagging Commands
+program
+    .command("tag")
+    .description("Create a new tag for the current or specified version")
+    .option("-n, --name <name>", "Tag name to use.")
+    .action(tag_1.createTag);
+program
+    .command("tags")
+    .description("List all tags for the current project")
+    .action(tag_1.listTags);
 program.parse(process.argv);

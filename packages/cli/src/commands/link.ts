@@ -11,7 +11,25 @@ import path from "path";
 import pc from "picocolors";
 import { login } from "./auth/login";
 
-export async function linkProject() {
+const createEnvFiles = (enviDirPath: string, enviFilePath: string) => {
+  // create project config file path and .env if they don't exist
+  if (!existsSync(enviDirPath)) {
+    mkdirSync(enviDirPath);
+
+    if (!existsSync(enviFilePath)) {
+      writeFileSync(enviFilePath, "", { encoding: "utf-8" });
+    }
+  }
+  console.log("\n");
+};
+
+export async function linkProject(args?: { token: string }) {
+  let projectId = "";
+  if (args) {
+    if (args.token) {
+      projectId = args.token;
+    }
+  }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to link a project."));
@@ -26,6 +44,26 @@ export async function linkProject() {
     }
 
     const client = await getConfiguredClient();
+    const currentDir = process.cwd();
+    const enviDirPath = path.join(currentDir, ".nvii");
+    const enviFilePath = path.join(enviDirPath, "nvii.json");
+
+    if (projectId && projectId.trim() !== "") {
+      const response = await client.get(
+        `/projects/${userConfig.userId}/${projectId}`,
+      );
+      const project = response.data as Project;
+
+      if (!project) {
+        console.log(pc.red(`Project with id <${projectId}> not found.`));
+        return;
+      }
+
+      createEnvFiles(enviDirPath, enviFilePath);
+      await writeProjectConfig(project.id);
+      console.log(pc.green("Project linked successfully!"));
+      return;
+    }
     const response = await client.get(`/projects/${userConfig.userId}`);
     const projects = response.data as Project[];
 
@@ -56,22 +94,18 @@ export async function linkProject() {
       return;
     }
 
-    const currentDir = process.cwd();
-    const enviDirPath = path.join(currentDir, ".nvii");
-    const enviFilePath = path.join(enviDirPath, "nvii.json");
-
-    // create project config file path and .env if they don't exist
-    if (!existsSync(enviDirPath)) {
-      mkdirSync(enviDirPath);
-
-      if (!existsSync(enviFilePath)) {
-        writeFileSync(enviFilePath, "", { encoding: "utf-8" });
-      }
-    }
-    console.log("\n");
-    await writeProjectConfig(selectedProject.id);
+    createEnvFiles(enviDirPath, enviFilePath);
+    await writeProjectConfig(selectedProject.id, "main");
     console.log(pc.green("Project linked successfully!"));
   } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nLink process cancelled."));
+      return;
+    }
     console.error(pc.red("\nError linking project:"), error.message);
     process.exit(1);
   }

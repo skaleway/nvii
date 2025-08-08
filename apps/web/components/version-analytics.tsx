@@ -24,6 +24,8 @@ import {
   Plus,
   Minus,
   RefreshCw,
+  GitCommit,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@nvii/ui/components/button";
 import {
@@ -40,74 +42,113 @@ import {
 } from "@nvii/ui/components/tabs";
 import { ScrollArea } from "@nvii/ui/components/scroll-area";
 import { Badge } from "@nvii/ui/components/badge";
+import { Skeleton } from "@nvii/ui/components/skeleton";
+import { toast } from "sonner";
 
-interface VersionAnalytics {
-  changeFrequency: {
+interface AnalyticsData {
+  totalVersions: number;
+  changeFrequency: Array<{
     date: string;
     changes: number;
-    versions: number;
-  }[];
-  mostChangedVariables: {
+  }>;
+  mostChangedVariables: Array<{
     variable: string;
-    changeCount: number;
-    lastChanged: Date;
-  }[];
-  userActivity: {
+    changes: number;
+  }>;
+  userActivity: Array<{
     user: {
+      id: string;
       name: string | null;
       email: string | null;
     };
+    changes: number;
+  }>;
+  timelineData: Array<{
+    month: string;
     versions: number;
-    lastActivity: Date;
-  }[];
-  versionStats: {
-    total: number;
-    thisWeek: number;
-    thisMonth: number;
-    averagePerDay: number;
-  };
-  changeTypes: {
-    added: number;
-    modified: number;
-    deleted: number;
+  }>;
+  stats: {
+    totalChanges: number;
+    uniqueVariables: number;
+    activeUsers: number;
+    recentActivity: number;
   };
 }
 
 interface VersionAnalyticsProps {
   projectId: string;
-  analytics?: VersionAnalytics;
-  isLoading?: boolean;
-  onRefresh?: () => void;
+  userId: string;
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
-export function VersionAnalytics({
-  projectId,
-  analytics,
-  isLoading = false,
-  onRefresh,
-}: VersionAnalyticsProps) {
+export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+
+  const fetchAnalytics = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `/api/projects/${userId}/${projectId}/versions/analytics`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch analytics");
+      }
+
+      const data = await response.json();
+      setAnalytics(data);
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      toast.error("Failed to load version analytics");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [projectId, userId]);
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Version Analytics</h2>
-          <Button variant="outline" size="sm" disabled>
+          <div>
+            <h2 className="text-2xl font-bold">Version Analytics</h2>
+            <p className="text-muted-foreground">
+              Insights into your project's environment variable changes
+            </p>
+          </div>
+          <Button variant="outline" disabled>
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <Card key={i}>
-              <CardHeader className="pb-2">
-                <div className="h-4 bg-gray-200 rounded animate-pulse" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-4" />
               </CardHeader>
               <CardContent>
-                <div className="h-8 bg-gray-200 rounded animate-pulse" />
+                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-3 w-24 mt-2" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader>
+                <Skeleton className="h-6 w-40" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-64 w-full" />
               </CardContent>
             </Card>
           ))}
@@ -118,69 +159,49 @@ export function VersionAnalytics({
 
   if (!analytics) {
     return (
-      <div className="text-center py-8">
-        <Activity className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900">
-          No analytics data
-        </h3>
-        <p className="mt-1 text-sm text-gray-500">
-          Analytics will appear once you have version history.
-        </p>
-      </div>
+      <Card>
+        <CardContent className="p-12 text-center">
+          <Activity className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            No analytics data available
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Start making changes to see analytics.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
-
-  const changeTypeData = [
-    { name: "Added", value: analytics.changeTypes.added, color: "#10B981" },
-    {
-      name: "Modified",
-      value: analytics.changeTypes.modified,
-      color: "#3B82F6",
-    },
-    { name: "Deleted", value: analytics.changeTypes.deleted, color: "#EF4444" },
-  ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Version Analytics</h2>
-        <Button variant="outline" size="sm" onClick={onRefresh}>
+        <div>
+          <h2 className="text-2xl font-bold">Version Analytics</h2>
+          <p className="text-muted-foreground">
+            Insights into your project's environment variable changes
+          </p>
+        </div>
+        <Button variant="outline" onClick={fetchAnalytics}>
           <RefreshCw className="mr-2 h-4 w-4" />
           Refresh
         </Button>
       </div>
 
-      {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Versions
             </CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <GitCommit className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.versionStats.total}
-            </div>
+            <div className="text-2xl font-bold">{analytics.totalVersions}</div>
             <p className="text-xs text-muted-foreground">
-              {analytics.versionStats.thisWeek} this week
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analytics.versionStats.thisMonth}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {analytics.versionStats.averagePerDay.toFixed(1)} per day avg
+              All time versions created
             </p>
           </CardContent>
         </Card>
@@ -192,25 +213,42 @@ export function VersionAnalytics({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {analytics.userActivity.length}
+              {analytics.stats.activeUsers}
             </div>
             <p className="text-xs text-muted-foreground">
-              Contributing to versions
+              Users making changes
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Most Changed</CardTitle>
-            <Edit className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Variables</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {analytics.mostChangedVariables[0]?.variable.slice(0, 8) || "N/A"}
+              {analytics.stats.uniqueVariables}
             </div>
             <p className="text-xs text-muted-foreground">
-              {analytics.mostChangedVariables[0]?.changeCount || 0} changes
+              Unique environment variables
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Recent Activity
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {analytics.stats.recentActivity}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Changes in last 30 days
             </p>
           </CardContent>
         </Card>
@@ -230,52 +268,57 @@ export function VersionAnalytics({
             {/* Change Frequency Chart */}
             <Card>
               <CardHeader>
-                <CardTitle>Change Frequency</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Daily Change Frequency (Last 30 Days)
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={analytics.changeFrequency}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(date) =>
+                        new Date(date).toLocaleDateString()
+                      }
+                    />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip
+                      labelFormatter={(date) =>
+                        new Date(date).toLocaleDateString()
+                      }
+                      formatter={(value: number) => [value, "Changes"]}
+                    />
                     <Line
                       type="monotone"
                       dataKey="changes"
                       stroke="#8884d8"
                       strokeWidth={2}
+                      dot={{ fill: "#8884d8" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            {/* Change Types Distribution */}
+            {/* Timeline Chart */}
             <Card>
               <CardHeader>
-                <CardTitle>Change Types</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Versions Over Time (Last 12 Months)
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={changeTypeData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) =>
-                        `${name} ${(percent ? percent * 100 : 0).toFixed(0)}%`
-                      }
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {changeTypeData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={analytics.timelineData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
                     <Tooltip />
-                  </PieChart>
+                    <Bar dataKey="versions" fill="#82ca9d" />
+                  </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
@@ -285,16 +328,16 @@ export function VersionAnalytics({
         <TabsContent value="activity" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Version Activity Timeline</CardTitle>
+              <CardTitle>Versions Over Time (Last 12 Months)</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={analytics.changeFrequency}>
+                <BarChart data={analytics.timelineData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
+                  <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="versions" fill="#8884d8" />
+                  <Bar dataKey="versions" fill="#82ca9d" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -309,32 +352,47 @@ export function VersionAnalytics({
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-3">
-                  {analytics.mostChangedVariables.map((variable, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-                          <span className="text-sm font-semibold text-blue-600">
-                            {index + 1}
-                          </span>
+                  {analytics.mostChangedVariables.length > 0 ? (
+                    analytics.mostChangedVariables
+                      .slice(0, 8)
+                      .map((item, index) => (
+                        <div
+                          key={item.variable}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-xs"
+                            >
+                              {item.variable}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">
+                              {item.changes}
+                            </span>
+                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{
+                                  width: `${
+                                    (item.changes /
+                                      analytics.mostChangedVariables[0]
+                                        ?.changes) *
+                                      100 || 0
+                                  }%`,
+                                }}
+                              />
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <code className="text-sm font-mono font-semibold">
-                            {variable.variable}
-                          </code>
-                          <p className="text-xs text-muted-foreground">
-                            Last changed{" "}
-                            {variable.lastChanged.toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <Badge variant="secondary">
-                        {variable.changeCount} changes
-                      </Badge>
-                    </div>
-                  ))}
+                      ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No variable changes yet
+                    </p>
+                  )}
                 </div>
               </ScrollArea>
             </CardContent>
@@ -349,27 +407,48 @@ export function VersionAnalytics({
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-3">
-                  {analytics.userActivity.map((user, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full">
-                          <Users className="h-5 w-5 text-gray-600" />
+                  {analytics.userActivity.length > 0 ? (
+                    analytics.userActivity.slice(0, 6).map((item, index) => (
+                      <div
+                        key={item.user.id}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                            {(item.user.name || item.user.email || "U")
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                          <span className="text-sm font-medium">
+                            {item.user.name ||
+                              item.user.email ||
+                              "Unknown User"}
+                          </span>
                         </div>
-                        <div>
-                          <p className="font-medium">
-                            {user.user.name || user.user.email}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Last active {user.lastActivity.toLocaleDateString()}
-                          </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">
+                            {item.changes} changes
+                          </span>
+                          <div className="w-12 bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-green-600 h-2 rounded-full"
+                              style={{
+                                width: `${
+                                  (item.changes /
+                                    analytics.userActivity[0]?.changes) *
+                                    100 || 0
+                                }%`,
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
-                      <Badge variant="outline">{user.versions} versions</Badge>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No user activity yet
+                    </p>
+                  )}
                 </div>
               </ScrollArea>
             </CardContent>

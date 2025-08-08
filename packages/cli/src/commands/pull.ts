@@ -2,31 +2,97 @@ import pc from "picocolors";
 import {
   isLogedIn,
   readConfigFile,
-  writeProjectConfig,
   readEnvFile,
-  decryptEnvValues,
   getConfiguredClient,
   readProjectConfig,
   writeEnvFile,
 } from "@nvii/env-helpers";
 import { login } from "./auth/login";
-import { readFileSync, promises as fs } from "fs";
-import path, { join } from "path";
-import { Project } from "@nvii/db";
-import inquirer from "inquirer";
-import { argv } from "process";
+import { EnvVersion, Project } from "@nvii/db";
 import {
   detectConflicts,
   promptConflictResolution,
   resolveConflicts,
   mergeEnvironments,
 } from "../lib/conflict";
-import { generateDiff, DiffResult } from "@nvii/env-helpers";
-import { fetchVersions, VersionWithUser } from "@nvii/env-helpers";
+import { generateDiff } from "@nvii/env-helpers";
 
-const DOT_ENV_FILE = ".env";
+const handleSummary = ({
+  projectId,
+  localEnvs,
+  prevVersion,
+}: {
+  projectId: string;
+  localEnvs: Record<string, string>;
+  prevVersion: Record<string, string>;
+}) => {
+  const diff = generateDiff(prevVersion, localEnvs);
+  const changesSummary = {
+    added: diff.added,
+    modified: diff.updated.map(([key, { old, new: newValue }]) => ({
+      key,
+      original: old,
+      value: newValue,
+    })),
+    removed: diff.removed,
+  };
+  // log change summary
+  if (
+    changesSummary.added.length > 0 ||
+    changesSummary.modified.length > 0 ||
+    changesSummary.removed.length > 0
+  ) {
+    console.log(
+      pc.bold(`\n📜 Change summary for project: ${pc.cyan(`${projectId}`)}`),
+    );
 
-export async function pullRemoteChanges() {
+    console.log(pc.dim("--------------------------------------------------"));
+    changesSummary.added.forEach((key) => {
+      console.log(
+        `${pc.yellow(`${key}:`)} added with value: ${localEnvs[key]}`,
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(pc.dim("--------------------------------------------------"));
+    });
+    changesSummary.modified.forEach((change) => {
+      console.log(
+        `${pc.yellow(`${change.key}:`)} changed from ${change.value} (local) to ${change.original} (remote)`,
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(pc.dim("--------------------------------------------------"));
+    });
+    changesSummary.removed.forEach((key) => {
+      console.log(
+        `${pc.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`,
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(pc.dim("--------------------------------------------------"));
+    });
+  } else {
+    console.log(
+      pc.bold(`\nNo changes detected for project: ${pc.cyan(`${projectId}`)}`),
+    );
+  }
+};
+export async function pullRemoteChanges(args?: {
+  force: string;
+  dryRun: string;
+  branch: string;
+}) {
+  let skipResolve = false;
+  let branch = "";
+  let dryRun = false;
+  if (args) {
+    if (args.force) {
+      skipResolve = true;
+    }
+    if (args.branch) {
+      branch = args.branch;
+    }
+    if (args.dryRun) {
+      dryRun = true;
+    }
+  }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to pull a project."));
@@ -39,21 +105,7 @@ export async function pullRemoteChanges() {
       console.log(pc.red("No user ID found. Please log in again."));
       return;
     }
-
-    // TODO: Complete this one
-    // const { selectedProjectBranch } = await inquirer.prompt([
-    //   {
-    //     type: "list",
-    //     name: "selectedProjectBranch",
-    //     message: "Select a project branch to pull from:",
-    //     choices: versions.map((version) => ({
-    //       branch: version.branch,
-    //       name: version.Project.name,
-    //     })),
-    //   },
-    // ]);
-
-    const cwd = process.cwd();
+    const existingEnv = await readEnvFile();
 
     const config = await readProjectConfig();
     if (!config) {
@@ -74,62 +126,68 @@ export async function pullRemoteChanges() {
       process.exit(1);
     }
 
+    // fetch data
     const client = await getConfiguredClient();
-    const response = await client.get(
-      `/projects/${userConfig.userId}/${projectId}`,
-    );
-    const project = response.data as Project;
+    const response = await client.get<{
+      project: Project;
+      versions: EnvVersion[];
+    }>(`/projects/${userConfig.userId}/${projectId}`);
+
+    let { versions, project } = response.data;
 
     if (!project) {
       console.log(pc.yellow("No project found for this user or repository."));
       process.exit(1);
     }
 
+    versions = versions.sort(
+      (a, b) =>
+        new Date(a.updatedAt).getHours() - new Date(b.updatedAt).getHours(),
+    );
+    const newVersion = versions[versions.length - 1];
+
     if (!project.content) {
       console.log(pc.yellow("No content found for this project envs."));
       process.exit(1);
     }
-    const envFilePath = path.join(cwd, DOT_ENV_FILE);
-    const existingEnv = await readEnvFile();
 
-    const finalEnv: Record<string, string> = { ...existingEnv };
-    let commentedLines = "";
-    // keep track of changes
-    const changedEnvs: Record<string, string>[] = [];
-
-    // decrypt envs before comparing
-    const decryptedEnv = decryptEnvValues(
-      project?.content as Record<string, string>,
-      userConfig.userId,
-    );
-
-    // Detect conflicts and handle them
-    const conflicts = detectConflicts(existingEnv, decryptedEnv);
-    let finalContent = decryptedEnv;
-
-    if (conflicts.length > 0) {
-      console.log(
-        pc.yellow(
-          `\n⚠️  Found ${conflicts.length} conflict(s) between local and remote versions.`,
-        ),
-      );
-      const resolution = await promptConflictResolution(conflicts);
-      finalContent = resolveConflicts(existingEnv, decryptedEnv, resolution);
-    } else {
-      finalContent = mergeEnvironments(existingEnv, decryptedEnv);
+    // If there is dry run show the user the changes between this version and previous one
+    if (dryRun) {
+      handleSummary({
+        projectId,
+        prevVersion: newVersion.content as Record<string, string>,
+        localEnvs: existingEnv,
+      });
+      return;
     }
 
-    // Calculate diff for change summary
-    const diff = generateDiff(existingEnv, finalContent);
-    const changesSummary = {
-      added: diff.added,
-      modified: diff.updated.map(([key, { old, new: newValue }]) => ({
-        key,
-        original: old,
-        value: newValue,
-      })),
-      removed: diff.removed,
-    };
+    // Detect conflicts and handle them
+    const conflicts = detectConflicts(
+      existingEnv,
+      newVersion.content as Record<string, string>,
+    );
+    let finalContent = newVersion.content as Record<string, string>;
+
+    if (!skipResolve) {
+      if (conflicts.length > 0) {
+        console.log(
+          pc.yellow(
+            `\n⚠️  Found ${conflicts.length} conflict(s) between local and remote versions.`,
+          ),
+        );
+        const resolution = await promptConflictResolution(conflicts);
+        finalContent = resolveConflicts(
+          existingEnv,
+          newVersion.content as Record<string, string>,
+          resolution,
+        );
+      } else {
+        finalContent = mergeEnvironments(
+          existingEnv,
+          newVersion.content as Record<string, string>,
+        );
+      }
+    }
 
     const values = await writeEnvFile(finalContent);
     if (!values) {
@@ -138,32 +196,21 @@ export async function pullRemoteChanges() {
     }
 
     // log change summary
-    if (
-      changesSummary.added.length > 0 ||
-      changesSummary.modified.length > 0 ||
-      changesSummary.removed.length > 0
-    ) {
-      console.log(
-        pc.bold(
-          `\n📜 Change summary for project: ${pc.cyan(`${project.name} - ${project.id}`)}`,
-        ),
-      );
-
-      console.log(pc.dim("--------------------------------------------------"));
-      changedEnvs.forEach((change) => {
-        console.log(
-          `${pc.yellow(`${change.key}:`)} changed from ${change.original} to ${change.value})}`,
-        );
-        console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
-        console.log(
-          pc.dim("--------------------------------------------------"),
-        );
-      });
-    }
-    console.log("\n");
-    await writeProjectConfig(project.id);
+    handleSummary({
+      projectId,
+      localEnvs: existingEnv,
+      prevVersion: finalContent,
+    });
     console.log(pc.green(".env file updated successfully!"));
   } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nPull cancelled."));
+      return;
+    }
     console.error(pc.red("\nError linking project:"), error.message);
     process.exit(1);
   }
