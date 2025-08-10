@@ -118,7 +118,7 @@ program
 program
     .command("generate")
     .alias("gen")
-    .description("Create a template .env.example file from your current environment variables")
+    .description("Create a template .env.x file from your current environment variables")
     .option("-o, --output <file>", "Output file path (default: .env.example)")
     .option("--format <type>", "Output format: env, json, yaml", "env")
     .action(commands_1.generateExample);

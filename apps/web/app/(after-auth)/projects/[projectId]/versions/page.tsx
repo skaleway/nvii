@@ -348,9 +348,9 @@ export default function VersionsPage() {
                   <Card key={i}>
                     <CardContent className="p-6">
                       <div className="space-y-3">
-                        <div className="h-4 bg-gray-600 rounded animate-pulse" />
-                        <div className="h-3 bg-gray-600 rounded animate-pulse w-2/3" />
-                        <div className="h-3 bg-gray-600 rounded animate-pulse w-1/2" />
+                        <div className="h-4 bg-primary/10 rounded animate-pulse" />
+                        <div className="h-3 bg-primary/10 rounded animate-pulse w-2/3" />
+                        <div className="h-3 bg-primary/10 rounded animate-pulse w-1/2" />
                       </div>
                     </CardContent>
                   </Card>
@@ -464,9 +464,7 @@ export default function VersionsPage() {
         <TabsContent value="analytics" className="space-y-6">
           <VersionAnalytics
             projectId={projectId as string}
-            analytics={analytics as VersionAnalyticsData}
-            isLoading={isLoading}
-            onRefresh={() => window.location.reload()}
+            userId={user.id as string}
           />
         </TabsContent>
       </Tabs>
