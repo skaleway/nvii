@@ -1,4 +1,4 @@
-import { exportVersion, readEnvFile } from "@nvii/env-helpers";
+import { generateEnvVersion, readEnvFile } from "@nvii/env-helpers";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import pc from "picocolors";
@@ -40,7 +40,7 @@ export async function generateExample(args?: {
     const cwd = process.cwd();
     const envPath = join(cwd, ".env");
     const envLocalPath = join(cwd, ".env.local");
-    const examplePath = join(cwd, outPutPath || ".env.example");
+    const examplePath = ".env.example";
 
     let envContent: string;
     let sourceFile: string;
@@ -58,32 +58,31 @@ export async function generateExample(args?: {
     }
 
     const existingEnvs = await readEnvFile();
-    let newEnvContent = "";
-    let filePath = examplePath;
+    let newEnvContent = envContent
+      .split("\n")
+      .filter((line) => line.trim() !== "")
+      .map((line) => {
+        if (line.startsWith("#")) {
+          return line;
+        }
 
-    if (resultFormat && resultFormat.trim() !== "") {
+        const key = line.split("=")[0];
+        if (!key) return null;
+
+        return `${key}=""`;
+      })
+      .filter(Boolean)
+      .join("\n");
+    let filePath = examplePath;
+    if (outPutPath && outPutPath.trim() !== "") {
+      filePath = outPutPath;
+    } else if (resultFormat && resultFormat.trim() !== "") {
       const content = { content: existingEnvs };
-      newEnvContent = exportVersion(
+      newEnvContent = generateEnvVersion(
         content as Record<string, string> & VersionInfo,
         resultFormat,
       );
-      filePath = `.env.${resultFormat === "env" ? "example" : resultFormat}`;
-    } else {
-      newEnvContent = envContent
-        .split("\n")
-        .filter((line) => line.trim() !== "")
-        .map((line) => {
-          if (line.startsWith("#")) {
-            return line;
-          }
-
-          const key = line.split("=")[0];
-          if (!key) return null;
-
-          return `${key}=""`;
-        })
-        .filter(Boolean)
-        .join("\n");
+      filePath = `${resultFormat === "env" ? examplePath : `.env.${resultFormat}`}`;
     }
 
     writeFileSync(filePath, newEnvContent);

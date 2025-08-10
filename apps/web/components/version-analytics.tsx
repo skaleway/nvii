@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   BarChart,
   Bar,
@@ -80,14 +80,12 @@ interface VersionAnalyticsProps {
   userId: string;
 }
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
-
 export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(
@@ -106,11 +104,11 @@ export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [projectId, userId]);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [projectId, userId]);
+  }, [projectId, userId, fetchAnalytics]);
 
   if (isLoading) {
     return (
@@ -119,7 +117,7 @@ export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
           <div>
             <h2 className="text-2xl font-bold">Version Analytics</h2>
             <p className="text-muted-foreground">
-              Insights into your project's environment variable changes
+              Insights into your project&apos;s environment variable changes
             </p>
           </div>
           <Button variant="outline" disabled>
@@ -180,7 +178,7 @@ export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
         <div>
           <h2 className="text-2xl font-bold">Version Analytics</h2>
           <p className="text-muted-foreground">
-            Insights into your project's environment variable changes
+            Insights into your project&apos;s environment variable changes
           </p>
         </div>
         <Button variant="outline" onClick={fetchAnalytics}>

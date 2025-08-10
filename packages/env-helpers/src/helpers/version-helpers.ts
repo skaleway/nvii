@@ -247,6 +247,37 @@ export function exportVersion(
 }
 
 /**
+ * Generate an example env versions as different formats
+ */
+export function generateEnvVersion(
+  version: VersionInfo,
+  format: "env" | "json" | "yaml" = "env",
+): string {
+  switch (format) {
+    case "json": {
+      let content = {};
+      Object.entries(version.content).map(([key]) => {
+        content = { ...content, [key]: "" };
+      });
+      return JSON.stringify(content, null, 2);
+    }
+    case "yaml":
+      return (
+        "nvii:\n" +
+        Object.entries(version.content)
+          .map(([key]) => `\t${key}: ${'""'}`)
+          .join("\n")
+      );
+
+    case "env":
+    default:
+      return Object.entries(version.content)
+        .map(([key]) => `${key}=${'""'}`)
+        .join("\n");
+  }
+}
+
+/**
  * Validate version content
  */
 export function validateVersionContent(content: Record<string, string>): {
