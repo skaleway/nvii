@@ -1,7 +1,7 @@
 import { tryCatch } from "@/lib/try-catch";
 import { useQuery } from "@tanstack/react-query";
-import { Team } from "@nvii/db";
 import axios from "axios";
+import { Team } from "better-auth/plugins/organization";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
 

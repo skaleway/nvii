@@ -3,11 +3,11 @@ import { ErrorResponse } from "@/lib/response";
 import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { validateCliAuth } from "../../../route";
+import { validateCliAuth } from "@/lib/cli-auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
     const { userId, projectId } = await params;

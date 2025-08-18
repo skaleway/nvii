@@ -7,9 +7,9 @@ import { db, Project } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { User } from "better-auth";
 import { headers } from "next/headers";
-import { AuthUser, validateCliAuth } from "../route";
 import { decryptEnv } from "@/lib/actions/decrypt";
 import { calculateChanges, encryptEnvValues } from "@nvii/env-helpers";
+import { validateCliAuth } from "@/lib/cli-auth";
 
 export async function GET(
   _: Request,
@@ -248,7 +248,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
     const { userId, projectId } = await params;

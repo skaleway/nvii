@@ -3,7 +3,7 @@ import { ErrorResponse } from "@/lib/response";
 import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { validateCliAuth } from "../../../../route";
+import { validateCliAuth } from "@/lib/cli-auth";
 
 // Switch branch
 export async function PATCH(

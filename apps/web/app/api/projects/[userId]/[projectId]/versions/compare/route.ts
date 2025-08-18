@@ -3,13 +3,13 @@ import { ErrorResponse } from "@/lib/response";
 import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { validateCliAuth } from "../../../route";
+import { validateCliAuth } from "@/lib/cli-auth";
 import { decryptEnv } from "@/lib/actions/decrypt";
 
 // Compare two versions
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
     const { userId, projectId } = await params;
@@ -128,7 +128,9 @@ export async function POST(
       } else if (leftValue !== rightValue) {
         diff.modified.push({
           key,
+          // @ts-ignore
           oldValue: leftValue,
+          // @ts-ignore
           newValue: rightValue,
         });
       }
@@ -160,7 +162,7 @@ export async function POST(
 // Get comparison options (available versions)
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
     const { userId, projectId } = await params;
