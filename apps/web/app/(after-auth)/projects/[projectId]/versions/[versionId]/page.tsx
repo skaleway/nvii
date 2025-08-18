@@ -11,9 +11,6 @@ import {
   FileText,
   Code,
   GitCommit,
-  Plus,
-  Minus,
-  Edit,
   Copy,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -85,32 +82,23 @@ export default function VersionDetailsPage() {
   }, [projectId, versionId, getProjectVersion, user.id]);
 
   const handleRollback = async (versionId: string) => {
-    console.log("Rolling back to version:", versionId);
     toast.success("Version rollback initiated");
   };
 
   const handleCreateTag = async (versionId: string, tagName: string) => {
-    console.log("Creating tag:", tagName, "for version:", versionId);
     toast.success(`Tag "${tagName}" created`);
   };
 
-  const handleCreateBranch = async (
-    versionId: string,
-    branchName: string,
-    description?: string,
-  ) => {
-    console.log("Creating branch:", branchName, "from version:", versionId);
+  const handleCreateBranch = async (versionId: string, branchName: string) => {
     toast.success(`Branch "${branchName}" created`);
   };
 
   const handleDeleteVersion = async (versionId: string) => {
-    console.log("Deleting version:", versionId);
     toast.success("Version deleted");
     router.push(`/projects/${projectId}/versions`);
   };
 
   const handleExportVersion = async (versionId: string) => {
-    console.log("Exporting version:", versionId);
     toast.success("Version exported");
   };
 
@@ -131,14 +119,12 @@ export default function VersionDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-6 space-y-6 max-w-7xl">
+      <div className="container mx-auto py-6 max-w-7xl">
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-primary/10 rounded w-1/3" />
           <div className="h-4 bg-primary/10 rounded w-1/2" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <div className="h-64 bg-primary/10 rounded" />
-            </div>
+            <div className="lg:col-span-2 h-64 bg-primary/10 rounded" />
             <div className="h-64 bg-primary/10 rounded" />
           </div>
         </div>
@@ -151,9 +137,7 @@ export default function VersionDetailsPage() {
       <div className="container mx-auto py-6">
         <div className="text-center py-12">
           <FileText className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
-            Version not found
-          </h3>
+          <h3 className="mt-2 text-sm font-medium">Version not found</h3>
           <Link href={`/projects/${projectId}/versions`}>
             <Button className="mt-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -166,69 +150,72 @@ export default function VersionDetailsPage() {
   }
 
   return (
-    <div className=" mx-auto py-6 space-y-6 max-w-7xl min-h-screen">
-      <div className="flex justify-between flex-col w-full">
-        <div className="flex items-center justify-between w-full space-x-4">
-          <Link href={`/projects/${projectId}/versions`}>
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Versions
-            </Button>
-          </Link>
+    <div className="container mx-auto py-6 max-w-7xl space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <Link href={`/projects/${projectId}/versions`}>
+          <Button variant="ghost" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+        </Link>
 
-          <VersionActions
-            version={version}
-            projectId={projectId as string}
-            onRollback={handleRollback}
-            onTag={handleCreateTag}
-            onBranch={handleCreateBranch}
-            onDelete={handleDeleteVersion}
-            onExport={handleExportVersion}
-          />
-        </div>
-        <div className="mt-4">
-          <h1 className="text-3xl font-bold">
-            {version.description || `Version ${version.id.slice(0, 8)}`}
-          </h1>
-          {/* <p className="text-muted-foreground">
-            Track and manage your environment variable versions
-          </p> */}
-          <div className="flex items-center space-x-2 mt-1">
-            <code className="text-sm text-gray-100 px-2 py-1 rounded">
-              {version.id}
-            </code>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => copyToClipboard(version.id)}
-            >
-              <Copy className="h-3 w-3" />
-            </Button>
-          </div>
+        <VersionActions
+          version={version}
+          projectId={projectId as string}
+          onRollback={handleRollback}
+          onTag={handleCreateTag}
+          onBranch={handleCreateBranch}
+          onDelete={handleDeleteVersion}
+          onExport={handleExportVersion}
+        />
+      </div>
+
+      {/* Version Title & ID */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold">
+          {version.description || `Version ${version.id.slice(0, 8)}`}
+        </h1>
+        <div className="flex items-center gap-2">
+          <code className="text-sm px-2 py-1 rounded bg-muted">
+            {version.id}
+          </code>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => copyToClipboard(version.id)}
+          >
+            <Copy className="h-3 w-3" />
+          </Button>
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Environment Variables */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2">
                 <Code className="h-5 w-5" />
                 <span>Environment Variables</span>
                 <Badge variant="outline">
-                  {Object.keys(version.content).length} variables
+                  {Object.keys(version.content).length}
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[500px]">
+              <ScrollArea className="h-[500px] pr-4">
                 <div className="space-y-3">
                   {Object.entries(version.content).map(([key, value]) => {
                     const changeType = getChangeType(key);
                     return (
-                      <div key={key} className="p-3 border rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
+                      <div
+                        key={key}
+                        className="p-3 border rounded-lg space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
                             <code className="font-semibold text-sm">{key}</code>
                             {changeType && (
                               <Badge variant="outline" className="text-xs">
@@ -244,7 +231,7 @@ export default function VersionDetailsPage() {
                             <Copy className="h-3 w-3" />
                           </Button>
                         </div>
-                        <div className="text-gray-50 p-2 rounded border font-mono text-sm break-all">
+                        <div className="font-mono text-sm break-all border rounded p-2 bg-muted">
                           {value}
                         </div>
                       </div>
@@ -256,18 +243,19 @@ export default function VersionDetailsPage() {
           </Card>
         </div>
 
+        {/* Version Info */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center gap-2">
                 <GitCommit className="h-5 w-5" />
                 <span>Version Info</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <div className="text-white">
+                <div>
                   <p className="font-medium">
                     {version.user.name || version.user.email}
                   </p>
@@ -277,7 +265,7 @@ export default function VersionDetailsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="font-medium">
@@ -298,23 +286,6 @@ export default function VersionDetailsPage() {
               )}
             </CardContent>
           </Card>
-
-          {/* {version.tags.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Tags</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {version.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )} */}
         </div>
       </div>
     </div>
