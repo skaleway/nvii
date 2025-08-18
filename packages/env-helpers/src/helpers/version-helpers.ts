@@ -1,3 +1,5 @@
+"use client";
+
 type EnvContent = {
   [key: string]: string;
 };

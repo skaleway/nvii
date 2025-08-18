@@ -46,7 +46,6 @@ import { Badge } from "@nvii/ui/components/badge";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
 import { EnvVersion } from "@nvii/db";
-import { exportVersion } from "@nvii/env-helpers";
 
 interface Version {
   id: string;
@@ -97,6 +96,34 @@ interface VersionAnalyticsData {
   };
 }
 
+function generateEnvVersion(
+  content: any,
+  format: "env" | "json" | "yaml" = "env",
+): string {
+  switch (format) {
+    case "json": {
+      let content = {};
+      Object.entries(content).map(([key, value]) => {
+        content = { ...content, [key]: value };
+      });
+      return JSON.stringify(content, null, 2);
+    }
+    case "yaml":
+      return (
+        "nvii:\n" +
+        Object.entries(content)
+          .map(([key, value]) => `\t${key}: ${value}`)
+          .join("\n")
+      );
+
+    case "env":
+    default:
+      return Object.entries(content)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("\n");
+  }
+}
+
 export default function VersionsPage() {
   const { projectId } = useParams();
   const { user } = useSession();
@@ -108,7 +135,8 @@ export default function VersionsPage() {
   const [sortBy, setSortBy] = useState<"date" | "changes">("date");
   const [activeTab, setActiveTab] = useState("history");
   const [versions, setVersions] = useState<Version[]>([]);
-  const { getProjectVersions, getProjectAccess } = useProjects();
+  const { getProjectVersions, getProjectAccess, getProjectVersion } =
+    useProjects();
 
   const [users, setUsers] = useState<
     Array<{ id: string; email: string | null; name: string | null }>
@@ -213,9 +241,35 @@ export default function VersionsPage() {
   };
 
   const handleExportVersion = async (versionId: string) => {
-    // const data = await exportVersion()
-    // Implement version export logic
-    console.log("Exporting version:", versionId);
+    const version = filteredVersions.find((item) => item.id === versionId);
+
+    if (!version) return;
+    let data: EnvVersion | null = null;
+
+    try {
+      data = await getProjectVersion(
+        projectId as string,
+        user.id,
+        versionId as string,
+      );
+    } catch (error) {
+      toast.error("Failed to load version details");
+      console.error("Error fetching version details:", error);
+    }
+
+    if (!data) return;
+    // @ts-ignore
+    const result = generateEnvVersion(data?.content, "env");
+    // Create and download file
+    const blob = new Blob([result], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `version-details-${data.id.slice(0, 8)}-to-${data.id.slice(0, 8)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const filteredVersions = versions.filter((version) => {
