@@ -3,8 +3,8 @@ import { ErrorResponse } from "@/lib/response";
 import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { validateCliAuth } from "../../route";
 import { decryptEnv } from "@/lib/actions/decrypt";
+import { validateCliAuth } from "@/lib/cli-auth";
 
 // Get all versions for a project
 export async function GET(
@@ -100,7 +100,7 @@ export async function GET(
 // Create a new version
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
     const { userId } = await params;

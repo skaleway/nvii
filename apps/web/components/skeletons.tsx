@@ -4,7 +4,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@nvii/ui/components/card";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@nvii/ui/components/skeleton";
 
 export function StatusCardSkeleton() {
   return (

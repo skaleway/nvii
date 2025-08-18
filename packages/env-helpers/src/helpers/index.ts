@@ -322,6 +322,16 @@ export async function writeProjectConfig(
     const enviDirPath = path.join(currentDir, ".nvii");
     const enviFilePath = path.join(enviDirPath, "nvii.json");
 
+    // validate the provided projectId if any
+    if (!projectId || projectId.trim() === "") {
+      console.log(
+        pc.red(
+          "Invalid project id. To write project config, a valid project Id must be provided.",
+        ),
+      );
+      process.exit(1);
+    }
+
     if (!existsSync(enviDirPath)) {
       // Create .nvii directory if it doesn't exist
       await fs.mkdir(enviDirPath, { recursive: true });

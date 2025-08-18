@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@nvii/ui/components/dialog";
 import {
   MoreVertical,
   RotateCcw,
@@ -24,7 +24,7 @@ import { Badge } from "@nvii/ui/components/badge";
 import { Button } from "@nvii/ui/components/button";
 import { Label } from "@nvii/ui/components/label";
 import { Input } from "@nvii/ui/components/input";
-import { Textarea } from "./ui/textarea";
+import { Textarea } from "@nvii/ui/components/textarea";
 import { useState } from "react";
 import {
   DropdownMenu,

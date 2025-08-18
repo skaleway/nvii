@@ -5,7 +5,26 @@ import path from "path";
 import pc from "picocolors";
 import fs from "fs";
 
-export async function logout() {
+export async function logout(args?: { username: string; email: string }) {
+  let username = "";
+  let email = "";
+  if (args) {
+    // validate user Input
+    if (args.username && args.email) {
+      console.log(
+        pc.yellow(
+          "Unexpected input. Ether provide your email or username to logout. NOT BOTH",
+        ),
+      );
+      process.exit(0);
+    }
+    if (args.username) {
+      username = args.username;
+    }
+    if (args.email) {
+      email = args.email;
+    }
+  }
   try {
     // Read current config
     const config = await readConfigFile();
@@ -15,19 +34,66 @@ export async function logout() {
     }
 
     // Ask for user ID confirmation
-    const { userId } = await inquirer.prompt([
-      {
-        type: "input",
-        name: "userId",
-        message: `Please enter your username to confirm logout: `,
-        validate: (input) => {
-          if (input === config.username) {
-            return true;
-          }
-          return "Username does not match. Please try again.";
+    if (!username && !email) {
+      const { userId } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "userId",
+          message: `Please enter your username to confirm logout: `,
+          validate: (input) => {
+            if (input === config.username) {
+              return true;
+            }
+            return "Username does not match. Please try again.";
+          },
         },
-      },
-    ]);
+      ]);
+
+      username = userId;
+    }
+
+    if (!email && !username) {
+      const { userId } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "userId",
+          message: `Please enter your username to confirm logout: `,
+          validate: (input) => {
+            if (input === config.email) {
+              return true;
+            }
+            return "Username does not match. Please try again.";
+          },
+        },
+      ]);
+
+      email = userId;
+    }
+
+    // Remove the config file
+    const homeDir = os.homedir();
+    const filePath = path.join(homeDir, FILENAME);
+
+    // validate username || email before login out
+    if (email) {
+      if (config.email !== email) {
+        console.log(
+          pc.redBright("Oops, Invalid email. Check your email and try again."),
+        );
+        process.exit(1);
+      }
+    }
+
+    if (username) {
+      if (config.username !== username) {
+        console.log(
+          pc.redBright(
+            "Oops, Invalid username. Check your username and try again.",
+          ),
+        );
+        process.exit(1);
+      }
+    }
 
     // Double-check with user
     const { confirm } = await inquirer.prompt([
@@ -45,9 +111,6 @@ export async function logout() {
       return;
     }
 
-    // Remove the config file
-    const homeDir = os.homedir();
-    const filePath = path.join(homeDir, FILENAME);
     fs.unlinkSync(filePath);
 
     console.log(pc.green("Successfully logged out!"));

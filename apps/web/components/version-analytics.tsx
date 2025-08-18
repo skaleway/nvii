@@ -376,6 +376,7 @@ export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
                                 style={{
                                   width: `${
                                     (item.changes /
+                                      //@ts-ignore
                                       analytics.mostChangedVariables[0]
                                         ?.changes) *
                                       100 || 0
@@ -433,6 +434,7 @@ export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
                               style={{
                                 width: `${
                                   (item.changes /
+                                    // @ts-ignore
                                     analytics.userActivity[0]?.changes) *
                                     100 || 0
                                 }%`,

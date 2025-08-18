@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@nvii/ui/components/dropdown-menu";
 import { Input } from "@nvii/ui/components/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@nvii/ui/components/skeleton";
 import {
   Table,
   TableBody,
