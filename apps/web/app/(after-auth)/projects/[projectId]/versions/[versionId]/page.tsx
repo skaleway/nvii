@@ -27,59 +27,42 @@ import { ScrollArea } from "@nvii/ui/components/scroll-area";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
 import { EnvVersion } from "@nvii/db";
-
-interface VersionDetails {
-  id: string;
-  description: string | null;
-  createdAt: Date;
-  user: {
-    name: string | null;
-    email: string | null;
-  };
-  tags: string[];
-  isCurrent: boolean;
-  content: Record<string, string>;
-  changes: {
-    added: string[];
-    modified: string[];
-    deleted: string[];
-  } | null;
-  previousVersion?: {
-    id: string;
-    content: Record<string, string>;
-  };
-}
+import { VersionDetails } from "@/types/version";
+import { useQuery } from "@tanstack/react-query";
 
 export default function VersionDetailsPage() {
   const { projectId, versionId } = useParams();
   const router = useRouter();
   const { user } = useSession();
 
-  const [version, setVersion] = useState<VersionDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const { getProjectVersion } = useProjects();
-
-  useEffect(() => {
-    const fetchVersionDetails = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getProjectVersion(
-          projectId as string,
-          user.id,
-          versionId as string,
-        );
-
-        setVersion(data as VersionDetails & EnvVersion);
-      } catch (error) {
-        toast.error("Failed to load version details");
-        console.error("Error fetching version details:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchVersionDetails();
-  }, [projectId, versionId, getProjectVersion, user.id]);
+  const fetchVersionDetails = async (): Promise<any | null> => {
+    try {
+      const data = await getProjectVersion(
+        projectId as string,
+        user.id,
+        versionId as string,
+      );
+      console.log({ data });
+      return data;
+    } catch (error) {
+      toast.error("Failed to load version details");
+      console.error("Error fetching version details:", error);
+      return null;
+    }
+  };
+  const {
+    data: version,
+    isPending,
+    isError,
+    refetch,
+    isRefetching,
+  } = useQuery<any | null>({
+    queryFn: fetchVersionDetails,
+    queryKey: ["versionDetails", projectId, versionId],
+    gcTime: 0,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
   const handleRollback = async (versionId: string) => {
     toast.success("Version rollback initiated");
@@ -117,7 +100,7 @@ export default function VersionDetailsPage() {
     return null;
   };
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="container mx-auto py-6 max-w-7xl">
         <div className="animate-pulse space-y-4">
@@ -232,7 +215,7 @@ export default function VersionDetailsPage() {
                           </Button>
                         </div>
                         <div className="font-mono text-sm break-all border rounded p-2 bg-muted">
-                          {value}
+                          {value as string}
                         </div>
                       </div>
                     );
