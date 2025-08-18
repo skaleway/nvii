@@ -66,25 +66,25 @@ export default function ProjectPage() {
         {/* Breadcrumb skeleton */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-20 bg-primary/10" />
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-4 w-32 bg-primary/10" />
           </div>
-          <Skeleton className="h-9 w-32" />
+          <Skeleton className="h-9 w-32 bg-primary/10" />
         </div>
 
         {/* Header skeleton */}
         <div className="flex items-center justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Skeleton className="h-9 w-48" />
-              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-9 w-48 bg-primary/10" />
+              <Skeleton className="h-6 w-24 bg-primary/10" />
             </div>
-            <Skeleton className="h-5 w-80" />
+            <Skeleton className="h-5 w-80 bg-primary/10" />
           </div>
           <div className="flex items-center gap-3">
-            <Skeleton className="h-9 w-20" />
-            <Skeleton className="h-9 w-32" />
+            <Skeleton className="h-9 w-20 bg-primary/10" />
+            <Skeleton className="h-9 w-32 bg-primary/10" />
           </div>
         </div>
 
@@ -94,18 +94,18 @@ export default function ProjectPage() {
             <div className="space-y-3">
               {/* Table header */}
               <div className="grid grid-cols-4 gap-4 pb-2 border-b">
-                <Skeleton className="h-4 w-16" />
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-16" />
-                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-16 bg-primary/10" />
+                <Skeleton className="h-4 w-20 bg-primary/10" />
+                <Skeleton className="h-4 w-16 bg-primary/10" />
+                <Skeleton className="h-4 w-20 bg-primary/10" />
               </div>
               {/* Table rows */}
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="grid grid-cols-4 gap-4 py-3">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-8" />
+                <div key={`item-${i}`} className="grid grid-cols-4 gap-4 py-3">
+                  <Skeleton className="h-4 w-24 bg-primary/10" />
+                  <Skeleton className="h-4 w-32 bg-primary/10" />
+                  <Skeleton className="h-4 w-16 bg-primary/10" />
+                  <Skeleton className="h-4 w-8 bg-primary/10" />
                 </div>
               ))}
             </div>

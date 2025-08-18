@@ -128,7 +128,7 @@ export function EnvVariableTable({
 
   if (isLoading) {
     return (
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-primary/10">
         <Table>
           <TableHeader>
             <TableRow>
@@ -142,24 +142,24 @@ export function EnvVariableTable({
             {Array.from({ length: 5 }).map((_, i) => (
               <TableRow key={i}>
                 <TableCell>
-                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-24 bg-primary/10" />
                   {i % 3 === 0 && (
                     <div className="mt-2 flex gap-1">
-                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-4 w-16 bg-primary/10" />
                     </div>
                   )}
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-32 bg-primary/10" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-16 bg-primary/10" />
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Skeleton className="h-8 w-8" />
-                    <Skeleton className="h-8 w-8" />
-                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8 bg-primary/10" />
+                    <Skeleton className="h-8 w-8 bg-primary/10" />
+                    <Skeleton className="h-8 w-8 bg-primary/10" />
                   </div>
                 </TableCell>
               </TableRow>
