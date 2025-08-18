@@ -98,9 +98,11 @@ export default function VersionComparePage() {
         setVersions(data as VersionInfo[] & EnvVersion[]);
         // Set default versions if not provided in URL
         if (data.length > 1) {
+          // @ts-ignore
           setLeftVersionId(data[1]?.id);
         }
         if (data.length > 0) {
+          // @ts-ignore
           setRightVersionId(data[0]?.id);
         }
       } catch (error) {

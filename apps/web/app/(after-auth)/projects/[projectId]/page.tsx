@@ -3,7 +3,6 @@
 import { EnvVariableTable } from "@/components/env-variable-table";
 import { ProjectAccessManager } from "@/components/project-access-manager";
 import { VersionHistory } from "@/components/version-history";
-import { Skeleton } from "@/components/ui/skeleton";
 import { projectApi } from "@/lib/api-client";
 import { useSession } from "@/provider/session";
 import { Project } from "@/types/project";
@@ -16,6 +15,7 @@ import {
   BreadcrumbSeparator,
 } from "@nvii/ui/components/breadcrumb";
 import { Button } from "@nvii/ui/components/button";
+import { Skeleton } from "@nvii/ui/components/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, RefreshCw } from "lucide-react";
 import { notFound, useParams } from "next/navigation";

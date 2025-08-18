@@ -240,9 +240,9 @@ This document outlines all tasks required to implement a complete version contro
   - [ ] `version-formatter.ts` - Format version output
 
 - [ ] **Create `src/diff/` directory**
-  - [ ] `diff-calculator.ts` - Calculate differences between versions
-  - [ ] `diff-formatter.ts` - Format diff output
-  - [ ] `diff-applier.ts` - Apply diff to environment
+  - [x] `diff-calculator.ts` - Calculate differences between versions
+  - [x] `diff-formatter.ts` - Format diff output
+  - [x] `diff-applier.ts` - Apply diff to environment
 
 - [ ] **Create `src/conflict/` directory**
   - [ ] `conflict-detector.ts` - Detect conflicts between versions
@@ -366,6 +366,7 @@ This document outlines all tasks required to implement a complete version contro
 2. Add advanced diff visualization
 3. Create bulk version operations
 4. Add version export/import functionality
+5. Update the cli logout to recieve flags such as username and email to logout the user without asking for them again. But make sure to confirm the logout manually and not do it with flags.
 
 ---
 

@@ -46,6 +46,7 @@ import { Badge } from "@nvii/ui/components/badge";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
 import { EnvVersion } from "@nvii/db";
+import { exportVersion } from "@nvii/env-helpers";
 
 interface Version {
   id: string;
@@ -212,6 +213,7 @@ export default function VersionsPage() {
   };
 
   const handleExportVersion = async (versionId: string) => {
+    // const data = await exportVersion()
     // Implement version export logic
     console.log("Exporting version:", versionId);
   };

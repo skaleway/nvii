@@ -4,8 +4,8 @@ import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
 import { decryptEnvValues } from "@/lib/encryption";
 import { headers } from "next/headers";
-import { AuthUser, validateCliAuth } from "../../../route";
 import { decryptEnv } from "@/lib/actions/decrypt";
+import { validateCliAuth } from "@/lib/cli-auth";
 
 // Get all versions for a project
 export async function GET(

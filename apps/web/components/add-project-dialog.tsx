@@ -30,7 +30,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Textarea } from "./ui/textarea";
+import { Textarea } from "@nvii/ui/components/textarea";
 
 const projectSchema = z.object({
   name: z.string().min(2, {
@@ -98,11 +98,9 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
             Add a new project to manage its environment variables.
           </DialogDescription>
         </DialogHeader>
-        {/* @ts-expect-error - react-hook-form types are not compatible with react 19 */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
-              // @ts-expect-error - react-hook-form types are not compatible with react 19
               control={form.control}
               name="name"
               render={({ field }) => (
@@ -117,7 +115,6 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
             />
 
             <FormField
-              // @ts-expect-error - react-hook-form types are not compatible with react 19
               control={form.control}
               name="description"
               render={({ field }) => (

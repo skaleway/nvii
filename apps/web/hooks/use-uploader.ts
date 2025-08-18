@@ -12,7 +12,18 @@ export interface Attachment {
   type?: string;
 }
 
-export default function useUploader(endpoint: EndPoint) {
+interface UseUploaderReturn {
+  startUpload: (files: File[]) => Promise<void>;
+  attachment: Attachment | null;
+  isUploading: boolean;
+  uploadProgress: number | undefined;
+  removeAttachment: () => Promise<void>;
+  reset: () => void;
+  routeConfig: unknown;
+  url: string | null;
+}
+
+export default function useUploader(endpoint: EndPoint): UseUploaderReturn {
   const [attachment, setAttachment] = useState<Attachment | null>(null);
 
   const [uploadProgress, setUploadProgress] = useState<number>();
@@ -31,7 +42,7 @@ export default function useUploader(endpoint: EndPoint) {
         `file_${crypto.randomUUID()}.${extension}`,
         {
           type: file.type,
-        }
+        },
       );
 
       setAttachment({ file: renamedFile, isUploading: true });
@@ -51,7 +62,7 @@ export default function useUploader(endpoint: EndPoint) {
                 size: uploadResult.size,
                 type: uploadResult.type.split("/")[1],
               }
-            : null
+            : null,
         );
         setUrl(uploadResult?.ufsUrl || null);
       }
@@ -86,7 +97,9 @@ export default function useUploader(endpoint: EndPoint) {
   }
 
   return {
-    startUpload,
+    startUpload: async (files: File[]) => {
+      await startUpload(files);
+    },
     attachment,
     isUploading,
     uploadProgress,

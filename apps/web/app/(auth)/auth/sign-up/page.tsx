@@ -7,7 +7,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@nvii/ui/components/form";
 import {
   Card,
   CardContent,
@@ -55,7 +55,7 @@ export default function SignUp() {
             description: "Check your email for a verification link.",
           });
         },
-        onError: (ctx) => {
+        onError: (ctx: any) => {
           toast({
             title: "Something went wrong",
             description: ctx.error.message ?? "Unknown error.",
