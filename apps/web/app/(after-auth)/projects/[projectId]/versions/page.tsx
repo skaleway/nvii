@@ -98,7 +98,7 @@ interface VersionAnalyticsData {
 
 function generateEnvVersion(
   content: any,
-  format: "env" | "json" | "yaml" = "env",
+  format: "env" | "json" | "yaml" = "env"
 ): string {
   switch (format) {
     case "json": {
@@ -146,7 +146,7 @@ export default function VersionsPage() {
     try {
       const projectAccess = await getProjectAccess(
         projectId as string,
-        user.id,
+        user.id
       );
       setUsers(projectAccess.map((access) => access.user));
     } catch (error) {
@@ -165,7 +165,7 @@ export default function VersionsPage() {
       try {
         const data = await getProjectVersions(
           projectId as string,
-          user.id as string,
+          user.id as string
         );
 
         if (!data) {
@@ -229,7 +229,7 @@ export default function VersionsPage() {
   const handleCreateBranch = async (
     versionId: string,
     branchName: string,
-    description?: string,
+    description?: string
   ) => {
     // Implement branch creation logic
     console.log("Creating branch:", branchName, "from version:", versionId);
@@ -250,7 +250,7 @@ export default function VersionsPage() {
       data = await getProjectVersion(
         projectId as string,
         user.id,
-        versionId as string,
+        versionId as string
       );
     } catch (error) {
       toast.error("Failed to load version details");
@@ -265,7 +265,7 @@ export default function VersionsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `version-details-${data.id.slice(0, 8)}-to-${data.id.slice(0, 8)}.txt`;
+    a.download = `version-details-${data.id.slice(0, 8)}-to-${data.id.slice(0, 8)}.env`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
