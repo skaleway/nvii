@@ -26,8 +26,6 @@ import { Badge } from "@nvii/ui/components/badge";
 import { ScrollArea } from "@nvii/ui/components/scroll-area";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
-import { EnvVersion } from "@nvii/db";
-import { VersionDetails } from "@/types/version";
 import { useQuery } from "@tanstack/react-query";
 
 export default function VersionDetailsPage() {
@@ -41,7 +39,7 @@ export default function VersionDetailsPage() {
       const data = await getProjectVersion(
         projectId as string,
         user.id,
-        versionId as string,
+        versionId as string
       );
       console.log({ data });
       return data;
@@ -91,7 +89,7 @@ export default function VersionDetailsPage() {
   };
 
   const getChangeType = (
-    key: string,
+    key: string
   ): "added" | "modified" | "deleted" | null => {
     if (!version?.changes) return null;
     if (version.changes.added.includes(key)) return "added";
