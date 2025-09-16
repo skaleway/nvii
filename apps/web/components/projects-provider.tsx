@@ -14,12 +14,16 @@ import {
   CreateProjectInput,
   projectAccessApi,
   ProjectAccess,
+  projectApi,
 } from "../lib/api-client";
 import { Project } from "../types/project";
 import { useSession } from "@/provider/session";
+import { EnvVersion } from "@nvii/db";
 
 type ProjectsContextType = {
   projects: Project[];
+  isRefetchingProjects: boolean;
+  refetchProjects: () => void;
   isLoading: boolean;
   error: Error | null;
   addProject: (project: CreateProjectInput) => Promise<void>;
@@ -27,9 +31,25 @@ type ProjectsContextType = {
   filteredProjects: (filter: string) => Project[];
   filterValue: string;
   setFilterValue: (filter: string) => void;
-  getProjectAccess: (projectId: string) => Promise<ProjectAccess[]>;
-  addProjectAccess: (projectId: string, userEmail: string) => Promise<void>;
+  getProjectAccess: (
+    projectId: string,
+    userId: string,
+  ) => Promise<ProjectAccess[]>;
+  addProjectAccess: (
+    projectId: string,
+    userEmail: string,
+    userId: string,
+  ) => Promise<void>;
   removeProjectAccess: (projectId: string, userId: string) => Promise<void>;
+  getProjectVersions: (
+    projectId: string,
+    userId: string,
+  ) => Promise<EnvVersion[]>;
+  getProjectVersion: (
+    projectId: string,
+    userId: string,
+    versionId: string,
+  ) => Promise<EnvVersion>;
 };
 
 const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
@@ -79,9 +99,13 @@ function ProjectsProviderInner({
     data: projects = [],
     isLoading,
     error,
+    refetch: refetchProjects,
+    isRefetching: isRefetchingProjects,
   } = useQuery({
     queryKey: ["projects"],
     queryFn: projectsApi.list,
+    staleTime: Infinity,
+    gcTime: 500,
   });
 
   // Add project mutation
@@ -95,7 +119,7 @@ function ProjectsProviderInner({
 
   // Remove project mutation
   const removeProjectMutation = useMutation({
-    mutationFn: projectsApi.delete,
+    mutationFn: (id: string) => projectsApi.delete(id, user.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
@@ -128,10 +152,12 @@ function ProjectsProviderInner({
     mutationFn: ({
       projectId,
       userEmail,
+      userId,
     }: {
       projectId: string;
       userEmail: string;
-    }) => projectAccessApi.add(projectId, userEmail),
+      userId: string;
+    }) => projectAccessApi.add(projectId, userEmail, userId),
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: ["projectAccess", projectId] });
     },
@@ -150,13 +176,38 @@ function ProjectsProviderInner({
     },
   });
 
-  const getProjectAccess = React.useCallback(async (projectId: string) => {
-    return projectAccessApi.list(projectId);
-  }, []);
+  const getProjectAccess = React.useCallback(
+    async (projectId: string, userId: string) => {
+      return projectAccessApi.list(projectId, userId);
+    },
+    [],
+  );
+
+  const getProjectVersions = React.useCallback(
+    async (projectId: string, userId: string): Promise<EnvVersion[]> => {
+      return await projectApi.versions(projectId, userId);
+    },
+    [],
+  );
+
+  const getProjectVersion = React.useCallback(
+    async (
+      projectId: string,
+      userId: string,
+      versionId: string,
+    ): Promise<EnvVersion> => {
+      return await projectApi.version(projectId, userId, versionId);
+    },
+    [],
+  );
 
   const addProjectAccess = React.useCallback(
-    async (projectId: string, userEmail: string) => {
-      await addProjectAccessMutation.mutateAsync({ projectId, userEmail });
+    async (projectId: string, userEmail: string, userId: string) => {
+      await addProjectAccessMutation.mutateAsync({
+        projectId,
+        userEmail,
+        userId,
+      });
     },
     [addProjectAccessMutation],
   );
@@ -182,6 +233,10 @@ function ProjectsProviderInner({
         getProjectAccess,
         addProjectAccess,
         removeProjectAccess,
+        isRefetchingProjects,
+        refetchProjects,
+        getProjectVersions,
+        getProjectVersion,
       }}
     >
       {children}

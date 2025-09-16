@@ -4,13 +4,16 @@ import {
   isLogedIn,
   readConfigFile,
   readEnvFile,
+  readProjectConfig,
   writeProjectConfig,
-} from "@workspace/env-helpers";
+} from "@nvii/env-helpers";
 import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
-
-const ENV_FILE = ".envi";
+import { unlinkProject } from "./unlink";
+import path from "path";
+import { appendFile } from "fs/promises";
+import { Project, VersionBranch } from "@nvii/db";
 
 /**
  * Prompts the user with a question using inquirer.
@@ -45,10 +48,14 @@ export async function createProject() {
       process.exit(1);
     }
 
+    const projectDescription = await promptUser(
+      "Enter project description (optional):",
+    );
+
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
-        pc.red("❌ Invalid user credentials. Please log in again.")
+        pc.red("❌ Invalid user credentials. Please log in again."),
       );
       await login();
       return;
@@ -58,17 +65,33 @@ export async function createProject() {
 
     const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
 
-    const client = await getConfiguredClient();
+    // unlink from the existing project and delete it from the db
+    await unlinkProject();
 
-    const response = await client.post(`/projects/${userConfig.userId}`, {
+    // contact the api
+    const client = await getConfiguredClient();
+    const response = await client.post<{
+      data: Project & { branches: VersionBranch[] };
+    }>(`/projects/${userConfig.userId}`, {
       name: projectName,
       content: encryptedEnvs,
       deviceId: userConfig.deviceId,
+      description: projectDescription,
     });
 
     const projectId = response.data.data.id;
-    await writeProjectConfig(projectId);
-  } catch (error) {
-    console.error(pc.red("❌ Error creating project:"), error);
+    const branchName = "main";
+    await writeProjectConfig(projectId, branchName);
+  } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nProject create cancelled."));
+      return;
+    }
+    console.error(pc.red("❌ Error creating project:"), error.message);
+    process.exit(1);
   }
 }

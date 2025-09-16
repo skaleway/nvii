@@ -1,32 +1,48 @@
 import { getCurrentUserFromSession } from "@/lib/current-user";
-import { ErrorResponse, Response } from "@/lib/response";
-import { db } from "@workspace/db";
+import { ErrorResponse } from "@/lib/response";
+import { db } from "@nvii/db";
 import { NextResponse } from "next/server";
-import { decryptEnvValues } from "@/lib/encryption";
+import { headers } from "next/headers";
+import { decryptEnv } from "@/lib/actions/decrypt";
+import { validateCliAuth } from "@/lib/cli-auth";
 
 // Get all versions for a project
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
-    const user = await getCurrentUserFromSession();
-    if (!user) {
+    const { searchParams } = new URL(request.url);
+    const limit = Number(searchParams.get("limit"));
+
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    const cliUser = await validateCliAuth(headersList);
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId, projectId } = params;
+    const { projectId } = await params;
+    const user = webUser || cliUser;
+    if (!user) {
+      return ErrorResponse("Unauthorized", 401);
+    }
 
     // Verify user has access to the project
     const project = await db.project.findUnique({
       where: {
         id: projectId,
         OR: [
-          { userId: userId },
+          { userId: user.id },
           {
             ProjectAccess: {
               some: {
-                userId: userId,
+                userId: user.id,
               },
             },
           },
@@ -54,15 +70,25 @@ export async function GET(
       orderBy: {
         createdAt: "desc",
       },
+      take: limit >= 1 ? limit : 30,
     });
 
-    // Decrypt content for each version
-    const decryptedVersions = versions.map((version) => ({
-      ...version,
-      content: version.content
-        ? decryptEnvValues(version.content as Record<string, string>, user.id)
-        : null,
-    }));
+    const decryptedVersions: unknown[] = [];
+    const handleDecrypt = async () => {
+      versions.map(async (item) => {
+        const decryptedContent = await decryptEnv(
+          item.content as Record<string, string>,
+          project.userId,
+        );
+
+        decryptedVersions.push({
+          ...item,
+          content: decryptedContent,
+        });
+      });
+    };
+
+    await handleDecrypt();
 
     return NextResponse.json(decryptedVersions);
   } catch (error) {
@@ -74,15 +100,28 @@ export async function GET(
 // Create a new version
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string; projectId: string } },
+  { params }: { params: Promise<{ userId: string; projectId: string }> },
 ): Promise<NextResponse> {
   try {
-    const user = await getCurrentUserFromSession();
+    const { userId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    const cliUser = await validateCliAuth(headersList);
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    const { projectId } = await params;
+    const user = webUser || cliUser;
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId, projectId } = params;
     const body = await request.json();
     const { content, description, changes } = body;
 
@@ -126,15 +165,7 @@ export async function POST(
       },
     });
 
-    // Decrypt content before sending response
-    const decryptedVersion = {
-      ...version,
-      content: version.content
-        ? decryptEnvValues(version.content as Record<string, string>, user.id)
-        : null,
-    };
-
-    return NextResponse.json(decryptedVersion);
+    return NextResponse.json(version);
   } catch (error) {
     console.error("[VERSION_POST]", error);
     return ErrorResponse("Internal Server Error", 500);

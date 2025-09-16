@@ -5,7 +5,7 @@ import type React from "react";
 import { useProjects } from "@/components/projects-provider";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog";
+} from "@nvii/ui/components/dialog";
 import {
   Form,
   FormControl,
@@ -23,13 +23,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/form";
+import { Input } from "@nvii/ui/components/input";
 import { Loader2, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Textarea } from "@nvii/ui/components/textarea";
 
 const projectSchema = z.object({
   name: z.string().min(2, {
@@ -41,16 +42,12 @@ const projectSchema = z.object({
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
-type EnvVariable = {
-  key: string;
-  value: string;
-};
-
 export function AddProjectDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const { addProject, isLoading } = useProjects();
+  const { addProject } = useProjects();
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -60,13 +57,14 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
   });
 
   async function onSubmit(data: ProjectFormValues) {
+    setIsLoading(true);
     try {
       const projectData = {
         name: data.name,
-        description: "",
+        description: data.description as string,
         status: "valid" as const,
         key: crypto.randomUUID(),
-        deviceId: crypto.randomUUID(),
+        content: {},
         envCount: 0,
         slug: data.name.toLowerCase().replace(/\s+/g, "-"),
       };
@@ -77,12 +75,7 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
         title: "Project created",
         description: `${data.name} has been created successfully.`,
       });
-
-      setOpen(false);
       form.reset();
-
-      // Navigate to the new project
-      router.push(`/projects/${projectData.slug}`);
     } catch (error) {
       toast({
         title: "Something went wrong",
@@ -90,6 +83,8 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
       console.error("Error creating project:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -103,11 +98,9 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
             Add a new project to manage its environment variables.
           </DialogDescription>
         </DialogHeader>
-        {/* @ts-expect-error - react-hook-form types are not compatible with react 19 */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
-              // @ts-expect-error - react-hook-form types are not compatible with react 19
               control={form.control}
               name="name"
               render={({ field }) => (
@@ -115,6 +108,24 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
                   <FormLabel>Project Name</FormLabel>
                   <FormControl>
                     <Input placeholder="My Awesome Project" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Description (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={1}
+                      placeholder="My awesome project for facebook envs..."
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

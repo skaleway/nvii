@@ -2,15 +2,16 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { Variable } from "@/types/project";
-import { Badge } from "@workspace/ui/components/badge";
-import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@nvii/ui/components/badge";
+import { Button } from "@nvii/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/dropdown-menu";
+import { Input } from "@nvii/ui/components/input";
+import { Skeleton } from "@nvii/ui/components/skeleton";
 import {
   Table,
   TableBody,
@@ -18,8 +19,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@workspace/ui/components/table";
-import { cn } from "@workspace/ui/lib/utils";
+} from "@nvii/ui/components/table";
+import { cn } from "@nvii/ui/lib/utils";
 import {
   CheckCircle,
   Copy,
@@ -34,9 +35,17 @@ import { useState } from "react";
 
 interface EnvVariableTableProps {
   environment: Record<string, string>;
+  isLoading?: boolean;
+  projectUserId: string;
+  userId: string;
 }
 
-export function EnvVariableTable({ environment }: EnvVariableTableProps) {
+export function EnvVariableTable({
+  environment,
+  isLoading = false,
+  userId,
+  projectUserId,
+}: EnvVariableTableProps) {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [variables, setVariables] = useState<Variable[]>(() =>
@@ -49,7 +58,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
       isEditing: false,
       status: value ? "valid" : "missing",
       requiredBy: [],
-    }))
+    })),
   );
 
   const toggleVisibility = (id: string) => {
@@ -57,18 +66,19 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isVisible: !variable.isVisible }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
   const toggleEditing = (id: string) => {
+    toggleVisibility(id);
     setVariables((prevVars) =>
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isEditing: !variable.isEditing }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
@@ -81,8 +91,8 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
               value,
               status: value ? "valid" : "missing",
             }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
@@ -91,8 +101,8 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isPublic: !variable.isPublic }
-          : variable
-      )
+          : variable,
+      ),
     );
   };
 
@@ -116,6 +126,50 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="rounded-md border bg-primary/10">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[30%]">Key</TableHead>
+              <TableHead className="w-[40%]">Value</TableHead>
+              <TableHead className="w-[10%]">Status</TableHead>
+              <TableHead className="w-[10%] text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
+                <TableCell>
+                  <Skeleton className="h-4 w-24 bg-primary/10" />
+                  {i % 3 === 0 && (
+                    <div className="mt-2 flex gap-1">
+                      <Skeleton className="h-4 w-16 bg-primary/10" />
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-32 bg-primary/10" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-16 bg-primary/10" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <Skeleton className="h-8 w-8 bg-primary/10" />
+                    <Skeleton className="h-8 w-8 bg-primary/10" />
+                    <Skeleton className="h-8 w-8 bg-primary/10" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border bg-card">
       <Table>
@@ -133,7 +187,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
               key={variable.id}
               className={cn(
                 variable.status === "missing" && "bg-amber-500/5",
-                variable.status === "invalid" && "bg-rose-500/5"
+                variable.status === "invalid" && "bg-rose-500/5",
               )}
             >
               <TableCell className="font-mono text-sm">
@@ -154,6 +208,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
                     type={variable.isVisible ? "text" : "password"}
                     value={variable.value}
                     onChange={(e) => updateValue(variable.id, e.target.value)}
+                    autoFocus
                     className="font-mono text-sm"
                   />
                 ) : (
@@ -233,7 +288,7 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
                     size="icon"
                     className={cn(
                       "h-8 w-8 transition-colors",
-                      copiedId === variable.id && "text-green-500"
+                      copiedId === variable.id && "text-green-500",
                     )}
                     onClick={() => copyToClipboard(variable)}
                     disabled={!variable.value}
@@ -253,11 +308,16 @@ export function EnvVariableTable({ environment }: EnvVariableTableProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View History</DropdownMenuItem>
-                      <DropdownMenuItem>Sync Variable</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
-                        Delete Variable
-                      </DropdownMenuItem>
+                      {/* <DropdownMenuItem asChild>
+                        <Link href={`${pathName}/${version.id}`}>
+                          View History
+                        </Link>
+                      </DropdownMenuItem> */}
+                      {projectUserId === userId && (
+                        <DropdownMenuItem className="text-destructive">
+                          Delete Variable
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

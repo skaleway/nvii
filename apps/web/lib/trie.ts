@@ -1,4 +1,4 @@
-import { db } from "@workspace/db";
+import { db } from "@nvii/db";
 import { getCurrentUserFromSession } from "./current-user";
 
 class TrieNode {

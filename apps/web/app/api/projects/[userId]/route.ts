@@ -1,77 +1,41 @@
+import { validateCliAuth } from "@/lib/cli-auth";
 import { getCurrentUserFromSession } from "@/lib/current-user";
 import { ErrorResponse, Response } from "@/lib/response";
-import { db } from "@workspace/db";
+import { db } from "@nvii/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-
-type AuthUser = {
-  id: string;
-  name: string | null;
-  email: string | null;
-  emailVerified: boolean | null;
-  image: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-async function validateCliAuth(headers: Headers): Promise<AuthUser | null> {
-  const userId = headers.get("X-User-Id");
-  const deviceId = headers.get("X-Device-Id");
-  const authCode = headers.get("X-Auth-Code");
-
-  if (!userId || !deviceId || !authCode) {
-    return null;
-  }
-
-  // Verify the device exists and belongs to the user
-  const device = await db.device.findFirst({
-    where: {
-      userId,
-      id: deviceId,
-      code: authCode,
-    },
-  });
-
-  if (!device) {
-    return null;
-  }
-
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      emailVerified: true,
-      image: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  return user as AuthUser | null;
-}
 
 export const GET = async (
   request: Request,
   { params }: { params: Promise<{ userId: string }> },
 ): Promise<NextResponse> => {
   try {
-    const user = await getCurrentUserFromSession();
+    const { userId } = await params;
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    const cliUser = await validateCliAuth(headersList);
+
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+    const user = webUser || cliUser;
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const { userId } = await params;
-
     const projects = await db.project.findMany({
       where: {
         OR: [
-          { userId: userId },
+          { userId: user.id },
           {
             ProjectAccess: {
               some: {
-                userId: userId,
+                userId: user.id,
               },
             },
           },
@@ -101,31 +65,71 @@ export const POST = async (
 ): Promise<NextResponse> => {
   try {
     const { userId } = await params;
+    // read request headers sent from the cli
     const headersList = await headers();
+    // validate cli request headers
+    const cliUser = await validateCliAuth(headersList);
 
-    let user = await validateCliAuth(headersList);
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
 
-    if (!user) {
-      user = (await getCurrentUserFromSession()) as AuthUser | null;
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
+      return ErrorResponse("Unauthorized", 401);
     }
+
+    const user = webUser || cliUser;
 
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
     }
 
-    if (user.id !== userId) {
-      return ErrorResponse("Unauthorized - User ID mismatch", 401);
+    const body = await request.json();
+
+    // check for duplicate project names
+    const existingProject = await db.project.findFirst({
+      where: {
+        userId: user?.id,
+        name: body.name,
+      },
+    });
+
+    if (existingProject) {
+      return NextResponse.json(
+        { message: "Project with this name already exists" },
+        { status: 400 },
+      );
     }
 
-    const body = await request.json();
+    const authenticatedUser = await db.user.findUnique({
+      where: { id: user?.id },
+    });
+
+    if (!authenticatedUser) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    const authenticatedUserDeviceId = await db.device.findFirst({
+      where: {
+        userId: authenticatedUser.id,
+      },
+    });
+    if (!authenticatedUserDeviceId && cliUser) {
+      // block only cli requests with no device ids
+      return ErrorResponse("Unauthorized", 401);
+    }
 
     const project = await db.$transaction(async (tx) => {
       const newProject = await tx.project.create({
         data: {
           userId,
           name: body.name,
-          deviceId: body.deviceId,
+          deviceId: authenticatedUserDeviceId?.id ?? undefined,
           content: body.content,
+          description: body.description ?? "",
+        },
+        include: {
+          branches: true,
         },
       });
 
@@ -146,16 +150,18 @@ export const POST = async (
             modified: [],
             deleted: [],
           },
-          createdBy: user.id,
+          createdBy: user?.id as string,
         },
       });
 
       return newProject;
     });
-
     return Response(project);
   } catch (error) {
     console.error(error);
-    return ErrorResponse("Internal Server Error", 500);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 };

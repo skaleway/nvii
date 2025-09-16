@@ -7,25 +7,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@nvii/ui/components/form";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
-import { Input } from "@workspace/ui/components/input";
-
+} from "@nvii/ui/components/card";
+import { Input } from "@nvii/ui/components/input";
 import Link from "next/link";
-
 import { useToast } from "@/hooks/use-toast";
 import { authClient } from "@/lib/auth-client";
 import { signUpSchema } from "@/lib/verification";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@workspace/ui/components/button";
+import { Button } from "@nvii/ui/components/button";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Loader2 } from "lucide-react";
 
 export default function SignUp() {
   const [pending, setPending] = useState(false);
@@ -49,21 +48,17 @@ export default function SignUp() {
         name: values.name,
       },
       {
-        onRequest: () => {
-          setPending(true);
-        },
+        onRequest: () => setPending(true),
         onSuccess: () => {
           toast({
             title: "Account created",
-            description:
-              "Your account has been created. Check your email for a verification link.",
+            description: "Check your email for a verification link.",
           });
         },
-        onError: (ctx) => {
-          console.log("error", ctx);
+        onError: (ctx: any) => {
           toast({
             title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
+            description: ctx.error.message ?? "Unknown error.",
           });
         },
       },
@@ -72,28 +67,32 @@ export default function SignUp() {
   };
 
   return (
-    <div className="grow flex items-center justify-center p-4 w-full">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
+      <Card className="w-full max-w-md rounded-2xl shadow-xl border border-tranbg-transparent bg-background text-white">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center text-gray-800">
+          <CardTitle className="text-4xl font-extrabold text-center">
             Create Account
           </CardTitle>
+          <p className="text-sm text-center text-gray-400">
+            Join us and get started instantly
+          </p>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {["name", "email", "password", "confirmPassword"].map((field) => (
                 <FormField
-                  control={form.control}
                   key={field}
+                  control={form.control}
                   name={field as keyof z.infer<typeof signUpSchema>}
                   render={({ field: fieldProps }) => (
                     <FormItem>
-                      <FormLabel>
-                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                      <FormLabel className="capitalize text-gray-300">
+                        {field.replace("Password", " password")}
                       </FormLabel>
                       <FormControl>
                         <Input
+                          className="bg-transparent border border-gray-700 text-white placeholder:text-gray-500 focus:ring-primary focus:border-primary"
                           type={
                             field.includes("password")
                               ? "password"
@@ -102,8 +101,8 @@ export default function SignUp() {
                                 : "text"
                           }
                           placeholder={`Enter your ${field}`}
-                          {...fieldProps}
                           autoComplete="off"
+                          {...fieldProps}
                         />
                       </FormControl>
                       <FormMessage />
@@ -111,12 +110,22 @@ export default function SignUp() {
                   )}
                 />
               ))}
-              <Button disabled={pending}>Sign up</Button>
+              <Button
+                disabled={pending}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                {pending && <Loader2 className="w-4 h-4 animate-spin" />} Sign
+                Up
+              </Button>
             </form>
           </Form>
-          <div className="mt-4 text-center text-sm">
-            <Link href="/sign-in" className="text-primary hover:underline">
-              Already have an account? Sign in
+          <div className="mt-6 text-center text-sm text-gray-400">
+            Already have an account?{" "}
+            <Link
+              href="/auth/sign-in"
+              className="text-primary font-medium hover:underline"
+            >
+              Sign in
             </Link>
           </div>
         </CardContent>

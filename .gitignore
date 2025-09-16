@@ -37,5 +37,11 @@ npm-debug.log*
 *.pem
 .env*.local
 
+packages/database/generated
+
+# local editor files
+.vscode
 # Generated
-generated
+
+# local todo list
+task.todo

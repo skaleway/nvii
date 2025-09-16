@@ -6,27 +6,31 @@ import {
   AlertTriangle,
   XCircle,
   MoreHorizontal,
+  Trash2,
+  Copy,
+  RefreshCcw,
 } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
-import { Button } from "@workspace/ui/components/button";
+import { cn } from "@nvii/ui/lib/utils";
+import { Button } from "@nvii/ui/components/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@workspace/ui/components/card";
+} from "@nvii/ui/components/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
+} from "@nvii/ui/components/dropdown-menu";
 import { useProjects } from "@/components/projects-provider";
 import { useToast } from "@/hooks/use-toast";
 import { parseISO, format } from "date-fns";
 import { AnalyzedContent, Project, ProjectAccess } from "@/types/project";
 import { useSession } from "@/provider/session";
 import { VersionHistory } from "./version-history";
+import { toast as toaster } from "sonner";
 
 interface ProjectCardProps {
   project: Project;
@@ -43,13 +47,33 @@ export function ProjectCard({ project }: ProjectCardProps) {
     (access: ProjectAccess) => access.user.id === project.userId,
   )?.user;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!project.id) return;
 
-    removeProject(project.id);
+    const toastId = toaster.loading(`Deleting "${project.name}"`);
+    try {
+      await removeProject(project.id);
+      toast({
+        title: "Project deleted",
+        description: `${project.name} has been deleted successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Something went wrong",
+        description: "Your project could not be deleted. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Error creating project:", error);
+    } finally {
+      toaster.dismiss(toastId);
+    }
+  };
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
     toast({
-      title: "Project deleted",
-      description: `${project.name} has been deleted successfully.`,
+      title: "Project id copied",
+      description: `Project ${project.name} id copied successfully.`,
     });
   };
 
@@ -58,7 +82,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <Link href={`/projects/${project.id}`}>
-            <h3 className="font-semibold leading-none tracking-tight hover:text-primary">
+            <h3 className="font-semibold leading-none tracking-tight">
               {project.name}
               {isSharedProject && (
                 <span className="ml-2 text-xs text-muted-foreground">
@@ -80,17 +104,25 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <DropdownMenuItem asChild>
               <Link href={`/projects/${project.id}`}>View Details</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            {/* <DropdownMenuItem asChild>
               <Link href={`/projects/${project.id}`}>Edit Variables</Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem asChild>
-              <Link href="/sync">Sync Variables</Link>
+              <Link href="/sync">
+                <RefreshCcw className="mr-1 h-4 w-4" />
+                Sync Variables
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleCopyId(project.id)}>
+              <Copy className="mr-1 h-4 w-4" />
+              Copy Project Id
             </DropdownMenuItem>
             {!isSharedProject && (
               <DropdownMenuItem
-                className="text-destructive"
+                className="text-destructive hover:text-destructive"
                 onClick={handleDelete}
               >
+                <Trash2 className="mr-1 h-4 w-4" />
                 Delete Project
               </DropdownMenuItem>
             )}
@@ -103,7 +135,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {format(parseISO(project.updatedAt), "MMM d, yyyy")}
           </div>
           <div className="flex items-center gap-2">
-            <VersionHistory projectId={project.id} />
+            <VersionHistory projectId={project.id} userId={user.id} />
             <span className="text-sm font-medium">
               {project.content.totalElem} variables
             </span>

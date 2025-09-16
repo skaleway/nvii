@@ -1,1 +1,7 @@
-.envi/
+.nvii
+
+dist
+.turbo
+nodemon.json
+.nvii/
+

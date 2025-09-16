@@ -562,8 +562,8 @@ var require_help = __commonJS({
         const breaks = `\\s${zeroWidthSpace}`;
         const regex = new RegExp(`
 |.{1,${columnWidth - 1}}([${breaks}]|$)|[^${breaks}]+?([${breaks}]|$)`, "g");
-        const lines2 = columnText.match(regex) || [];
-        return leadingStr + lines2.map((line, i) => {
+        const lines = columnText.match(regex) || [];
+        return leadingStr + lines.map((line, i) => {
           if (line === "\n")
             return "";
           return (i > 0 ? indentString : "") + line.trimEnd();
@@ -23789,9 +23789,9 @@ var require_cjs = __commonJS({
   }
 });
 
-// ../../node_modules/.pnpm/run-async@3.0.0/node_modules/run-async/index.js
+// ../../node_modules/.pnpm/run-async@4.0.5/node_modules/run-async/index.js
 var require_run_async = __commonJS({
-  "../../node_modules/.pnpm/run-async@3.0.0/node_modules/run-async/index.js"(exports2, module2) {
+  "../../node_modules/.pnpm/run-async@4.0.5/node_modules/run-async/index.js"(exports2, module2) {
     "use strict";
     function isPromise(obj) {
       return !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
@@ -23828,12 +23828,16 @@ var require_run_async = __commonJS({
           var contextEnded = false;
           var doneFactory = function() {
             if (contextEnded) {
-              console.warn("Run-async async() called outside a valid run-async context, callback will be ignored.");
+              console.warn(
+                "Run-async async() called outside a valid run-async context, callback will be ignored."
+              );
               return function() {
               };
             }
             if (callbackConflict) {
-              console.warn("Run-async wrapped function (async) returned a promise.\nCalls to async() callback can have unexpected results.");
+              console.warn(
+                "Run-async wrapped function (async) returned a promise.\nCalls to async() callback can have unexpected results."
+              );
             }
             usingCallback = true;
             return function(err, value) {
@@ -23850,7 +23854,9 @@ var require_run_async = __commonJS({
               get(_target, prop) {
                 if (prop === proxyProperty) {
                   if (prop in _target) {
-                    console.warn(`${proxyProperty} property is been shadowed by run-sync`);
+                    console.warn(
+                      `${proxyProperty} property is been shadowed by run-sync`
+                    );
                   }
                   return doneFactory;
                 }
@@ -23863,7 +23869,9 @@ var require_run_async = __commonJS({
           var answer = func.apply(_this, Array.prototype.slice.call(args));
           if (usingCallback) {
             if (isPromise(answer)) {
-              console.warn("Run-async wrapped function (sync) returned a promise but async() callback must be executed to resolve.");
+              console.warn(
+                "Run-async wrapped function (sync) returned a promise but async() callback must be executed to resolve."
+              );
             }
           } else {
             if (isPromise(answer)) {
@@ -23909,32 +23917,49 @@ var {
 } = import_index.default;
 
 // src/commands/crypt.ts
-var import_env_helpers = require("@workspace/env-helpers");
-async function testencryption() {
-  const config = await (0, import_env_helpers.readConfigFile)();
-  if (!config?.userId) {
-    console.error(
-      "You must be logged in to test encryption. Run 'envi login' first."
-    );
+var import_env_helpers = require("@nvii/env-helpers");
+var import_picocolors = __toESM(require_picocolors());
+async function testEncryption() {
+  try {
+    const config = await (0, import_env_helpers.readConfigFile)();
+    if (!config?.userId) {
+      console.error(
+        "You must be logged in to test encryption. Run 'nvii login' first."
+      );
+      process.exit(1);
+    }
+    const envs = await (0, import_env_helpers.readEnvFile)();
+    const encryptedEnv = (0, import_env_helpers.encryptEnvValues)(envs, config.userId);
+    const decryptedEnv = (0, import_env_helpers.decryptEnvValues)(encryptedEnv, config.userId);
+    console.log("Encrypted Env:", encryptedEnv);
+    console.log("Decrypted Env:", decryptedEnv);
+  } catch (error) {
+    console.error(import_picocolors.default.red("\nError testing encryption:"), error.message);
     process.exit(1);
   }
-  const envs = await (0, import_env_helpers.readEnvFile)();
-  const encryptedEnv = (0, import_env_helpers.encryptEnvValues)(envs, config.userId);
-  const decryptedEnv = (0, import_env_helpers.decryptEnvValues)(encryptedEnv, config.userId);
-  console.log("Encrypted Env:", encryptedEnv);
-  console.log("Decrypted Env:", decryptedEnv);
 }
 
 // src/commands/generate.ts
+var import_env_helpers2 = require("@nvii/env-helpers");
 var import_fs = require("fs");
 var import_path = require("path");
-var import_picocolors = __toESM(require_picocolors());
-async function generateExample() {
+var import_picocolors2 = __toESM(require_picocolors());
+async function generateExample(args) {
+  let outPutPath = "";
+  let resultFormat = "";
+  if (args) {
+    if (args.format) {
+      resultFormat = args.format;
+    }
+    if (args.output) {
+      outPutPath = args.output;
+    }
+  }
   try {
     const cwd = process.cwd();
     const envPath = (0, import_path.join)(cwd, ".env");
     const envLocalPath = (0, import_path.join)(cwd, ".env.local");
-    const examplePath = (0, import_path.join)(cwd, ".env.example");
+    const examplePath = ".env.example";
     let envContent;
     let sourceFile;
     if ((0, import_fs.existsSync)(envPath)) {
@@ -23948,7 +23973,8 @@ async function generateExample() {
         "No .env or .env.local file found in the current directory"
       );
     }
-    const exampleContent = envContent.split("\n").filter((line) => line.trim() !== "").map((line) => {
+    const existingEnvs = await (0, import_env_helpers2.readEnvFile)();
+    let newEnvContent = envContent.split("\n").filter((line) => line.trim() !== "").map((line) => {
       if (line.startsWith("#")) {
         return line;
       }
@@ -23957,29 +23983,41 @@ async function generateExample() {
         return null;
       return `${key}=""`;
     }).filter(Boolean).join("\n");
-    (0, import_fs.writeFileSync)(examplePath, exampleContent);
-    console.log(import_picocolors.default.green("\u2713"), "Generated .env.example file successfully!");
-    console.log(import_picocolors.default.dim("Source:"), sourceFile);
-    console.log(import_picocolors.default.dim("Location:"), examplePath);
+    let filePath = examplePath;
+    if (outPutPath && outPutPath.trim() !== "") {
+      filePath = outPutPath;
+    } else if (resultFormat && resultFormat.trim() !== "") {
+      const content = { content: existingEnvs };
+      newEnvContent = (0, import_env_helpers2.generateEnvVersion)(
+        content,
+        resultFormat
+      );
+      filePath = `${resultFormat === "env" ? examplePath : `.env.${resultFormat}`}`;
+    }
+    (0, import_fs.writeFileSync)(filePath, newEnvContent);
+    console.log(import_picocolors2.default.green("\u2713"), ` Generated ${filePath} file successfully!`);
+    console.log(import_picocolors2.default.dim("Source:"), sourceFile);
+    console.log(import_picocolors2.default.dim("Location:"), filePath);
   } catch (error) {
     const fileError = error;
     if (fileError.code === "ENOENT") {
-      console.error(import_picocolors.default.red("\u2717"), fileError.message);
+      console.error(import_picocolors2.default.red("\u2717"), fileError.message);
       return;
     }
     console.error(
-      import_picocolors.default.red("\u2717"),
-      "Failed to generate .env.example file:",
+      import_picocolors2.default.red("\u2717"),
+      "Failed to generate .env.<format> file:",
       fileError.message
     );
+    process.exit(1);
   }
 }
 
 // src/commands/link.ts
-var import_env_helpers3 = require("@workspace/env-helpers");
+var import_env_helpers4 = require("@nvii/env-helpers");
 var import_fs3 = require("fs");
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/key.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/key.js
 var isUpKey = (key) => (
   // The up key
   key.name === "up" || // Vim keybinding
@@ -23997,7 +24035,7 @@ var isBackspaceKey = (key) => key.name === "backspace";
 var isNumberKey = (key) => "1234567890".includes(key.name);
 var isEnterKey = (key) => key.name === "enter" || key.name === "return";
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/errors.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/errors.js
 var AbortPromptError = class extends Error {
   name = "AbortPromptError";
   message = "Prompt was aborted";
@@ -24020,10 +24058,10 @@ var ValidationError = class extends Error {
   name = "ValidationError";
 };
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/use-prefix.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/use-state.js
 var import_node_async_hooks2 = require("async_hooks");
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/hook-engine.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/hook-engine.js
 var import_node_async_hooks = require("async_hooks");
 var hookStorage = new import_node_async_hooks.AsyncLocalStorage();
 function createStore(rl) {
@@ -24129,25 +24167,25 @@ var effectScheduler = {
   }
 };
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/use-state.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/use-state.js
 function useState(defaultValue) {
   return withPointer((pointer) => {
-    const setFn = (newValue) => {
+    const setState = import_node_async_hooks2.AsyncResource.bind(function setState2(newValue) {
       if (pointer.get() !== newValue) {
         pointer.set(newValue);
         handleChange();
       }
-    };
+    });
     if (pointer.initialized) {
-      return [pointer.get(), setFn];
+      return [pointer.get(), setState];
     }
     const value = typeof defaultValue === "function" ? defaultValue() : defaultValue;
     pointer.set(value);
-    return [value, setFn];
+    return [value, setState];
   });
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/use-effect.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/use-effect.js
 function useEffect(cb, depArray) {
   withPointer((pointer) => {
     const oldDeps = pointer.get();
@@ -24159,10 +24197,10 @@ function useEffect(cb, depArray) {
   });
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/theme.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/theme.js
 var import_yoctocolors_cjs = __toESM(require_yoctocolors_cjs(), 1);
 
-// ../../node_modules/.pnpm/@inquirer+figures@1.0.11/node_modules/@inquirer/figures/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+figures@1.0.13/node_modules/@inquirer/figures/dist/esm/index.js
 var import_node_process = __toESM(require("process"), 1);
 function isUnicodeSupported() {
   if (import_node_process.default.platform !== "win32") {
@@ -24451,7 +24489,7 @@ var figures = shouldUseMain ? mainSymbols : fallbackSymbols;
 var esm_default = figures;
 var replacements = Object.entries(specialMainSymbols);
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/theme.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/theme.js
 var defaultTheme = {
   prefix: {
     idle: import_yoctocolors_cjs.default.blue("?"),
@@ -24473,7 +24511,7 @@ var defaultTheme = {
   }
 };
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/make-theme.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/make-theme.js
 function isPlainObject(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -24501,7 +24539,7 @@ function makeTheme(...themes) {
   return deepMerge(...themesToMerge);
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/use-prefix.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/use-prefix.js
 function usePrefix({ status = "idle", theme }) {
   const [showLoader, setShowLoader] = useState(false);
   const [tick, setTick] = useState(0);
@@ -24510,13 +24548,13 @@ function usePrefix({ status = "idle", theme }) {
     if (status === "loading") {
       let tickInterval;
       let inc = -1;
-      const delayTimeout = setTimeout(import_node_async_hooks2.AsyncResource.bind(() => {
+      const delayTimeout = setTimeout(() => {
         setShowLoader(true);
-        tickInterval = setInterval(import_node_async_hooks2.AsyncResource.bind(() => {
+        tickInterval = setInterval(() => {
           inc = inc + 1;
           setTick(inc % spinner.frames.length);
-        }), spinner.interval);
-      }), 300);
+        }, spinner.interval);
+      }, 300);
       return () => {
         clearTimeout(delayTimeout);
         clearInterval(tickInterval);
@@ -24532,7 +24570,7 @@ function usePrefix({ status = "idle", theme }) {
   return typeof prefix === "string" ? prefix : prefix[iconName] ?? prefix["idle"];
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/use-memo.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/use-memo.js
 function useMemo(fn, dependencies) {
   return withPointer((pointer) => {
     const prev = pointer.get();
@@ -24545,12 +24583,12 @@ function useMemo(fn, dependencies) {
   });
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/use-ref.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/use-ref.js
 function useRef(val) {
   return useState({ current: val })[0];
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/use-keypress.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/use-keypress.js
 function useKeypress(userHandler) {
   const signal = useRef(userHandler);
   signal.current = userHandler;
@@ -24569,7 +24607,7 @@ function useKeypress(userHandler) {
   }, []);
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/utils.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/utils.js
 var import_cli_width = __toESM(require_cli_width(), 1);
 var import_wrap_ansi = __toESM(require_wrap_ansi(), 1);
 function breakLines(content, width) {
@@ -24579,95 +24617,96 @@ function readlineWidth() {
   return (0, import_cli_width.default)({ defaultWidth: 80, output: readline().output });
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/pagination/lines.js
-function split(content, width) {
-  return breakLines(content, width).split("\n");
-}
-function rotate(count, items) {
-  const max = items.length;
-  const offset = (count % max + max) % max;
-  return [...items.slice(offset), ...items.slice(0, offset)];
-}
-function lines({ items, width, renderItem, active, position: requested, pageSize }) {
-  const layouts = items.map((item, index) => ({
-    item,
-    index,
-    isActive: index === active
-  }));
-  const layoutsInPage = rotate(active - requested, layouts).slice(0, pageSize);
-  const renderItemAt = (index) => layoutsInPage[index] == null ? [] : split(renderItem(layoutsInPage[index]), width);
-  const pageBuffer = Array.from({ length: pageSize });
-  const activeItem = renderItemAt(requested).slice(0, pageSize);
-  const position = requested + activeItem.length <= pageSize ? requested : pageSize - activeItem.length;
-  pageBuffer.splice(position, activeItem.length, ...activeItem);
-  let bufferPointer = position + activeItem.length;
-  let layoutPointer = requested + 1;
-  while (bufferPointer < pageSize && layoutPointer < layoutsInPage.length) {
-    for (const line of renderItemAt(layoutPointer)) {
-      pageBuffer[bufferPointer++] = line;
-      if (bufferPointer >= pageSize)
-        break;
-    }
-    layoutPointer++;
-  }
-  bufferPointer = position - 1;
-  layoutPointer = requested - 1;
-  while (bufferPointer >= 0 && layoutPointer >= 0) {
-    for (const line of renderItemAt(layoutPointer).reverse()) {
-      pageBuffer[bufferPointer--] = line;
-      if (bufferPointer < 0)
-        break;
-    }
-    layoutPointer--;
-  }
-  return pageBuffer.filter((line) => typeof line === "string");
-}
-
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/pagination/position.js
-function finite({ active, pageSize, total }) {
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/pagination/use-pagination.js
+function usePointerPosition({ active, renderedItems, pageSize, loop }) {
+  const state = useRef({
+    lastPointer: active,
+    lastActive: void 0
+  });
+  const { lastPointer, lastActive } = state.current;
   const middle = Math.floor(pageSize / 2);
-  if (total <= pageSize || active < middle)
-    return active;
-  if (active >= total - middle)
-    return active + pageSize - total;
-  return middle;
-}
-function infinite({ active, lastActive, total, pageSize, pointer }) {
-  if (total <= pageSize)
-    return active;
-  if (lastActive < active && active - lastActive < pageSize) {
-    return Math.min(Math.floor(pageSize / 2), pointer + active - lastActive);
+  const renderedLength = renderedItems.reduce((acc, item) => acc + item.length, 0);
+  const defaultPointerPosition = renderedItems.slice(0, active).reduce((acc, item) => acc + item.length, 0);
+  let pointer = defaultPointerPosition;
+  if (renderedLength > pageSize) {
+    if (loop) {
+      pointer = lastPointer;
+      if (
+        // First render, skip this logic.
+        lastActive != null && // Only move the pointer down when the user moves down.
+        lastActive < active && // Check user didn't move up across page boundary.
+        active - lastActive < pageSize
+      ) {
+        pointer = Math.min(
+          // Furthest allowed position for the pointer is the middle of the list
+          middle,
+          Math.abs(active - lastActive) === 1 ? Math.min(
+            // Move the pointer at most the height of the last active item.
+            lastPointer + (renderedItems[lastActive]?.length ?? 0),
+            // If the user moved by one item, move the pointer to the natural position of the active item as
+            // long as it doesn't move the cursor up.
+            Math.max(defaultPointerPosition, lastPointer)
+          ) : (
+            // Otherwise, move the pointer down by the difference between the active and last active item.
+            lastPointer + active - lastActive
+          )
+        );
+      }
+    } else {
+      const spaceUnderActive = renderedItems.slice(active).reduce((acc, item) => acc + item.length, 0);
+      pointer = spaceUnderActive < pageSize - middle ? (
+        // If the active item is near the end of the list, progressively move the cursor towards the end.
+        pageSize - spaceUnderActive
+      ) : (
+        // Otherwise, progressively move the pointer to the middle of the list.
+        Math.min(defaultPointerPosition, middle)
+      );
+    }
   }
+  state.current.lastPointer = pointer;
+  state.current.lastActive = active;
   return pointer;
 }
-
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/pagination/use-pagination.js
 function usePagination({ items, active, renderItem, pageSize, loop = true }) {
-  const state = useRef({ position: 0, lastActive: 0 });
-  const position = loop ? infinite({
-    active,
-    lastActive: state.current.lastActive,
-    total: items.length,
-    pageSize,
-    pointer: state.current.position
-  }) : finite({
-    active,
-    total: items.length,
-    pageSize
+  const width = readlineWidth();
+  const bound = (num) => (num % items.length + items.length) % items.length;
+  const renderedItems = items.map((item, index) => {
+    if (item == null)
+      return [];
+    return breakLines(renderItem({ item, index, isActive: index === active }), width).split("\n");
   });
-  state.current.position = position;
-  state.current.lastActive = active;
-  return lines({
-    items,
-    width: readlineWidth(),
-    renderItem,
-    active,
-    position,
-    pageSize
-  }).join("\n");
+  const renderedLength = renderedItems.reduce((acc, item) => acc + item.length, 0);
+  const renderItemAtIndex = (index) => renderedItems[index] ?? [];
+  const pointer = usePointerPosition({ active, renderedItems, pageSize, loop });
+  const activeItem = renderItemAtIndex(active).slice(0, pageSize);
+  const activeItemPosition = pointer + activeItem.length <= pageSize ? pointer : pageSize - activeItem.length;
+  const pageBuffer = Array.from({ length: pageSize });
+  pageBuffer.splice(activeItemPosition, activeItem.length, ...activeItem);
+  const itemVisited = /* @__PURE__ */ new Set([active]);
+  let bufferPointer = activeItemPosition + activeItem.length;
+  let itemPointer = bound(active + 1);
+  while (bufferPointer < pageSize && !itemVisited.has(itemPointer) && (loop && renderedLength > pageSize ? itemPointer !== active : itemPointer > active)) {
+    const lines = renderItemAtIndex(itemPointer);
+    const linesToAdd = lines.slice(0, pageSize - bufferPointer);
+    pageBuffer.splice(bufferPointer, linesToAdd.length, ...linesToAdd);
+    itemVisited.add(itemPointer);
+    bufferPointer += linesToAdd.length;
+    itemPointer = bound(itemPointer + 1);
+  }
+  bufferPointer = activeItemPosition - 1;
+  itemPointer = bound(active - 1);
+  while (bufferPointer >= 0 && !itemVisited.has(itemPointer) && (loop && renderedLength > pageSize ? itemPointer !== active : itemPointer < active)) {
+    const lines = renderItemAtIndex(itemPointer);
+    const linesToAdd = lines.slice(Math.max(0, lines.length - bufferPointer - 1));
+    pageBuffer.splice(bufferPointer - linesToAdd.length + 1, linesToAdd.length, ...linesToAdd);
+    itemVisited.add(itemPointer);
+    bufferPointer -= linesToAdd.length;
+    itemPointer = bound(itemPointer - 1);
+  }
+  return pageBuffer.filter((line) => typeof line === "string").join("\n");
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/create-prompt.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/create-prompt.js
 var readline2 = __toESM(require("readline"), 1);
 var import_node_async_hooks3 = require("async_hooks");
 var import_mute_stream = __toESM(require_lib(), 1);
@@ -24923,7 +24962,7 @@ var {
   unload
 } = signalExitWrap(processOk(process3) ? new SignalExit(process3) : new SignalExitFallback());
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/screen-manager.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/screen-manager.js
 var import_node_util = require("util");
 var import_ansi_escapes = __toESM(require_ansi_escapes(), 1);
 var height = (content) => content.split("\n").length;
@@ -24988,7 +25027,7 @@ var ScreenManager = class {
   }
 };
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/promise-polyfill.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/promise-polyfill.js
 var PromisePolyfill = class extends Promise {
   // Available starting from Node 22
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
@@ -25003,7 +25042,7 @@ var PromisePolyfill = class extends Promise {
   }
 };
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/create-prompt.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/create-prompt.js
 function getCallSites() {
   const _prepareStackTrace = Error.prepareStackTrace;
   let result = [];
@@ -25090,7 +25129,7 @@ function createPrompt(view) {
   return prompt2;
 }
 
-// ../../node_modules/.pnpm/@inquirer+core@10.1.11_@types+node@20.17.10/node_modules/@inquirer/core/dist/esm/lib/Separator.js
+// ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/Separator.js
 var import_yoctocolors_cjs2 = __toESM(require_yoctocolors_cjs(), 1);
 var Separator = class {
   separator = import_yoctocolors_cjs2.default.dim(Array.from({ length: 15 }).join(esm_default.line));
@@ -25105,7 +25144,7 @@ var Separator = class {
   }
 };
 
-// ../../node_modules/.pnpm/@inquirer+checkbox@4.1.6_@types+node@20.17.10/node_modules/@inquirer/checkbox/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+checkbox@4.2.0_@types+node@20.19.9/node_modules/@inquirer/checkbox/dist/esm/index.js
 var import_yoctocolors_cjs3 = __toESM(require_yoctocolors_cjs(), 1);
 var import_ansi_escapes2 = __toESM(require_ansi_escapes(), 1);
 var checkboxTheme = {
@@ -25212,9 +25251,16 @@ var esm_default2 = createPrompt((config, done) => {
     } else if (key.name === shortcuts.invert) {
       setItems(items.map(toggle));
     } else if (isNumberKey(key)) {
-      const position = Number(key.name) - 1;
-      const item = items[position];
-      if (item != null && isSelectable(item)) {
+      const selectedIndex = Number(key.name) - 1;
+      let selectableIndex = -1;
+      const position = items.findIndex((item) => {
+        if (Separator.isSeparator(item))
+          return false;
+        selectableIndex++;
+        return selectableIndex === selectedIndex;
+      });
+      const selectedItem = items[position];
+      if (selectedItem && isSelectable(selectedItem)) {
         setActive(position);
         setItems(items.map((choice, i) => i === position ? toggle(choice) : choice));
       }
@@ -25281,8 +25327,7 @@ ${theme.style.error(errorMsg)}`;
 ${page}${helpTipBottom}${choiceDescription}${error}${import_ansi_escapes2.default.cursorHide}`;
 });
 
-// ../../node_modules/.pnpm/@inquirer+editor@4.2.11_@types+node@20.17.10/node_modules/@inquirer/editor/dist/esm/index.js
-var import_node_async_hooks4 = require("async_hooks");
+// ../../node_modules/.pnpm/@inquirer+editor@4.2.15_@types+node@20.19.9/node_modules/@inquirer/editor/dist/esm/index.js
 var import_external_editor = __toESM(require_main(), 1);
 var editorTheme = {
   validationFailureMode: "keep"
@@ -25296,7 +25341,7 @@ var esm_default3 = createPrompt((config, done) => {
   const prefix = usePrefix({ status, theme });
   function startEditor(rl) {
     rl.pause();
-    const editCallback = import_node_async_hooks4.AsyncResource.bind(async (error2, answer) => {
+    const editCallback = async (error2, answer) => {
       rl.resume();
       if (error2) {
         setError(error2.toString());
@@ -25317,7 +25362,7 @@ var esm_default3 = createPrompt((config, done) => {
           setStatus("idle");
         }
       }
-    });
+    };
     (0, import_external_editor.editAsync)(value, (error2, answer) => void editCallback(error2, answer), {
       postfix,
       ...fileProps
@@ -25351,7 +25396,7 @@ var esm_default3 = createPrompt((config, done) => {
   return [[prefix, message, helpTip].filter(Boolean).join(" "), error];
 });
 
-// ../../node_modules/.pnpm/@inquirer+confirm@5.1.10_@types+node@20.17.10/node_modules/@inquirer/confirm/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+confirm@5.1.14_@types+node@20.19.9/node_modules/@inquirer/confirm/dist/esm/index.js
 function getBooleanValue(value, defaultValue) {
   let answer = defaultValue !== false;
   if (/^(y|yes)/i.test(value))
@@ -25395,12 +25440,12 @@ var esm_default4 = createPrompt((config, done) => {
   return `${prefix} ${message}${defaultValue} ${formattedValue}`;
 });
 
-// ../../node_modules/.pnpm/@inquirer+input@4.1.10_@types+node@20.17.10/node_modules/@inquirer/input/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+input@4.2.1_@types+node@20.19.9/node_modules/@inquirer/input/dist/esm/index.js
 var inputTheme = {
   validationFailureMode: "keep"
 };
 var esm_default5 = createPrompt((config, done) => {
-  const { required, validate = () => true } = config;
+  const { required, validate = () => true, prefill = "tab" } = config;
   const theme = makeTheme(inputTheme, config.theme);
   const [status, setStatus] = useState("idle");
   const [defaultValue = "", setDefaultValue] = useState(config.default);
@@ -25440,6 +25485,12 @@ var esm_default5 = createPrompt((config, done) => {
       setError(void 0);
     }
   });
+  useEffect((rl) => {
+    if (prefill === "editable" && defaultValue) {
+      rl.write(defaultValue);
+      setValue(defaultValue);
+    }
+  }, []);
   const message = theme.style.message(config.message, status);
   let formattedValue = value;
   if (typeof config.transformer === "function") {
@@ -25461,7 +25512,7 @@ var esm_default5 = createPrompt((config, done) => {
   ];
 });
 
-// ../../node_modules/.pnpm/@inquirer+number@3.0.13_@types+node@20.17.10/node_modules/@inquirer/number/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+number@3.0.17_@types+node@20.19.9/node_modules/@inquirer/number/dist/esm/index.js
 function isStepOf(value, step, min) {
   const valuePow = value * Math.pow(10, 6);
   const stepPow = step * Math.pow(10, 6);
@@ -25542,7 +25593,7 @@ var esm_default6 = createPrompt((config, done) => {
   ];
 });
 
-// ../../node_modules/.pnpm/@inquirer+expand@4.0.13_@types+node@20.17.10/node_modules/@inquirer/expand/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+expand@4.0.17_@types+node@20.19.9/node_modules/@inquirer/expand/dist/esm/index.js
 var import_yoctocolors_cjs4 = __toESM(require_yoctocolors_cjs(), 1);
 function normalizeChoices2(choices) {
   return choices.map((choice) => {
@@ -25638,7 +25689,7 @@ var esm_default7 = createPrompt((config, done) => {
   ];
 });
 
-// ../../node_modules/.pnpm/@inquirer+rawlist@4.1.1_@types+node@20.17.10/node_modules/@inquirer/rawlist/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+rawlist@4.1.5_@types+node@20.19.9/node_modules/@inquirer/rawlist/dist/esm/index.js
 var import_yoctocolors_cjs5 = __toESM(require_yoctocolors_cjs(), 1);
 var numberRegex = /\d+/;
 function isSelectableChoice(choice) {
@@ -25749,7 +25800,7 @@ var esm_default8 = createPrompt((config, done) => {
   ];
 });
 
-// ../../node_modules/.pnpm/@inquirer+password@4.0.13_@types+node@20.17.10/node_modules/@inquirer/password/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+password@4.0.17_@types+node@20.19.9/node_modules/@inquirer/password/dist/esm/index.js
 var import_ansi_escapes3 = __toESM(require_ansi_escapes(), 1);
 var esm_default9 = createPrompt((config, done) => {
   const { validate = () => true } = config;
@@ -25799,7 +25850,7 @@ var esm_default9 = createPrompt((config, done) => {
   return [[prefix, message, config.mask ? formattedValue : helpTip].join(" "), error];
 });
 
-// ../../node_modules/.pnpm/@inquirer+search@3.0.13_@types+node@20.17.10/node_modules/@inquirer/search/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+search@3.1.0_@types+node@20.19.9/node_modules/@inquirer/search/dist/esm/index.js
 var import_yoctocolors_cjs6 = __toESM(require_yoctocolors_cjs(), 1);
 var searchTheme = {
   icon: { cursor: esm_default.pointer },
@@ -25923,8 +25974,8 @@ var esm_default10 = createPrompt((config, done) => {
   let helpTip = "";
   if (searchResults.length > 1 && (theme.helpMode === "always" || theme.helpMode === "auto" && firstRender.current)) {
     helpTip = searchResults.length > pageSize ? `
-${theme.style.help("(Use arrow keys to reveal more choices)")}` : `
-${theme.style.help("(Use arrow keys)")}`;
+${theme.style.help(`(${config.instructions?.pager ?? "Use arrow keys to reveal more choices"})`)}` : `
+${theme.style.help(`(${config.instructions?.navigation ?? "Use arrow keys"})`)}`;
   }
   const page = usePagination({
     items: searchResults,
@@ -25965,7 +26016,7 @@ ${theme.style.description(selectedChoice.description)}` : ``;
   ];
 });
 
-// ../../node_modules/.pnpm/@inquirer+select@4.2.1_@types+node@20.17.10/node_modules/@inquirer/select/dist/esm/index.js
+// ../../node_modules/.pnpm/@inquirer+select@4.3.1_@types+node@20.19.9/node_modules/@inquirer/select/dist/esm/index.js
 var import_yoctocolors_cjs7 = __toESM(require_yoctocolors_cjs(), 1);
 var import_ansi_escapes4 = __toESM(require_ansi_escapes(), 1);
 var selectTheme = {
@@ -26044,7 +26095,14 @@ var esm_default11 = createPrompt((config, done) => {
         setActive(next);
       }
     } else if (isNumberKey(key) && !Number.isNaN(Number(rl.line))) {
-      const position = Number(rl.line) - 1;
+      const selectedIndex = Number(rl.line) - 1;
+      let selectableIndex = -1;
+      const position = items.findIndex((item2) => {
+        if (Separator.isSeparator(item2))
+          return false;
+        selectableIndex++;
+        return selectableIndex === selectedIndex;
+      });
       const item = items[position];
       if (item != null && isSelectable3(item)) {
         setActive(position);
@@ -26084,14 +26142,16 @@ ${theme.style.help(`(${config.instructions?.pager ?? "Use arrow keys to reveal m
       helpTipTop = theme.style.help(`(${config.instructions?.navigation ?? "Use arrow keys"})`);
     }
   }
+  let separatorCount = 0;
   const page = usePagination({
     items,
     active,
     renderItem({ item, isActive, index }) {
       if (Separator.isSeparator(item)) {
+        separatorCount++;
         return ` ${item.separator}`;
       }
-      const indexLabel = theme.indexMode === "number" ? `${index + 1}. ` : "";
+      const indexLabel = theme.indexMode === "number" ? `${index + 1 - separatorCount}. ` : "";
       if (item.disabled) {
         const disabledLabel = typeof item.disabled === "string" ? item.disabled : "(disabled)";
         return theme.style.disabled(`${indexLabel}${item.name} ${disabledLabel}`);
@@ -26112,7 +26172,7 @@ ${theme.style.description(selectedChoice.description)}` : ``;
 ${page}${helpTipBottom}${choiceDescription}${import_ansi_escapes4.default.cursorHide}`;
 });
 
-// ../../node_modules/.pnpm/inquirer@12.6.1_@types+node@20.17.10/node_modules/inquirer/dist/esm/ui/prompt.js
+// ../../node_modules/.pnpm/inquirer@12.9.0_@types+node@20.19.9/node_modules/inquirer/dist/esm/ui/prompt.js
 var import_node_readline = __toESM(require("readline"), 1);
 var import_rxjs = __toESM(require_cjs(), 1);
 var import_run_async = __toESM(require_run_async(), 1);
@@ -26330,7 +26390,7 @@ var PromptsRunner = class {
   };
 };
 
-// ../../node_modules/.pnpm/inquirer@12.6.1_@types+node@20.17.10/node_modules/inquirer/dist/esm/index.js
+// ../../node_modules/.pnpm/inquirer@12.9.0_@types+node@20.19.9/node_modules/inquirer/dist/esm/index.js
 var builtInPrompts = {
   input: esm_default5,
   select: esm_default11,
@@ -26382,10 +26442,10 @@ var esm_default12 = inquirer;
 
 // src/commands/link.ts
 var import_path3 = __toESM(require("path"));
-var import_picocolors3 = __toESM(require_picocolors());
+var import_picocolors4 = __toESM(require_picocolors());
 
 // src/commands/auth/login.ts
-var import_env_helpers2 = require("@workspace/env-helpers");
+var import_env_helpers3 = require("@nvii/env-helpers");
 var import_async_listen = require("async-listen");
 var import_child_process = require("child_process");
 var import_config = require("dotenv/config");
@@ -26394,7 +26454,7 @@ var import_http = __toESM(require("http"));
 var import_nanoid = require("nanoid");
 var import_os = __toESM(require("os"));
 var import_path2 = __toESM(require("path"));
-var import_picocolors2 = __toESM(require_picocolors());
+var import_picocolors3 = __toESM(require_picocolors());
 var import_url = __toESM(require("url"));
 var UserCancellationError = class extends Error {
   constructor(message) {
@@ -26405,43 +26465,66 @@ var UserCancellationError = class extends Error {
 async function writeToConfigFile(data) {
   try {
     const homeDir = import_os.default.homedir();
-    const filePath = import_path2.default.join(homeDir, import_env_helpers2.FILENAME);
+    const filePath = import_path2.default.join(homeDir, import_env_helpers3.FILENAME);
     (0, import_fs2.writeFileSync)(filePath, JSON.stringify(data, null, 2));
+    const userData = (0, import_fs2.readFileSync)(filePath, "utf-8");
+    const dirname = import_path2.default.dirname(filePath);
+    return {
+      filePath,
+      userData,
+      dirname
+    };
   } catch (error) {
     console.error("Error writing to local config file", error);
   }
 }
 var nanoid = (0, import_nanoid.customAlphabet)("123456789QAZWSXEDCRFVTGBYHNUJMIKOLP", 8);
 async function login() {
+  const res = await (0, import_env_helpers3.checkLoginStats)();
+  if (res?.success) {
+    return;
+  }
   const oraModule = await import("ora");
   const ora = oraModule.default;
   const server = import_http.default.createServer();
   const { port } = await (0, import_async_listen.listen)(server, 0, "127.0.0.1");
   const authPromise = new Promise((resolve, reject) => {
-    server.on("request", (req, res) => {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-      res.setHeader(
+    server.on("request", (req, res2) => {
+      res2.setHeader("Access-Control-Allow-Origin", "*");
+      res2.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+      res2.setHeader(
         "Access-Control-Allow-Headers",
         "Content-Type, Authorization"
       );
       if (req.method === "OPTIONS") {
-        res.writeHead(200);
-        res.end();
+        res2.writeHead(200);
+        res2.end();
       } else if (req.method === "GET") {
         const parsedUrl = import_url.default.parse(req.url, true);
         if (parsedUrl.query.cancelled) {
-          res.writeHead(200);
-          res.end();
+          res2.writeHead(200);
+          res2.end();
           reject(new UserCancellationError("Login process cancelled by user."));
         } else {
-          res.writeHead(200);
-          res.end();
+          const isValidCode = parsedUrl.query.authCode === code;
+          if (!isValidCode) {
+            console.log(
+              import_picocolors3.default.yellow(
+                "Login failed. Use a valid url, refresh your browser and try again."
+              )
+            );
+            res2.writeHead(400);
+            res2.end();
+            return;
+          }
+          res2.writeHead(200);
+          res2.end();
           resolve(parsedUrl.query);
         }
       } else {
-        res.writeHead(405);
-        res.end();
+        res2.writeHead(405);
+        res2.end();
+        reject(new UserCancellationError("Login process failed."));
       }
     });
   });
@@ -26450,245 +26533,946 @@ async function login() {
   const confirmationUrl = new URL(`${process.env.CLIENT_URL}/auth/devices`);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
-  console.log(`Confirmation code: ${import_picocolors2.default.bold(code)}
+  console.log(`Confirmation code: ${import_picocolors3.default.bold(code)}
 `);
   console.log(
     `If something goes wrong, copy and paste this URL into your browser:
-${import_picocolors2.default.bold(confirmationUrl.toString())}
+${import_picocolors3.default.bold(confirmationUrl.toString())}
 `
   );
   (0, import_child_process.spawn)("open", [confirmationUrl.toString()]);
   const spinner = ora("Waiting for authentication...\n").start();
   try {
     const authData = await authPromise;
-    console.log({ authData });
     spinner.stop();
-    writeToConfigFile(authData);
-    console.log(import_picocolors2.default.green("Authentication successful!"));
-    console.log(`Config saved at: ~/ ${import_env_helpers2.FILENAME}
+    await writeToConfigFile(authData);
+    console.log(import_picocolors3.default.green("Authentication successful!"));
+    console.log(`Config saved at: ~/ ${import_env_helpers3.FILENAME}
 `);
     server.close();
     process.exit(0);
   } catch (error) {
     spinner.stop();
-    if (error instanceof UserCancellationError) {
-      console.log(import_picocolors2.default.yellow("Authentication cancelled.\n"));
-    } else {
-      console.error(import_picocolors2.default.red("Authentication failed:"), error);
-    }
     server.close();
+    if (error.response) {
+      console.error(import_picocolors3.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error instanceof UserCancellationError) {
+      console.log(import_picocolors3.default.yellow("Authentication cancelled.\n"));
+    } else {
+      console.error(import_picocolors3.default.red("Authentication failed:"), error);
+    }
     process.exit(1);
   }
 }
 
 // src/commands/link.ts
-var DOT_ENV_FILE = ".env";
-async function linkProject() {
+var createEnvFiles = (enviDirPath, enviFilePath) => {
+  if (!(0, import_fs3.existsSync)(enviDirPath)) {
+    (0, import_fs3.mkdirSync)(enviDirPath);
+    if (!(0, import_fs3.existsSync)(enviFilePath)) {
+      (0, import_fs3.writeFileSync)(enviFilePath, "", { encoding: "utf-8" });
+    }
+  }
+  console.log("\n");
+};
+async function linkProject(args) {
+  let projectId = "";
+  if (args) {
+    if (args.token) {
+      projectId = args.token;
+    }
+  }
   try {
-    if (!(0, import_env_helpers3.isLogedIn)()) {
-      console.log(import_picocolors3.default.red("You must be logged in to link a project."));
+    if (!(0, import_env_helpers4.isLogedIn)()) {
+      console.log(import_picocolors4.default.red("You must be logged in to link a project."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers3.readConfigFile)();
+    const userConfig = await (0, import_env_helpers4.readConfigFile)();
     if (!userConfig?.userId) {
-      console.log(import_picocolors3.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors4.default.red("No user ID found. Please log in again."));
       return;
     }
-    const client = await (0, import_env_helpers3.getConfiguredClient)();
-    const response = await client.get(`/projects/${userConfig.userId}`);
-    const projects = response.data.data;
-    if (!projects.length) {
-      console.log(import_picocolors3.default.yellow("No projects found for this user."));
-      return;
-    }
-    const { selectedProjectId } = await esm_default12.prompt([
-      {
-        type: "list",
-        name: "selectedProjectId",
-        message: "Select a project to link:",
-        choices: projects.map((proj) => ({
-          name: proj.name,
-          value: proj.id
-        }))
-      }
-    ]);
-    const selectedProject = projects.find(
-      (proj) => proj.id === selectedProjectId
-    );
-    if (!selectedProject) {
-      console.log(import_picocolors3.default.red("Selected project not found."));
-      return;
-    }
+    const client = await (0, import_env_helpers4.getConfiguredClient)();
     const currentDir = process.cwd();
-    if (!selectedProject.content) {
+    const enviDirPath = import_path3.default.join(currentDir, ".nvii");
+    const enviFilePath = import_path3.default.join(enviDirPath, "nvii.json");
+    const response = await client.get(`/projects/${userConfig.userId}`);
+    const projects = response.data;
+    if (!projects.length) {
+      console.log(
+        import_picocolors4.default.yellow("No projects found for this directory. Run 'nvii new'.")
+      );
       return;
     }
-    const { createEnvFile } = await esm_default12.prompt([
-      {
-        type: "confirm",
-        name: "createEnvFile",
-        message: "This project contains a .env file. Do you want to populate its values?",
-        default: false
-      }
-    ]);
-    if (!createEnvFile) {
-      console.log(import_picocolors3.default.yellow("Skipping .env file creation."));
-      return;
-    }
-    const envFilePath = import_path3.default.join(currentDir, DOT_ENV_FILE);
-    let existingEnv = await (0, import_env_helpers3.readEnvFile)();
-    const finalEnv = { ...existingEnv };
-    let commentedLines = "";
-    for (const [key, value] of Object.entries(selectedProject.content)) {
-      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
-      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
-      console.log({ normalizedNew, normalizedExisting });
-      if (existingEnv[key] !== void 0 && normalizedExisting === normalizedNew) {
-        const { overwrite } = await esm_default12.prompt([
-          {
-            type: "confirm",
-            name: "overwrite",
-            message: `Conflict: ${key} exists. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
-            default: false
-          }
-        ]);
-        if (overwrite) {
-          finalEnv[key] = value;
-        } else {
-          commentedLines += `# ${key}=${value}
-`;
+    if (!projectId) {
+      const { selectedProjectId } = await esm_default12.prompt([
+        {
+          type: "list",
+          name: "selectedProjectId",
+          message: "Select a project to link:",
+          choices: projects.map((proj) => ({
+            name: proj.name,
+            value: proj.id
+          }))
         }
-      } else {
-        finalEnv[key] = value;
-      }
+      ]);
+      projectId = selectedProjectId;
     }
-    const decryptedEnv = (0, import_env_helpers3.decryptEnvValues)(finalEnv, userConfig.userId);
-    const finalEnvContent = Object.entries(decryptedEnv).map(([key, value]) => `${key}=${value}`).join("\n") + "\n" + commentedLines;
-    await import_fs3.promises.writeFile(envFilePath, finalEnvContent);
-    await (0, import_env_helpers3.writeProjectConfig)(selectedProject.id);
-    console.log(import_picocolors3.default.green(".env file updated successfully!"));
+    const selectedProject = projects.find((proj) => proj.id === projectId);
+    if (!selectedProject) {
+      console.log(import_picocolors4.default.red(`Project with id <${projectId}> not found.`));
+      process.exit(1);
+    }
+    createEnvFiles(enviDirPath, enviFilePath);
+    await (0, import_env_helpers4.writeProjectConfig)(projectId, "main");
+    console.log(import_picocolors4.default.green("Project linked successfully!"));
   } catch (error) {
-    console.error(import_picocolors3.default.red("Error linking project:"), error);
+    if (error.response) {
+      console.error(import_picocolors4.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors4.default.yellow("\nLink process cancelled."));
+      return;
+    }
+    console.error(import_picocolors4.default.red("\nError linking project:"), error.message);
+    process.exit(1);
   }
 }
 
 // src/commands/new.ts
-var import_env_helpers4 = require("@workspace/env-helpers");
-var import_picocolors4 = __toESM(require_picocolors());
+var import_env_helpers6 = require("@nvii/env-helpers");
+var import_picocolors6 = __toESM(require_picocolors());
+
+// src/commands/unlink.ts
+var import_env_helpers5 = require("@nvii/env-helpers");
+var import_picocolors5 = __toESM(require_picocolors());
+async function unlinkProject() {
+  try {
+    if (!(0, import_env_helpers5.isLogedIn)()) {
+      console.log(import_picocolors5.default.red("You must be logged in to link a project."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers5.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors5.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const projectConfig = await (0, import_env_helpers5.readProjectConfig)();
+    const client = await (0, import_env_helpers5.getConfiguredClient)();
+    const response = await client.get(`/projects/${userConfig.userId}`);
+    const projects = response.data;
+    if (!projects.length) {
+      console.log(
+        import_picocolors5.default.yellow("No projects found for current user. Run 'nvii new'.")
+      );
+      return;
+    }
+    const project = projects.find(
+      (item) => item.id === projectConfig?.projectId
+    );
+    if (!project) {
+      console.log(import_picocolors5.default.red("Project not linked remote project yet."));
+      return;
+    }
+    const { unLinkProject } = await esm_default12.prompt([
+      {
+        type: "confirm",
+        name: "unLinkProject",
+        message: `Are you sure you want to unlink from ${import_picocolors5.default.dim(project?.name)}`
+      }
+    ]);
+    if (!unLinkProject) {
+      console.log("Skipping project unlink.");
+      return;
+    }
+    console.log("\n");
+    const result = await (0, import_env_helpers5.unlinkProjectConfig)(project.id);
+    if (!result) {
+      console.log(
+        import_picocolors5.default.yellow(
+          "Oops. An error occurred deleting the local .nvii directory. You can delete it manually."
+        )
+      );
+      process.exit(1);
+    }
+    console.log(import_picocolors5.default.green(`Project unlinked successfully!`));
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors5.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors5.default.yellow("\nUnlink cancelled."));
+      return;
+    }
+    console.error(import_picocolors5.default.red("\nError linking project:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/new.ts
 async function promptUser(message) {
   const response = await esm_default12.prompt([
     {
       type: "input",
       name: "answer",
-      message: import_picocolors4.default.cyan(message)
+      message: import_picocolors6.default.cyan(message)
     }
   ]);
   return response.answer.trim();
 }
 async function createProject() {
   try {
-    if (!(0, import_env_helpers4.isLogedIn)()) {
-      console.log(import_picocolors4.default.red("You must be logged in to create a new project."));
+    if (!(0, import_env_helpers6.isLogedIn)()) {
+      console.log(import_picocolors6.default.red("You must be logged in to create a new project."));
       await login();
     }
     const projectName = await promptUser("Enter your project name:");
     if (!projectName) {
-      console.error(import_picocolors4.default.red("\u274C Project name cannot be empty."));
+      console.error(import_picocolors6.default.red("\u274C Project name cannot be empty."));
       process.exit(1);
     }
-    const userConfig = await (0, import_env_helpers4.readConfigFile)();
+    const projectDescription = await promptUser(
+      "Enter project description (optional):"
+    );
+    const userConfig = await (0, import_env_helpers6.readConfigFile)();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
-        import_picocolors4.default.red("\u274C Invalid user credentials. Please log in again.")
+        import_picocolors6.default.red("\u274C Invalid user credentials. Please log in again.")
       );
       await login();
       return;
     }
-    const envs = await (0, import_env_helpers4.readEnvFile)();
-    const encryptedEnvs = (0, import_env_helpers4.encryptEnvValues)(envs, userConfig.userId);
-    const client = await (0, import_env_helpers4.getConfiguredClient)();
+    const envs = await (0, import_env_helpers6.readEnvFile)();
+    const encryptedEnvs = (0, import_env_helpers6.encryptEnvValues)(envs, userConfig.userId);
+    await unlinkProject();
+    const client = await (0, import_env_helpers6.getConfiguredClient)();
     const response = await client.post(`/projects/${userConfig.userId}`, {
       name: projectName,
       content: encryptedEnvs,
-      deviceId: userConfig.deviceId
+      deviceId: userConfig.deviceId,
+      description: projectDescription
     });
     const projectId = response.data.data.id;
-    await (0, import_env_helpers4.writeProjectConfig)(projectId);
+    const branchName = "main";
+    await (0, import_env_helpers6.writeProjectConfig)(projectId, branchName);
   } catch (error) {
-    console.error(import_picocolors4.default.red("\u274C Error creating project:"), error);
+    if (error.response) {
+      console.error(import_picocolors6.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors6.default.yellow("\nProject create cancelled."));
+      return;
+    }
+    console.error(import_picocolors6.default.red("\u274C Error creating project:"), error.message);
+    process.exit(1);
   }
 }
 
 // src/commands/update.ts
-var import_picocolors5 = __toESM(require_picocolors());
-var import_env_helpers5 = require("@workspace/env-helpers");
+var import_picocolors7 = __toESM(require_picocolors());
+var import_env_helpers7 = require("@nvii/env-helpers");
 async function updateProject() {
   try {
-    const userData = await (0, import_env_helpers5.readConfigFile)();
-    if (!(0, import_env_helpers5.isLogedIn)()) {
-      console.log(import_picocolors5.default.red("You must be logged in to update a project."));
+    const userData = await (0, import_env_helpers7.readConfigFile)();
+    if (!(0, import_env_helpers7.isLogedIn)()) {
+      console.log(import_picocolors7.default.red("You must be logged in to update a project."));
       await login();
     }
     if (!userData) {
-      console.log(import_picocolors5.default.red("You must be logged in to update a project."));
+      console.log(import_picocolors7.default.red("You must be logged in to update a project."));
       await login();
     }
-    const projectConfig = await (0, import_env_helpers5.readProjectConfig)();
-    if (!projectConfig) {
+    const config = await (0, import_env_helpers7.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors7.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
       console.error(
-        import_picocolors5.default.red(
-          "\u274C Project not linked. Please run 'envi link' to link your project first."
+        import_picocolors7.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
     }
-    const envVars = await (0, import_env_helpers5.readEnvFile)();
-    const encryptedEnv = (0, import_env_helpers5.encryptEnvValues)(envVars, userData.userId);
-    const client = await (0, import_env_helpers5.getConfiguredClient)();
-    const project = await client.patch(
-      `/projects/${userData.userId}/${projectConfig.projectId}`,
-      {
-        content: encryptedEnv
-      }
+    const envVars = await (0, import_env_helpers7.readEnvFile)();
+    const encryptedEnv = (0, import_env_helpers7.encryptEnvValues)(envVars, userData.userId);
+    const client = await (0, import_env_helpers7.getConfiguredClient)();
+    const versions = await client.get(
+      `/projects/${userData.userId}/${projectId}/versions/latest`
     );
-    console.log(import_picocolors5.default.cyan("Updated environment variables:"));
-    console.log(project.data.data.content);
+    if (!versions || !versions.data) {
+      console.error(import_picocolors7.default.red("\u274C Project not found or no data available."));
+      process.exit(1);
+    }
+    const versionToUpdateTo = versions.data[0];
+    if (!versionToUpdateTo.content) {
+      console.error(import_picocolors7.default.red("\u274C No content found for this project envs."));
+      process.exit(1);
+    }
+    const decryptedEnv = (0, import_env_helpers7.decryptEnvValues)(
+      versionToUpdateTo?.content,
+      userData?.userId
+    );
+    const data = await (0, import_env_helpers7.writeEnvFile)(decryptedEnv);
+    if (!data) {
+      console.error(
+        import_picocolors7.default.red("\u274C Failed to write environment variables to .env file.")
+      );
+      process.exit(1);
+    }
+    console.log(import_picocolors7.default.cyan("Updated environment variables:"));
     console.log(
-      import_picocolors5.default.green("\u2705 Project updated successfully with new .env variables.")
+      import_picocolors7.default.green("\u2705 Project updated successfully with new .env variables.")
     );
   } catch (error) {
-    console.error(import_picocolors5.default.red("\u274C Error updating project:"), error);
+    if (error.response) {
+      console.error(import_picocolors7.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors7.default.yellow("\nUpdate cancelled."));
+      return;
+    }
+    console.error(import_picocolors7.default.red("\u274C Error updating project:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/pull.ts
+var import_picocolors8 = __toESM(require_picocolors());
+var import_env_helpers8 = require("@nvii/env-helpers");
+
+// src/lib/conflict.ts
+function detectConflicts(localEnv, remoteEnv) {
+  const conflicts = [];
+  for (const [key, localValue] of Object.entries(localEnv)) {
+    if (key in remoteEnv && remoteEnv[key] !== localValue) {
+      conflicts.push(key);
+    }
+  }
+  return conflicts;
+}
+async function promptConflictResolution(conflicts) {
+  const resolution = {};
+  console.log(`
+\u26A0\uFE0F  Found ${conflicts.length} conflict(s). Please resolve them:
+`);
+  for (const key of conflicts) {
+    const { choice } = await esm_default12.prompt([
+      {
+        type: "list",
+        name: "choice",
+        message: `Conflict for "${key}":`,
+        choices: [
+          { name: "Keep local value", value: "existing" },
+          { name: "Use remote value", value: "new" }
+        ]
+      }
+    ]);
+    resolution[key] = choice;
+  }
+  return resolution;
+}
+function resolveConflicts(localEnv, remoteEnv, resolution) {
+  const mergedEnv = { ...localEnv };
+  for (const [key, value] of Object.entries(remoteEnv)) {
+    if (!(key in localEnv)) {
+      mergedEnv[key] = value;
+    }
+  }
+  for (const [key, choice] of Object.entries(resolution)) {
+    if (choice === "new") {
+      mergedEnv[key] = remoteEnv[key];
+    }
+  }
+  return mergedEnv;
+}
+function mergeEnvironments(localEnv, remoteEnv) {
+  return { ...localEnv, ...remoteEnv };
+}
+
+// src/commands/pull.ts
+var import_env_helpers9 = require("@nvii/env-helpers");
+var handleSummary = ({
+  projectId,
+  localEnvs,
+  prevVersion
+}) => {
+  const diff = (0, import_env_helpers9.generateDiff)(prevVersion, localEnvs);
+  const changesSummary = {
+    added: diff.added,
+    modified: diff.updated.map(([key, { old, new: newValue }]) => ({
+      key,
+      original: old,
+      value: newValue
+    })),
+    removed: diff.removed
+  };
+  if (changesSummary.added.length > 0 || changesSummary.modified.length > 0 || changesSummary.removed.length > 0) {
+    console.log(
+      import_picocolors8.default.bold(`
+\u{1F4DC} Change summary for project: ${import_picocolors8.default.cyan(`${projectId}`)}`)
+    );
+    console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+    changesSummary.added.forEach((key) => {
+      console.log(
+        `${import_picocolors8.default.yellow(`${key}:`)} added with value: ${localEnvs[key]}`
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+    });
+    changesSummary.modified.forEach((change) => {
+      console.log(
+        `${import_picocolors8.default.yellow(`${change.key}:`)} changed from ${change.value} (local) to ${change.original} (remote)`
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+    });
+    changesSummary.removed.forEach((key) => {
+      console.log(
+        `${import_picocolors8.default.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+    });
+  } else {
+    console.log(
+      import_picocolors8.default.bold(`
+No changes detected for project: ${import_picocolors8.default.cyan(`${projectId}`)}`)
+    );
+  }
+};
+async function pullRemoteChanges(args) {
+  let skipResolve = false;
+  let branch = "";
+  let dryRun = false;
+  if (args) {
+    if (args.force) {
+      skipResolve = true;
+    }
+    if (args.branch) {
+      branch = args.branch;
+    }
+    if (args.dryRun) {
+      dryRun = true;
+    }
+  }
+  try {
+    if (!(0, import_env_helpers8.isLogedIn)()) {
+      console.log(import_picocolors8.default.red("You must be logged in to pull a project."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers8.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors8.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const existingEnv = await (0, import_env_helpers8.readEnvFile)();
+    const config = await (0, import_env_helpers8.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors8.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors8.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers8.getConfiguredClient)();
+    const response = await client.get(`/projects/${userConfig.userId}/${projectId}`);
+    let { versions, project } = response.data;
+    if (!project) {
+      console.log(import_picocolors8.default.yellow("No project found for this user or repository."));
+      process.exit(1);
+    }
+    versions = versions.sort(
+      (a, b) => new Date(a.updatedAt).getHours() - new Date(b.updatedAt).getHours()
+    );
+    const newVersion = versions[versions.length - 1];
+    if (!project.content) {
+      console.log(import_picocolors8.default.yellow("No content found for this project envs."));
+      process.exit(1);
+    }
+    if (dryRun) {
+      handleSummary({
+        projectId,
+        prevVersion: newVersion.content,
+        localEnvs: existingEnv
+      });
+      return;
+    }
+    const conflicts = detectConflicts(
+      existingEnv,
+      newVersion.content
+    );
+    let finalContent = newVersion.content;
+    if (!skipResolve) {
+      if (conflicts.length > 0) {
+        console.log(
+          import_picocolors8.default.yellow(
+            `
+\u26A0\uFE0F  Found ${conflicts.length} conflict(s) between local and remote versions.`
+          )
+        );
+        const resolution = await promptConflictResolution(conflicts);
+        finalContent = resolveConflicts(
+          existingEnv,
+          newVersion.content,
+          resolution
+        );
+      } else {
+        finalContent = mergeEnvironments(
+          existingEnv,
+          newVersion.content
+        );
+      }
+    }
+    const values = await (0, import_env_helpers8.writeEnvFile)(finalContent);
+    if (!values) {
+      console.error(import_picocolors8.default.red("\nOops an unexpected error occurred."));
+      process.exit(1);
+    }
+    handleSummary({
+      projectId,
+      localEnvs: existingEnv,
+      prevVersion: finalContent
+    });
+    console.log(import_picocolors8.default.green(".env file updated successfully!"));
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors8.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors8.default.yellow("\nPull cancelled."));
+      return;
+    }
+    console.error(import_picocolors8.default.red("\nError linking project:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/some.ts
+var import_picocolors9 = __toESM(require_picocolors());
+async function some() {
+  try {
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors9.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    console.error(
+      import_picocolors9.default.red("\nError merging env branches (versions):"),
+      error.message
+    );
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors9.default.yellow("\nSome cancelled."));
+      return;
+    }
+    console.error(import_picocolors9.default.red("Error soming versions:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/push.ts
+var import_env_helpers10 = require("@nvii/env-helpers");
+var import_picocolors10 = __toESM(require_picocolors());
+var handleSummary2 = ({
+  projectId,
+  localEnvs,
+  prevVersion
+}) => {
+  const diff = (0, import_env_helpers10.generateDiff)(prevVersion, localEnvs);
+  const changesSummary = {
+    added: diff.added,
+    modified: diff.updated.map(([key, { old, new: newValue }]) => ({
+      key,
+      original: old,
+      value: newValue
+    })),
+    removed: diff.removed
+  };
+  if (changesSummary.added.length > 0 || changesSummary.modified.length > 0 || changesSummary.removed.length > 0) {
+    console.log(
+      import_picocolors10.default.bold(`
+\u{1F4DC} Change summary for project: ${import_picocolors10.default.cyan(`${projectId}`)}`)
+    );
+    console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+    changesSummary.added.forEach((key) => {
+      console.log(
+        `${import_picocolors10.default.yellow(`${key}:`)} added with value: ${localEnvs[key]}`
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+    });
+    changesSummary.modified.forEach((change) => {
+      console.log(
+        `${import_picocolors10.default.yellow(`${change.key}:`)} changed from ${change.original} (remote) to ${change.value} (local)`
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+    });
+    changesSummary.removed.forEach((key) => {
+      console.log(
+        `${import_picocolors10.default.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
+      );
+      console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
+      console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+    });
+  } else {
+    console.log(
+      import_picocolors10.default.bold(`
+No changes detected for project: ${import_picocolors10.default.cyan(`${projectId}`)}`)
+    );
+  }
+};
+async function pushLatestChanges(args) {
+  let message = "";
+  let branch = "";
+  let dryRun = false;
+  if (args) {
+    if (args.message) {
+      message = args.message;
+    }
+    if (args.branch) {
+      branch = args.branch;
+    }
+    if (args.dryRun) {
+      dryRun = true;
+    }
+  }
+  try {
+    if (!(0, import_env_helpers10.isLogedIn)()) {
+      console.log(import_picocolors10.default.red("You must be logged in to push changes."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers10.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors10.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    let config = await (0, import_env_helpers10.readProjectConfig)();
+    if (!config) {
+      await linkProject();
+    }
+    config = await (0, import_env_helpers10.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors10.default.red(
+          "An error occurred reading local .nvii folder currently. Try again."
+        )
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors10.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const localEnvs = await (0, import_env_helpers10.readEnvFile)();
+    if (Object.keys(localEnvs).length === 0) {
+      console.log(import_picocolors10.default.yellow("Local .env file is empty. Nothing to push."));
+      return;
+    }
+    if (message.trim() === "" && !dryRun) {
+      const { description } = await esm_default12.prompt([
+        {
+          type: "input",
+          name: "description",
+          message: "Enter a short description for this version:",
+          required: true
+        }
+      ]);
+      message = description;
+    }
+    const client = await (0, import_env_helpers10.getConfiguredClient)();
+    if (dryRun) {
+      const response = await client.get(
+        `/projects/${userConfig.userId}/${projectId}/versions`
+      );
+      if (!response) {
+        console.log(
+          import_picocolors10.default.red(`bad: unable to access '${process.env.CLIENT_URL}'`)
+        );
+      }
+      let versions = response.data;
+      versions = versions.sort(
+        (a, b) => new Date(a.updatedAt).getHours() - new Date(b.updatedAt).getHours()
+      );
+      const prevVersion = versions[versions.length - 1];
+      handleSummary2({
+        projectId,
+        prevVersion: prevVersion.content,
+        localEnvs
+      });
+      return;
+    }
+    await client.patch(`/projects/${userConfig.userId}/${projectId}`, {
+      content: localEnvs,
+      message
+    });
+    console.log(
+      import_picocolors10.default.green("\n\u2705 Successfully pushed changes and created a new version.")
+    );
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors10.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors10.default.yellow("\nPush cancelled."));
+      return;
+    }
+    console.error(import_picocolors10.default.red("\nError pushing local changes:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/history.ts
+var import_env_helpers11 = require("@nvii/env-helpers");
+var import_picocolors11 = __toESM(require_picocolors());
+async function getHistory(args) {
+  let limit = 0;
+  let oneline = false;
+  let author = "";
+  if (args) {
+    if (args.author) {
+      author = args.author;
+    }
+    if (args.limit) {
+      if (!Number(args.limit)) {
+        console.warn(import_picocolors11.default.yellow("Invalid limit (must be of type number)"));
+        process.exit(1);
+      }
+      const limitNumber = Number(args.limit);
+      if (limitNumber <= 0) {
+        console.warn(import_picocolors11.default.yellow("Invalid limit (must be at least 1)"));
+        process.exit(1);
+      }
+      limit = limitNumber;
+    }
+    if (args.oneline) {
+      oneline = true;
+    }
+  }
+  try {
+    if (!(0, import_env_helpers11.isLogedIn)()) {
+      console.log(import_picocolors11.default.red("You must be logged in to view project history."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers11.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors11.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const config = await (0, import_env_helpers11.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors11.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors11.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers11.getConfiguredClient)();
+    const response = await client.get(
+      `/projects/${userConfig.userId}/${projectId}`
+    );
+    const project = response.data.project;
+    if (!project) {
+      console.log(import_picocolors11.default.yellow("No project found for this user or repository."));
+      process.exit(1);
+    }
+    if (!project.content) {
+      console.log(import_picocolors11.default.yellow("No content found for this project envs."));
+      process.exit(1);
+    }
+    const versions = await (0, import_env_helpers11.fetchVersions)(userConfig.userId, projectId, limit);
+    if (!versions || versions.length === 0) {
+      console.log(import_picocolors11.default.yellow("No version history found for this project."));
+      return;
+    }
+    let filteredVersions = versions;
+    if (author) {
+      filteredVersions = versions.filter(
+        (version) => version.user.email?.toLowerCase().includes(author.toLowerCase()) || version.user.name && version.user.name.toLowerCase().includes(author.toLowerCase())
+      );
+      if (filteredVersions.length === 0) {
+        console.log(import_picocolors11.default.yellow(`No versions found for author: ${author}`));
+        return;
+      }
+    }
+    console.log(
+      import_picocolors11.default.bold(
+        `
+\u{1F4DC} Version history for project ${import_picocolors11.default.cyan(`${project.name} - ${project.id}`)}`
+      )
+    );
+    if (author) {
+      console.log(import_picocolors11.default.dim(`Filtered by author: ${author}`));
+    }
+    if (!oneline) {
+      console.log(import_picocolors11.default.dim("--------------------------------------------------"));
+    }
+    filteredVersions.forEach((version) => {
+      if (oneline) {
+        const shortId = version.id.substring(0, 8);
+        const author2 = version.user.name || version.user.email;
+        const date = new Date(version.createdAt).toLocaleDateString();
+        const message = version.description || "No description";
+        console.log(
+          `${import_picocolors11.default.yellow(shortId)} ${import_picocolors11.default.dim(date)} ${import_picocolors11.default.cyan(author2)} ${message}`
+        );
+      } else {
+        console.log(
+          `${import_picocolors11.default.yellow(`version ${version.id}`)} ${import_picocolors11.default.dim(`(by ${version.user.name || version.user.email})`)}`
+        );
+        console.log(`Date:    ${new Date(version.createdAt).toLocaleString()}`);
+        console.log(
+          `Message: ${version.description || import_picocolors11.default.dim("No description")}`
+        );
+        console.log(
+          import_picocolors11.default.dim("--------------------------------------------------")
+        );
+      }
+    });
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors11.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors11.default.yellow("\nHistory log cancelled."));
+      return;
+    }
+    console.error(import_picocolors11.default.red("\nError fetching history:"), error.message);
     process.exit(1);
   }
 }
 
 // src/commands/auth/logout.ts
-var import_env_helpers6 = require("@workspace/env-helpers");
+var import_env_helpers12 = require("@nvii/env-helpers");
 var import_os2 = __toESM(require("os"));
 var import_path4 = __toESM(require("path"));
-var import_picocolors6 = __toESM(require_picocolors());
+var import_picocolors12 = __toESM(require_picocolors());
 var import_fs4 = __toESM(require("fs"));
-async function logout() {
+async function logout(args) {
+  let username = "";
+  let email = "";
+  if (args) {
+    if (args.username && args.email) {
+      console.log(
+        import_picocolors12.default.yellow(
+          "Unexpected input. Ether provide your email or username to logout. NOT BOTH"
+        )
+      );
+      process.exit(0);
+    }
+    if (args.username) {
+      username = args.username;
+    }
+    if (args.email) {
+      email = args.email;
+    }
+  }
   try {
-    const config = await (0, import_env_helpers6.readConfigFile)();
+    const config = await (0, import_env_helpers12.readConfigFile)();
     if (!config) {
-      console.log(import_picocolors6.default.yellow("You are not logged in."));
+      console.log(import_picocolors12.default.yellow("You are not logged in."));
       return;
     }
-    const { userId } = await esm_default12.prompt([
-      {
-        type: "input",
-        name: "userId",
-        message: `Please enter your username to confirm logout ("${config.username}"): `,
-        validate: (input) => {
-          if (input === config.username) {
-            return true;
+    if (!username && !email) {
+      const { userId } = await esm_default12.prompt([
+        {
+          type: "input",
+          name: "userId",
+          message: `Please enter your username to confirm logout: `,
+          validate: (input) => {
+            if (input === config.username) {
+              return true;
+            }
+            return "Username does not match. Please try again.";
           }
-          return "Username does not match. Please try again.";
         }
+      ]);
+      username = userId;
+    }
+    if (!email && !username) {
+      const { userId } = await esm_default12.prompt([
+        {
+          type: "input",
+          name: "userId",
+          message: `Please enter your username to confirm logout: `,
+          validate: (input) => {
+            if (input === config.email) {
+              return true;
+            }
+            return "Username does not match. Please try again.";
+          }
+        }
+      ]);
+      email = userId;
+    }
+    const homeDir = import_os2.default.homedir();
+    const filePath = import_path4.default.join(homeDir, import_env_helpers12.FILENAME);
+    if (email) {
+      if (config.email !== email) {
+        console.log(
+          import_picocolors12.default.redBright("Oops, Invalid email. Check your email and try again.")
+        );
+        process.exit(1);
       }
-    ]);
+    }
+    if (username) {
+      if (config.username !== username) {
+        console.log(
+          import_picocolors12.default.redBright(
+            "Oops, Invalid username. Check your username and try again."
+          )
+        );
+        process.exit(1);
+      }
+    }
     const { confirm } = await esm_default12.prompt([
       {
         type: "confirm",
@@ -26698,42 +27482,657 @@ async function logout() {
       }
     ]);
     if (!confirm) {
-      console.log(import_picocolors6.default.yellow("Logout cancelled."));
+      console.log(import_picocolors12.default.yellow("Logout cancelled."));
       return;
     }
-    const homeDir = import_os2.default.homedir();
-    const filePath = import_path4.default.join(homeDir, import_env_helpers6.FILENAME);
     import_fs4.default.unlinkSync(filePath);
-    console.log(import_picocolors6.default.green("Successfully logged out!"));
+    console.log(import_picocolors12.default.green("Successfully logged out!"));
   } catch (error) {
-    console.error(import_picocolors6.default.red("Error during logout:"), error);
+    if (error.response) {
+      console.error(import_picocolors12.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors12.default.yellow("\nLogout cancelled."));
+      return;
+    }
+    console.error(import_picocolors12.default.red("Error during logout:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/auth/whoami.ts
+var import_env_helpers13 = require("@nvii/env-helpers");
+var import_picocolors13 = __toESM(require_picocolors());
+var whoami = async () => {
+  try {
+    const file = await (0, import_env_helpers13.readConfigFile)();
+    if (!file)
+      return;
+    console.log(import_picocolors13.default.green(`Logged in as ${file.username} (${file.email})`));
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors13.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    console.error("Error reading config:", error.message);
+    process.exit(1);
+  }
+};
+
+// src/commands/tag.ts
+var import_env_helpers14 = require("@nvii/env-helpers");
+var import_picocolors14 = __toESM(require_picocolors());
+async function createTag(args) {
+  const oraModule = await import("ora");
+  const ora = oraModule.spinners.aesthetic;
+  let tagName = "";
+  let versionId = "";
+  if (args) {
+    if (args.name) {
+      tagName = args.name;
+    }
+    if (args.version) {
+      versionId = args.version;
+    }
+  }
+  try {
+    if (!(0, import_env_helpers14.isLogedIn)()) {
+      console.log(import_picocolors14.default.red("You must be logged in to create tags."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers14.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors14.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const config = await (0, import_env_helpers14.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors14.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors14.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers14.getConfiguredClient)();
+    if (!versionId) {
+      const versionsResponse = await client.get(
+        `/projects/${userConfig.userId}/${projectId}/versions?limit=1`
+      );
+      const versions = versionsResponse.data;
+      if (versions.length === 0) {
+        console.log(import_picocolors14.default.yellow("No versions available to tag."));
+        return;
+      }
+      versionId = versions[0].id;
+    }
+    if (!tagName) {
+      const { inputTagName } = await esm_default12.prompt([
+        {
+          type: "input",
+          name: "inputTagName",
+          message: "Enter tag name:",
+          validate: (input) => {
+            if (!input.trim())
+              return "Tag name cannot be empty";
+            if (!/^[a-zA-Z0-9._-]+$/.test(input))
+              return "Tag name can only contain letters, numbers, dots, underscores, and hyphens";
+            return true;
+          }
+        }
+      ]);
+      tagName = inputTagName;
+    }
+    const response = await client.post(
+      `/projects/${userConfig.userId}/${projectId}/versions/tags`,
+      {
+        versionId,
+        tagName
+      }
+    );
+    console.log(
+      import_picocolors14.default.green(
+        `\u2705 Successfully created tag '${tagName}' for version ${versionId?.slice(0, 8)}`
+      )
+    );
+  } catch (error) {
+    if (error.response?.status === 409) {
+      console.error(
+        import_picocolors14.default.red("\u274C Tag name already exists. Choose a different name.")
+      );
+    } else {
+      console.error(import_picocolors14.default.red("Error creating tag:"), error.message);
+    }
+    process.exit(1);
+  }
+}
+async function listTags() {
+  try {
+    if (!(0, import_env_helpers14.isLogedIn)()) {
+      console.log(import_picocolors14.default.red("You must be logged in to list tags."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers14.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors14.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const config = await (0, import_env_helpers14.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors14.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors14.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers14.getConfiguredClient)();
+    const response = await client.get(
+      `/projects/${userConfig.userId}/${projectId}/versions/tags`
+    );
+    const tags = response.data;
+    if (!tags || tags.length === 0) {
+      console.log(import_picocolors14.default.yellow("No tags found for this project."));
+      return;
+    }
+    console.log(import_picocolors14.default.bold(`
+\u{1F3F7}\uFE0F Tags for project ${import_picocolors14.default.cyan(projectId)}`));
+    console.log(import_picocolors14.default.dim("--------------------------------------------------"));
+    tags.forEach((tag) => {
+      console.log(
+        `${import_picocolors14.default.yellow(tag.name)} -> ${import_picocolors14.default.dim(`version ${tag.version.id.slice(0, 8)}`)}`
+      );
+      console.log(`   ${tag.version.description || "No description"}`);
+      console.log(`   ${new Date(tag.createdAt).toLocaleDateString()}`);
+      console.log(import_picocolors14.default.dim("--------------------------------------------------"));
+    });
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors14.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors14.default.yellow("\nTag cancelled."));
+      return;
+    }
+    console.error(import_picocolors14.default.red("Error listing tags:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/branch.ts
+var import_env_helpers15 = require("@nvii/env-helpers");
+var import_picocolors15 = __toESM(require_picocolors());
+async function createBranch(args) {
+  let branchName = "";
+  let baseVersionId = "";
+  if (args) {
+    if (args.name) {
+      branchName = args.name;
+    }
+    if (args.version) {
+      baseVersionId = args.version;
+    }
+  }
+  try {
+    if (!(0, import_env_helpers15.isLogedIn)()) {
+      console.log(import_picocolors15.default.red("You must be logged in to create branches."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers15.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors15.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const config = await (0, import_env_helpers15.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors15.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors15.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers15.getConfiguredClient)();
+    if (!branchName) {
+      const { inputBranchName } = await esm_default12.prompt([
+        {
+          type: "input",
+          name: "inputBranchName",
+          message: "Enter branch name:",
+          validate: (input) => {
+            if (!input.trim())
+              return "Branch name cannot be empty";
+            if (!/^[a-zA-Z0-9._/-]+$/.test(input))
+              return "Branch name can only contain letters, numbers, dots, underscores, hyphens, and slashes";
+            return true;
+          }
+        }
+      ]);
+      branchName = inputBranchName;
+    }
+    if (!baseVersionId) {
+      const versionsResponse = await client.get(
+        `/projects/${userConfig.userId}/${projectId}/versions?limit=1`
+      );
+      const versions = versionsResponse.data;
+      if (versions.length === 0) {
+        console.log(import_picocolors15.default.yellow("No versions available to branch from."));
+        return;
+      }
+      baseVersionId = versions[0].id;
+    }
+    const response = await client.post(
+      `/projects/${userConfig.userId}/${projectId}/versions/branches`,
+      {
+        branchName,
+        baseVersionId,
+        projectId
+      }
+    );
+    if (!response || !response.data) {
+      console.log(import_picocolors15.default.yellow("Oops an error occurred creating new branch."));
+      process.exit(1);
+    }
+    console.log(
+      import_picocolors15.default.green(
+        `\u2705 Successfully created branch '${branchName}' from version ${baseVersionId?.slice(0, 8)}`
+      )
+    );
+  } catch (error) {
+    if (error.response?.status === 409) {
+      console.error(
+        import_picocolors15.default.red("\u274C Branch name already exists. Choose a different name.")
+      );
+    } else {
+      console.error(import_picocolors15.default.red("Error creating branch:"), error.message);
+    }
+    process.exit(1);
+  }
+}
+async function listBranches() {
+  const oraModule = await import("ora");
+  const ora = oraModule.default;
+  try {
+    if (!(0, import_env_helpers15.isLogedIn)()) {
+      console.log(import_picocolors15.default.red("You must be logged in to list branches."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers15.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors15.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const config = await (0, import_env_helpers15.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors15.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors15.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers15.getConfiguredClient)();
+    const spinner = ora("Fetching project branches...\n").start();
+    const response = await client.get(
+      `/projects/${userConfig.userId}/${projectId}/versions/branches`
+    );
+    spinner.stop();
+    const branches = response.data;
+    if (!branches || branches.length === 0) {
+      console.log(import_picocolors15.default.yellow("No branches found for this project."));
+      return;
+    }
+    console.log(import_picocolors15.default.bold(`
+\u{1F33F} Branches for project ${import_picocolors15.default.cyan(projectId)}`));
+    console.log(import_picocolors15.default.dim("--------------------------------------------------"));
+    const projectConfig = await (0, import_env_helpers15.readProjectConfig)();
+    branches.forEach((branch) => {
+      const isActive = branch.isActive ? import_picocolors15.default.green("* ") : "  ";
+      console.log(
+        `${isActive}${import_picocolors15.default.cyan(projectConfig?.branch === branch.name ? `*${branch.name}` : branch.name)} -> ${import_picocolors15.default.dim(`version ${branch.baseVersion.id.slice(0, 8)}`)}`
+      );
+      console.log(
+        `   Created: ${new Date(branch.createdAt).toLocaleDateString()}`
+      );
+      console.log(import_picocolors15.default.dim("--------------------------------------------------"));
+    });
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors15.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors15.default.yellow("\nBranch create cancelled."));
+      return;
+    }
+    console.error(import_picocolors15.default.red("Error listing branches:"), error.message);
+    process.exit(1);
+  }
+}
+async function switchBranch(args) {
+  let branchName = "";
+  if (args) {
+    if (args.name) {
+      branchName = args.name;
+    }
+  }
+  try {
+    if (!(0, import_env_helpers15.isLogedIn)()) {
+      console.log(import_picocolors15.default.red("You must be logged in to switch branches."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers15.readConfigFile)();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors15.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const config = await (0, import_env_helpers15.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors15.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors15.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers15.getConfiguredClient)();
+    if (!branchName) {
+      const branchesResponse = await client.get(
+        `/projects/${userConfig.userId}/${projectId}/versions/branches`
+      );
+      const branches = branchesResponse.data;
+      if (!branches || branches.length === 0) {
+        console.log(import_picocolors15.default.yellow("No branches found for this project."));
+        return;
+      }
+      const { selectedBranch } = await esm_default12.prompt([
+        {
+          type: "list",
+          name: "selectedBranch",
+          message: "Select a branch to switch to:",
+          choices: branches.map((branch) => ({
+            name: `${branch.name} ${branch.isActive ? "(current)" : ""}`,
+            value: branch.name
+          }))
+        }
+      ]);
+      branchName = selectedBranch;
+    }
+    const remoteUpdateResponse = await client.patch(
+      `/projects/${userConfig.userId}/${projectId}/versions/branches/${branchName}`
+    );
+    branchName = remoteUpdateResponse.data.name;
+    await (0, import_env_helpers15.writeProjectConfig)(projectId, branchName);
+    console.log(import_picocolors15.default.green(`\u2705 Switched to branch '${branchName}'`));
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors15.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors15.default.yellow("\nBranch switch cancelled."));
+      return;
+    }
+    if (error.response?.status === 404) {
+      console.error(import_picocolors15.default.red("\u274C Branch not found."));
+    } else {
+      console.error(import_picocolors15.default.red("Error switching branch:"), error.message);
+    }
+    process.exit(1);
+  }
+}
+
+// src/commands/rollback.ts
+var import_env_helpers16 = require("@nvii/env-helpers");
+var import_picocolors16 = __toESM(require_picocolors());
+var skipConfirmationPrompt = async (skipConfirmation, description, id) => {
+  if (!skipConfirmation) {
+    const { confirmRollback } = await esm_default12.prompt([
+      {
+        type: "confirm",
+        name: "confirmRollback",
+        message: `Are you sure you want to rollback to <${import_picocolors16.default.dim(`${description} - id: ${id}`)}>?`
+      }
+    ]);
+    if (!confirmRollback) {
+      console.log(import_picocolors16.default.cyan("Skipping rollback..."));
+      process.exit(0);
+    }
+  }
+};
+async function rollback(args) {
+  let versionId = "";
+  let skipConfirmation = false;
+  if (args) {
+    if (args.version) {
+      versionId = args.version;
+    }
+    if (args.force) {
+      skipConfirmation = true;
+    }
+  }
+  try {
+    if (!(0, import_env_helpers16.isLogedIn)()) {
+      console.log(import_picocolors16.default.red("You must be logged in to roll back."));
+      await login();
+      return;
+    }
+    const userConfig = await (0, import_env_helpers16.readConfigFile)();
+    const config = await (0, import_env_helpers16.readProjectConfig)();
+    if (!config) {
+      console.log(
+        import_picocolors16.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!userConfig?.userId || !projectId) {
+      console.error(
+        import_picocolors16.default.red(
+          "Project not linked or user not configured. Please run 'nvii link'."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await (0, import_env_helpers16.getConfiguredClient)();
+    if (versionId && versionId.trim() !== "") {
+      const response2 = await client.get(
+        `/projects/${userConfig.userId}/${projectId}/versions/${versionId}`
+      );
+      const version = response2.data;
+      if (!version) {
+        console.log(import_picocolors16.default.red(`Version with id <${versionId}> not found.`));
+        return;
+      }
+      await skipConfirmationPrompt(
+        skipConfirmation,
+        version.description,
+        version.id
+      );
+      console.log(import_picocolors16.default.cyan("Updating local .env file..."));
+      const values2 = await (0, import_env_helpers16.writeEnvFile)(
+        version?.content
+      );
+      if (!values2) {
+        console.error(import_picocolors16.default.red("\nOops an unexpected error occurred."));
+        process.exit(1);
+      }
+      console.log(
+        import_picocolors16.default.green(
+          "\u2705 Local .env file has been updated to match the rollback version."
+        )
+      );
+      return;
+    }
+    const versionsResponse = await client.get(
+      `/projects/${userConfig.userId}/${projectId}/versions?limit=20`
+    );
+    const versions = versionsResponse.data;
+    if (versions.length < 2) {
+      console.log(import_picocolors16.default.yellow("Not enough versions to roll back."));
+      return;
+    }
+    const { versionIdToRollback } = await esm_default12.prompt([
+      {
+        type: "list",
+        name: "versionIdToRollback",
+        message: "Select a version to roll back to:",
+        choices: versions.slice(1).map((version) => ({
+          name: `${new Date(version.createdAt).toLocaleString()} - ${version.description} (by ${version.user.name})`,
+          value: version.id
+        }))
+      }
+    ]);
+    const response = await client.get(
+      `/projects/${userConfig.userId}/${projectId}/versions/${versionIdToRollback}`
+    );
+    const versionToRollback = response.data;
+    if (!versionToRollback.content) {
+      console.error(
+        import_picocolors16.default.red("Selected version has no content. Cannot roll back.")
+      );
+      return;
+    }
+    await skipConfirmationPrompt(
+      skipConfirmation,
+      versionToRollback.description,
+      versionToRollback.id
+    );
+    console.log(import_picocolors16.default.cyan("Updating local .env file..."));
+    const values = await (0, import_env_helpers16.writeEnvFile)(
+      versionToRollback?.content
+    );
+    if (!values) {
+      console.error(import_picocolors16.default.red("\nOops an unexpected error occurred."));
+      process.exit(1);
+    }
+    console.log(
+      import_picocolors16.default.green(
+        "\u2705 Local .env file has been updated to match the rollback version."
+      )
+    );
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors16.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors16.default.yellow("\nRollback cancelled."));
+      return;
+    }
+    console.error(import_picocolors16.default.red("\nError during rollback:"), error.message);
     process.exit(1);
   }
 }
 
 // src/index.ts
-var import_env_helpers7 = require("@workspace/env-helpers");
-var import_picocolors7 = __toESM(require_picocolors());
 var program2 = new Command();
-program2.command("login").description("Authenticate with your service via the CLI").action(login);
-program2.command("logout").description("Logout from your service via the CLI").action(logout);
-program2.command("whoami").description("Show the current user").action(async () => {
-  try {
-    const file = await (0, import_env_helpers7.readConfigFile)();
-    if (!file)
-      return;
-    console.log(import_picocolors7.default.green(`Logged in as ${file.username} (${file.email})`));
-  } catch (error) {
-    console.error("Error reading config:", error);
-  }
-});
-program2.command("new").description("Create a new project").action(() => {
-  createProject();
-});
-program2.command("link").description("Link an existing project to the current directory").action(linkProject);
-program2.command("test").description("Test to see if the encryption and decryption works").action(testencryption);
-program2.command("update").description("Update the existing env file").action(updateProject);
-program2.command("generate").description("Generate a .env.example file from your .env file").action(generateExample);
+program2.name("nvii").description(
+  "Secure environment variable management for modern development teams"
+).version("1.0.0").configureHelp({
+  sortSubcommands: true,
+  showGlobalOptions: true
+}).addHelpText(
+  "before",
+  `
+\u{1F510} Nvii - Secure Environment Variable Manager
+`
+);
+if (process.argv.length <= 2) {
+  program2.help();
+}
+program2.command("login").description("Authenticate and establish a secure session with Nvii").action(login);
+program2.command("logout").option(
+  "-u, --username <username>",
+  "The username of the account to logout from."
+).option(
+  "-id, --email <email>",
+  "The email of the user account to logout from."
+).description(
+  "Terminate your current session and clear authentication credentials"
+).action(logout);
+program2.command("whoami").description("Display information about the currently authenticated user").action(whoami);
+program2.command("new").description(
+  "Initialize a new project and configure environment variable management"
+).action(createProject);
+program2.command("link").description("Connect the current directory to an existing remote project").option("-t, --token <id>", "Specific project token or id to connect to.").action(linkProject);
+program2.command("unlink").description(
+  "Disconnect the current directory from its linked remote project"
+).action(unlinkProject);
+program2.command("pull").description(
+  "Fetch and merge environment variables from the remote repository"
+).option("-f, --force", "Force pull without conflict resolution prompts").option("-b, --branch <branch>", "Pull from specific branch (default: main)").option("-dry, --dry-run", "Preview changes without applying them").action(pullRemoteChanges);
+program2.command("push").description(
+  "Upload local environment variable changes and create a new version"
+).option("-m, --message <message>", "Version description message").option("-b, --branch <branch>", "Push to specific branch (default: main)").option("-dry, --dry-run", "Preview changes without uploading").action(pushLatestChanges);
+program2.command("update").description(
+  "Synchronize local environment file with the latest remote version"
+).action(updateProject);
+program2.command("log").description("Display version history and change log for the current project").option("-n, --limit <number>", "Limit number of versions to display", "10").option("--oneline", "Show condensed one-line format").option("--author <email>", "Filter by author email").action(getHistory);
+program2.command("rollback").description("Restore environment variables to a previous version state").option("-v, --version <id>", "Specific version ID to rollback to").option("-f, --force", "Skip confirmation prompts").action(rollback);
+program2.command("merge").description(
+  "Consolidate multiple environment variable versions into the main branch"
+).option("-s, --source <branch>", "Source branch to merge from").option(
+  "-t, --target <branch>",
+  "Target branch to merge into (default: main)"
+).action(some);
+program2.command("generate").alias("gen").description(
+  "Create a template .env.x file from your current environment variables"
+).option("-o, --output <file>", "Output file path (default: .env.example)").option("--format <type>", "Output format: env, json, yaml", "env").action(generateExample);
+program2.command("test").description("Verify encryption and decryption functionality").action(testEncryption);
+program2.command("branch").description("Create a new branch from the current or specified version").option("-n, --name <name>", "Branch name").action(createBranch);
+program2.command("branches").description("List all branches for the current project").action(listBranches);
+program2.command("checkout").description("Switch to a different branch").option("-n, --name <name>", "Branch name to switch to").action(switchBranch);
+program2.command("tag").description("Create a new tag for the current or specified version").option("-n, --name <name>", "Tag name to use.").action(createTag);
+program2.command("tags").description("List all tags for the current project").action(listTags);
 program2.parse(process.argv);
 /*! Bundled license information:
 

@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.9.0
- * Query Engine version: 81e4af48011447c3cc503a190e86995b66d2a28e
+ * Prisma Client JS version: 6.14.0
+ * Query Engine version: 717184b7b35ea05dfa71a3236b7af656013e1e49
  */
 Prisma.prismaVersion = {
-  client: "6.9.0",
-  engine: "81e4af48011447c3cc503a190e86995b66d2a28e"
+  client: "6.14.0",
+  engine: "717184b7b35ea05dfa71a3236b7af656013e1e49"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -127,7 +127,8 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  optsCode: 'optsCode'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -181,6 +182,7 @@ exports.Prisma.ProjectScalarFieldEnum = {
   key: 'key',
   deviceId: 'deviceId',
   content: 'content',
+  description: 'description',
   updatedAt: 'updatedAt',
   createdAt: 'createdAt'
 };
@@ -196,9 +198,31 @@ exports.Prisma.EnvVersionScalarFieldEnum = {
   projectId: 'projectId',
   content: 'content',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   createdBy: 'createdBy',
   description: 'description',
-  changes: 'changes'
+  changes: 'changes',
+  branch: 'branch'
+};
+
+exports.Prisma.VersionTagScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  versionId: 'versionId',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.VersionBranchScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  projectId: 'projectId',
+  baseVersionId: 'baseVersionId',
+  isActive: 'isActive',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -240,7 +264,9 @@ exports.Prisma.ModelName = {
   Device: 'Device',
   Project: 'Project',
   ProjectAccess: 'ProjectAccess',
-  EnvVersion: 'EnvVersion'
+  EnvVersion: 'EnvVersion',
+  VersionTag: 'VersionTag',
+  VersionBranch: 'VersionBranch'
 };
 
 /**

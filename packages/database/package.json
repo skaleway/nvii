@@ -1,18 +1,17 @@
 {
-  "name": "@workspace/db",
+  "name": "@nvii/db",
   "version": "1.0.0",
   "exports": {
     ".": "./src/client.ts"
   },
   "scripts": {
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:dev": "prisma migra te dev",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:seed": "tsx src/seed.ts",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "dev": "tsup src/* --watch",
     "format": "prisma format",
     "lint": "eslint . --max-warnings 0",
     "prebuild": "npm run db:generate",
@@ -23,8 +22,8 @@
     "@prisma/client": "latest"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
-    "@workspace/typescript-config": "workspace:*",
+    "@nvii/eslint-config": "workspace:*",
+    "@nvii/typescript-config": "workspace:*",
     "eslint": "^8.57.0",
     "prisma": "latest",
     "rimraf": "^5.0.5",

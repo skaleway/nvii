@@ -1,23 +1,35 @@
-"use client"
+"use client";
 
-import { ArrowDownToLine, ArrowUpFromLine, CheckCircle, RefreshCw } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table"
-import { Badge } from "@workspace/ui/components/badge"
+import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  CheckCircle,
+  RefreshCw,
+} from "lucide-react";
+import { Button } from "@nvii/ui/components/button";
+import { Checkbox } from "@nvii/ui/components/checkbox";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@nvii/ui/components/table";
+import { Badge } from "@nvii/ui/components/badge";
 
 interface SyncTableProps {
-  filter: "all" | "changes" | "conflicts"
+  filter: "all" | "changes" | "conflicts";
 }
 
 type Project = {
-  id: string
-  name: string
-  localChanges: number
-  remoteChanges: number
-  conflicts: number
-  lastSynced: string
-}
+  id: string;
+  name: string;
+  localChanges: number;
+  remoteChanges: number;
+  conflicts: number;
+  lastSynced: string;
+};
 
 export function SyncTable({ filter }: SyncTableProps) {
   // Mock data
@@ -62,14 +74,15 @@ export function SyncTable({ filter }: SyncTableProps) {
       conflicts: 0,
       lastSynced: "1 week ago",
     },
-  ]
+  ];
 
   const filteredProjects = projects.filter((project) => {
-    if (filter === "all") return true
-    if (filter === "changes") return project.localChanges > 0 || project.remoteChanges > 0
-    if (filter === "conflicts") return project.conflicts > 0
-    return true
-  })
+    if (filter === "all") return true;
+    if (filter === "changes")
+      return project.localChanges > 0 || project.remoteChanges > 0;
+    if (filter === "conflicts") return project.conflicts > 0;
+    return true;
+  });
 
   return (
     <div className="rounded-md border">
@@ -114,7 +127,10 @@ export function SyncTable({ filter }: SyncTableProps) {
               </TableCell>
               <TableCell>
                 {project.conflicts > 0 ? (
-                  <Badge variant="outline" className="bg-destructive/10 text-destructive">
+                  <Badge
+                    variant="outline"
+                    className="bg-destructive/10 text-destructive"
+                  >
                     {project.conflicts}
                   </Badge>
                 ) : (
@@ -143,5 +159,5 @@ export function SyncTable({ filter }: SyncTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

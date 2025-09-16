@@ -8,6 +8,6 @@ export default defineConfig({
   clean: true,
   bundle: true,
   dts: true,
-  external: ["@workspace/env-helpers"],
+  external: ["@nvii/env-helpers"],
   noExternal: ["commander", "inquirer", "picocolors"],
 });

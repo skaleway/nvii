@@ -1,7 +1,7 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
-import { Button } from "@workspace/ui/components/button";
+import { Avatar, AvatarFallback } from "@nvii/ui/components/avatar";
+import { Button } from "@nvii/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -10,19 +10,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog";
-import { Input } from "@workspace/ui/components/input";
+} from "@nvii/ui/components/dialog";
+import { Input } from "@nvii/ui/components/input";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
-import UserProfile from "@workspace/ui/components/user-profile";
+} from "@nvii/ui/components/tooltip";
+import UserProfile from "@nvii/ui/components/user-profile";
 import { Loader2, Plus, Users, X } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 import { useProjects } from "./projects-provider";
+import { Badge } from "@nvii/ui/components/badge";
 
 function UserAvatar({
   user,
@@ -58,7 +59,15 @@ function UserAvatar({
   );
 }
 
-export function ProjectAccessManager({ projectId }: { projectId: string }) {
+export function ProjectAccessManager({
+  projectId,
+  userId,
+  projectUserId,
+}: {
+  projectId: string;
+  userId: string;
+  projectUserId: string;
+}) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -70,13 +79,13 @@ export function ProjectAccessManager({ projectId }: { projectId: string }) {
 
   const loadUsers = React.useCallback(async () => {
     try {
-      const projectAccess = await getProjectAccess(projectId);
+      const projectAccess = await getProjectAccess(projectId, userId);
       setUsers(projectAccess.map((access) => access.user));
     } catch (error) {
       console.error("Failed to load users:", error);
       toast.error("Failed to load users with access");
     }
-  }, [projectId, getProjectAccess]);
+  }, [projectId, getProjectAccess, userId]);
 
   React.useEffect(() => {
     loadUsers();
@@ -88,7 +97,7 @@ export function ProjectAccessManager({ projectId }: { projectId: string }) {
 
     setIsLoading(true);
     try {
-      await addProjectAccess(projectId, email);
+      await addProjectAccess(projectId, email, userId);
       toast.success("User invited successfully");
       setEmail("");
       loadUsers();
@@ -117,7 +126,7 @@ export function ProjectAccessManager({ projectId }: { projectId: string }) {
       <div className="flex items-center gap-2">
         <Users className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm text-muted-foreground">
-          {users.length} members
+          {users.length} {users.length === 1 ? "member" : "members"}
         </span>
       </div>
 
@@ -186,13 +195,19 @@ export function ProjectAccessManager({ projectId }: { projectId: string }) {
                         </p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemove(user.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+
+                    {user.id === projectUserId ? (
+                      <Badge variant="secondary">Admin</Badge>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemove(user.id)}
+                        disabled={userId !== projectUserId}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>

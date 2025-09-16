@@ -1,8 +1,8 @@
-import { FILENAME } from "@workspace/env-helpers";
+import { FILENAME, checkLoginStats } from "@nvii/env-helpers";
 import { listen } from "async-listen";
 import { spawn } from "child_process";
 import "dotenv/config";
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
 import http from "http";
 import { customAlphabet } from "nanoid";
 import os from "os";
@@ -22,6 +22,15 @@ async function writeToConfigFile(data: Record<string, string>) {
     const homeDir = os.homedir();
     const filePath = path.join(homeDir, FILENAME);
     writeFileSync(filePath, JSON.stringify(data, null, 2));
+
+    const userData = readFileSync(filePath, "utf-8");
+    const dirname = path.dirname(filePath);
+
+    return {
+      filePath,
+      userData,
+      dirname,
+    };
   } catch (error) {
     console.error("Error writing to local config file", error);
   }
@@ -30,6 +39,11 @@ async function writeToConfigFile(data: Record<string, string>) {
 const nanoid = customAlphabet("123456789QAZWSXEDCRFVTGBYHNUJMIKOLP", 8);
 
 export async function login() {
+  // check if user is already logged in and prevent useless login
+  const res = await checkLoginStats();
+  if (res?.success) {
+    return;
+  }
   const oraModule = await import("ora");
   const ora = oraModule.default;
 
@@ -42,7 +56,7 @@ export async function login() {
       res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
       res.setHeader(
         "Access-Control-Allow-Headers",
-        "Content-Type, Authorization"
+        "Content-Type, Authorization",
       );
 
       if (req.method === "OPTIONS") {
@@ -55,6 +69,18 @@ export async function login() {
           res.end();
           reject(new UserCancellationError("Login process cancelled by user."));
         } else {
+          // validate the code from the browser
+          const isValidCode = parsedUrl.query.authCode === code;
+          if (!isValidCode) {
+            console.log(
+              pc.yellow(
+                "Login failed. Use a valid url, refresh your browser and try again.",
+              ),
+            );
+            res.writeHead(400);
+            res.end();
+            return;
+          }
           res.writeHead(200);
           res.end();
           resolve(parsedUrl.query as Record<string, string>);
@@ -62,6 +88,7 @@ export async function login() {
       } else {
         res.writeHead(405);
         res.end();
+        reject(new UserCancellationError("Login process failed."));
       }
     });
   });
@@ -74,7 +101,7 @@ export async function login() {
 
   console.log(`Confirmation code: ${pc.bold(code)}\n`);
   console.log(
-    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`
+    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`,
   );
 
   spawn("open", [confirmationUrl.toString()]);
@@ -83,21 +110,24 @@ export async function login() {
 
   try {
     const authData = await authPromise;
-    console.log({ authData });
     spinner.stop();
-    writeToConfigFile(authData);
+    await writeToConfigFile(authData);
     console.log(pc.green("Authentication successful!"));
     console.log(`Config saved at: ~/ ${FILENAME}\n`);
     server.close();
     process.exit(0);
-  } catch (error) {
+  } catch (error: Error | any) {
     spinner.stop();
+    server.close();
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
+      return;
+    }
     if (error instanceof UserCancellationError) {
       console.log(pc.yellow("Authentication cancelled.\n"));
     } else {
       console.error(pc.red("Authentication failed:"), error);
     }
-    server.close();
     process.exit(1);
   }
 }

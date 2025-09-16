@@ -1,21 +1,35 @@
-import { Project } from "@workspace/db";
+import { Project } from "@nvii/db";
 import {
-  decryptEnvValues,
   getConfiguredClient,
   isLogedIn,
   readConfigFile,
-  readEnvFile,
   writeProjectConfig,
-} from "@workspace/env-helpers";
-import { promises as fs } from "fs";
+} from "@nvii/env-helpers";
+import { existsSync, promises as fs, mkdirSync, writeFileSync } from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import pc from "picocolors";
 import { login } from "./auth/login";
 
-const DOT_ENV_FILE = ".env";
+const createEnvFiles = (enviDirPath: string, enviFilePath: string) => {
+  // create project config file path and .env if they don't exist
+  if (!existsSync(enviDirPath)) {
+    mkdirSync(enviDirPath);
 
-export async function linkProject() {
+    if (!existsSync(enviFilePath)) {
+      writeFileSync(enviFilePath, "", { encoding: "utf-8" });
+    }
+  }
+  console.log("\n");
+};
+
+export async function linkProject(args?: { token: string }) {
+  let projectId = "";
+  if (args) {
+    if (args.token) {
+      projectId = args.token;
+    }
+  }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to link a project."));
@@ -30,102 +44,56 @@ export async function linkProject() {
     }
 
     const client = await getConfiguredClient();
+    const currentDir = process.cwd();
+    const enviDirPath = path.join(currentDir, ".nvii");
+    const enviFilePath = path.join(enviDirPath, "nvii.json");
+
     const response = await client.get(`/projects/${userConfig.userId}`);
-    const projects = response.data.data as Project[];
+    const projects = response.data as Project[];
 
     if (!projects.length) {
-      console.log(pc.yellow("No projects found for this user."));
+      console.log(
+        pc.yellow("No projects found for this directory. Run 'nvii new'."),
+      );
       return;
     }
 
-    const { selectedProjectId } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "selectedProjectId",
-        message: "Select a project to link:",
-        choices: projects.map((proj) => ({
-          name: proj.name,
-          value: proj.id,
-        })),
-      },
-    ]);
+    if (!projectId) {
+      const { selectedProjectId } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "selectedProjectId",
+          message: "Select a project to link:",
+          choices: projects.map((proj) => ({
+            name: proj.name,
+            value: proj.id,
+          })),
+        },
+      ]);
 
-    const selectedProject = projects.find(
-      (proj) => proj.id === selectedProjectId
-    );
+      projectId = selectedProjectId;
+    }
+
+    const selectedProject = projects.find((proj) => proj.id === projectId);
 
     if (!selectedProject) {
-      console.log(pc.red("Selected project not found."));
+      console.log(pc.red(`Project with id <${projectId}> not found.`));
+      process.exit(1);
+    }
+
+    createEnvFiles(enviDirPath, enviFilePath);
+    await writeProjectConfig(projectId, "main");
+    console.log(pc.green("Project linked successfully!"));
+  } catch (error: Error | any) {
+    if (error.response) {
+      console.error(pc.yellow(`\n${error.response.data.error}`));
       return;
     }
-
-    const currentDir = process.cwd();
-
-    if (!selectedProject.content) {
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(pc.yellow("\nLink process cancelled."));
       return;
     }
-
-    const { createEnvFile } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "createEnvFile",
-        message:
-          "This project contains a .env file. Do you want to populate its values?",
-        default: false,
-      },
-    ]);
-
-    if (!createEnvFile) {
-      console.log(pc.yellow("Skipping .env file creation."));
-      return;
-    }
-
-    const envFilePath = path.join(currentDir, DOT_ENV_FILE);
-    let existingEnv = await readEnvFile();
-
-    const finalEnv: Record<string, string> = { ...existingEnv };
-    let commentedLines = "";
-
-    for (const [key, value] of Object.entries(selectedProject.content)) {
-      const normalizedExisting = existingEnv[key]?.replace(/^"|"$/g, "") || "";
-      const normalizedNew = String(value).replace(/^"|"$/g, "") || "";
-
-      console.log({ normalizedNew, normalizedExisting });
-      if (
-        existingEnv[key] !== undefined &&
-        normalizedExisting === normalizedNew
-      ) {
-        const { overwrite } = await inquirer.prompt([
-          {
-            type: "confirm",
-            name: "overwrite",
-            message: `Conflict: ${key} exists. Overwrite? Current: "${normalizedExisting}" New: "${normalizedNew}"`,
-            default: false,
-          },
-        ]);
-        if (overwrite) {
-          finalEnv[key] = value;
-        } else {
-          commentedLines += `# ${key}=${value}\n`;
-        }
-      } else {
-        finalEnv[key] = value;
-      }
-    }
-
-    const decryptedEnv = decryptEnvValues(finalEnv, userConfig.userId);
-
-    const finalEnvContent =
-      Object.entries(decryptedEnv)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n") +
-      "\n" +
-      commentedLines;
-
-    await fs.writeFile(envFilePath, finalEnvContent);
-    await writeProjectConfig(selectedProject.id);
-    console.log(pc.green(".env file updated successfully!"));
-  } catch (error) {
-    console.error(pc.red("Error linking project:"), error);
+    console.error(pc.red("\nError linking project:"), error.message);
+    process.exit(1);
   }
 }

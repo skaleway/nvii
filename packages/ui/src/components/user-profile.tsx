@@ -4,9 +4,9 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@workspace/ui/components/avatar";
+} from "@nvii/ui/components/avatar";
 
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "@nvii/ui/lib/utils";
 
 const iconvVariants = cva(
   "rounded-full border flex items-center justify-center",
@@ -21,7 +21,7 @@ const iconvVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  }
+  },
 );
 
 interface ProfileProps extends VariantProps<typeof iconvVariants> {

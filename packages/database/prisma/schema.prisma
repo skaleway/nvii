@@ -19,6 +19,7 @@ model User {
   image            String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  optsCode         String?
   sessions         Session[]
   accounts         Account[]
   Device           Device[]
@@ -87,20 +88,23 @@ model Device {
 }
 
 model Project {
-  id        String   @id @default(cuid())
-  name      String
-  userId    String
-  key       String   @default(cuid())
-  user      User     @relation("ProjectOwner", fields: [userId], references: [id], onDelete: Cascade)
-  deviceId  String
-  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-  content   Json?
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  userId      String
+  key         String   @default(cuid())
+  user        User     @relation("ProjectOwner", fields: [userId], references: [id], onDelete: Cascade)
+  deviceId    String?
+  device      Device?  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  content     Json?
+  description String?
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 
   havingAccess  User[]          @relation("ProjectAccess")
   ProjectAccess ProjectAccess[]
   versions      EnvVersion[]
+  VersionTag    VersionTag[]
+  branches      VersionBranch[]
 
   @@unique([userId, name])
   @@map("projects")
@@ -120,15 +124,52 @@ model ProjectAccess {
 
 // Model to track environment variable versions
 model EnvVersion {
-  id          String   @id @default(cuid())
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  content     Json // Stores the environment variables at this version
-  createdAt   DateTime @default(now())
-  createdBy   String
-  user        User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  description String? // Optional description of what changed
-  changes     Json? // Stores what was added/modified/deleted
+  id            String          @id @default(cuid())
+  projectId     String
+  project       Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  content       Json // Stores the environment variables at this version
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
+  createdBy     String
+  user          User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  description   String? // Optional description of what changed
+  changes       Json? // Stores what was added/modified/deleted
+  branch        String          @default("main")
+  VersionTag    VersionTag[]
+  basedBranches VersionBranch[] @relation("BaseBranch")
 
+  @@index([projectId, createdAt(sort: Desc)])
+  @@index([createdBy])
+  @@index([branch])
   @@map("env_versions")
+}
+
+model VersionTag {
+  id          String     @id @default(cuid())
+  projectId   String
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  versionId   String
+  version     EnvVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+
+  @@unique([projectId, name])
+  @@map("env_version_tag")
+}
+
+model VersionBranch {
+  id            String     @id @default(cuid())
+  name          String
+  projectId     String
+  project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  baseVersionId String
+  baseVersion   EnvVersion @relation("BaseBranch", fields: [baseVersionId], references: [id], onDelete: Cascade)
+  isActive      Boolean    @default(false)
+  description   String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([projectId, name])
+  @@map("env_version_branches")
 }

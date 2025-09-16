@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
   Dialog,
@@ -8,12 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog";
-import { Button } from "@workspace/ui/components/button";
-import { ScrollArea } from "@workspace/ui/components/scroll-area";
-import { Badge } from "@workspace/ui/components/badge";
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
-import { History } from "lucide-react";
+} from "@nvii/ui/components/dialog";
+import { Button } from "@nvii/ui/components/button";
+import { ScrollArea } from "@nvii/ui/components/scroll-area";
+import { Badge } from "@nvii/ui/components/badge";
+import { Card, CardContent, CardHeader } from "@nvii/ui/components/card";
+import { History, Plus } from "lucide-react";
+import { useProjects } from "./projects-provider";
+import { toast } from "sonner";
+import Link from "next/link";
+import { EnvVersion } from "@nvii/db";
 
 interface Version {
   id: string;
@@ -31,11 +35,38 @@ interface Version {
 }
 
 interface VersionHistoryProps {
-  versions?: Version[];
+  projectId: string;
+  userId: string;
 }
 
-export function VersionHistory({ versions = [] }: VersionHistoryProps) {
+export function VersionHistory({ userId, projectId }: VersionHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [versions, setVersions] = useState<Version[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { getProjectVersions } = useProjects();
+
+  useEffect(() => {
+    const handleFetch = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getProjectVersions(projectId, userId);
+
+        if (!data) {
+          toast.error("Cannot fetch env versions at the moment.");
+          return;
+        }
+
+        setVersions(data as Version[] & EnvVersion[]);
+      } catch (error) {
+        toast.error("An error occurred loading env versions.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    handleFetch();
+  }, [getProjectVersions, userId, projectId]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -52,7 +83,7 @@ export function VersionHistory({ versions = [] }: VersionHistoryProps) {
         <ScrollArea className="h-[500px] pr-4">
           {versions.length > 0 ? (
             <div className="space-y-4">
-              {versions.map((version) => (
+              {versions.slice(0, 8).map((version) => (
                 <Card key={version.id}>
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
@@ -76,8 +107,9 @@ export function VersionHistory({ versions = [] }: VersionHistoryProps) {
                     <div className="space-y-2">
                       {version.changes && version.changes.added.length > 0 && (
                         <div className="flex items-center gap-2">
-                          <Badge variant="default" className="bg-green-500">
-                            Added
+                          <Badge variant="outline" className="text-green-600">
+                            <Plus className="mr-1 h-3 w-3" />
+                            {version.changes.added.length} added
                           </Badge>
                           <span className="text-sm">
                             {version.changes.added.length} environment
@@ -88,8 +120,8 @@ export function VersionHistory({ versions = [] }: VersionHistoryProps) {
                       {version.changes &&
                         version.changes.modified.length > 0 && (
                           <div className="flex items-center gap-2">
-                            <Badge variant="default" className="bg-blue-500">
-                              Modified
+                            <Badge variant="outline" className="text-blue-600">
+                              {version.changes.modified.length} modified
                             </Badge>
                             <span className="text-sm">
                               {version.changes.modified.length} environment
@@ -100,7 +132,9 @@ export function VersionHistory({ versions = [] }: VersionHistoryProps) {
                       {version.changes &&
                         version.changes.deleted.length > 0 && (
                           <div className="flex items-center gap-2">
-                            <Badge variant="destructive">Deleted</Badge>
+                            <Badge variant="outline" className="text-red-600">
+                              {version.changes.deleted.length} deleted
+                            </Badge>
                             <span className="text-sm">
                               {version.changes.deleted.length} environment
                               variable(s)
@@ -120,6 +154,11 @@ export function VersionHistory({ versions = [] }: VersionHistoryProps) {
             </div>
           )}
         </ScrollArea>
+        <Button asChild variant="outline" className="mt-4" size="sm">
+          <Link href={`/projects/${projectId}/versions`}>
+            View more details
+          </Link>
+        </Button>
       </DialogContent>
     </Dialog>
   );
