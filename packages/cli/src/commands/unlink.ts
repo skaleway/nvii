@@ -10,7 +10,7 @@ import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
 
-export async function unlinkProject() {
+export async function unlinkProject(checkProjects = true) {
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to link a project."));
@@ -30,18 +30,25 @@ export async function unlinkProject() {
     const response = await client.get(`/projects/${userConfig.userId}`);
     const projects = response.data as Project[];
 
-    if (!projects.length) {
+    if (checkProjects && !projects.length) {
       console.log(
-        pc.yellow("No projects found for current user. Run 'nvii new'."),
+        pc.yellow("No projects found for current user. Run 'nvii new'.")
       );
       return;
     }
 
     const project = projects.find(
-      (item) => item.id === projectConfig?.projectId,
+      (item) => item.id === projectConfig?.projectId
     );
+    if (checkProjects) {
+      if (!project) {
+        console.log(pc.red("Project not linked remote project yet."));
+        return;
+      }
+    }
+
+    // Fall back when theres is not project found to unlink from
     if (!project) {
-      console.log(pc.red("Project not linked remote project yet."));
       return;
     }
     const { unLinkProject } = await inquirer.prompt([
@@ -58,12 +65,12 @@ export async function unlinkProject() {
     }
 
     console.log("\n");
-    const result = await unlinkProjectConfig(project.id);
+    const result = await unlinkProjectConfig(project?.id as string);
     if (!result) {
       console.log(
         pc.yellow(
-          "Oops. An error occurred deleting the local .nvii directory. You can delete it manually.",
-        ),
+          "Oops. An error occurred deleting the local .nvii directory. You can delete it manually."
+        )
       );
       process.exit(1);
     }
