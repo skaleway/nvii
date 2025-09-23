@@ -85,11 +85,11 @@ function generateEnvVersion(
 ): string {
   switch (format) {
     case "json": {
-      let content = {};
+      let jsonContent = {};
       Object.entries(content).map(([key, value]) => {
-        content = { ...content, [key]: value };
+        jsonContent = { ...jsonContent, [key]: value };
       });
-      return JSON.stringify(content, null, 2);
+      return JSON.stringify(jsonContent, null, 2);
     }
     case "yaml":
       return (

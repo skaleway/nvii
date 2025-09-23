@@ -42,7 +42,7 @@ export async function unlinkProject(checkProjects = true) {
     );
     if (checkProjects) {
       if (!project) {
-        console.log(pc.red("Project not linked remote project yet."));
+        console.log(pc.red("Project is not linked to a remote project yet."));
         return;
       }
     }
@@ -65,7 +65,7 @@ export async function unlinkProject(checkProjects = true) {
     }
 
     console.log("\n");
-    const result = await unlinkProjectConfig(project?.id as string);
+    const result = await unlinkProjectConfig(project.id);
     if (!result) {
       console.log(
         pc.yellow(

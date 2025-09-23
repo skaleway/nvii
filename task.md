@@ -190,36 +190,87 @@ This document outlines all tasks required to implement a complete version contro
   - [x] User activity timeline
   - [x] Version usage statistics
 
-#### **Web Pages**
 
-- [ ] **Create `app/(after-auth)/projects/[projectId]/versions/page.tsx`**
-  - [x] Version history page
-  - [x] Version comparison tools
-  - [x] Version management actions
 
-- [ ] **Create `app/(after-auth)/projects/[projectId]/versions/[versionId]/page.tsx`**
-  - [x] Individual version view
-  - [x] Version details and metadata
-  - [x] Version actions (rollback, tag, etc.)
-
-- [ ] **Create `app/(after-auth)/projects/[projectId]/versions/compare/page.tsx`**
-  - [x] Version comparison page
-  - [x] Side-by-side diff view
-  - [x] Merge functionality
-
-#### **Web Utilities**
-
-- [ ] **Create `lib/diff-helpers.ts`**
-  - [x] `compareVersions(version1: Record<string, string>, version2: Record<string, string>): DiffResult`
-  - [x] `generateDiffReport(diff: DiffResult): string`
-  - [x] `formatVersionChanges(changes: VersionChanges): string`
-
-- [ ] **Create `lib/version-helpers.ts`** (enhance existing)
-  - [x] `getVersionAnalytics(projectId: string): Promise<VersionAnalytics>`
-  - [x] `createVersionTag(versionId: string, tagName: string): Promise<VersionTag>`
-  - [x] `mergeVersions(sourceVersionId: string, targetVersionId: string): Promise<VersionInfo>`
 
 ### 🔄 **Pending Tasks**
+
+#### **Web Application Layer (apps/web) – Pending Tasks**
+
+- [ ] **Create `api/projects/[userId]/[projectId]/versions/[versionId]/route.ts`**
+  - [ ] `GET` - Fetch specific version details
+  - [ ] `DELETE` - Delete specific version (with permissions)
+  - [ ] `PATCH` - Update version metadata (description, tags)
+
+- [ ] **Create `api/projects/[userId]/[projectId]/versions/compare/route.ts`**
+  - [ ] `POST` - Compare two versions and return diff
+  - [ ] `GET` - Get comparison options (version list)
+
+- [ ] **Create `api/projects/[userId]/[projectId]/versions/tags/route.ts`**
+  - [ ] `GET` - List all tags for project
+  - [ ] `POST` - Create new tag
+  - [ ] `DELETE` - Delete tag
+
+- [ ] **Create `api/projects/[userId]/[projectId]/versions/branches/route.ts`**
+  - [ ] `GET` - List all branches
+  - [ ] `POST` - Create new branch
+  - [ ] `PATCH` - Update branch
+  - [ ] `DELETE` - Delete branch
+
+- [ ] **Enhance existing version endpoints**
+  - [ ] Add pagination to version listing
+  - [ ] Add filtering (date range, user, changes)
+  - [ ] Add sorting options
+  - [ ] Add version search functionality
+
+- [ ] **Create `components/version-history.tsx`**
+  - [ ] Version timeline component
+  - [ ] Version list with change summaries
+  - [ ] Version selection and comparison
+  - [ ] Version filtering and search
+
+- [ ] **Create `components/version-diff.tsx`**
+  - [ ] Side-by-side diff view
+  - [ ] Inline diff view
+  - [ ] Change highlighting
+  - [ ] Diff export functionality
+
+- [ ] **Create `components/version-actions.tsx`**
+  - [ ] Rollback button
+  - [ ] Tag creation
+  - [ ] Branch creation
+  - [ ] Version deletion
+
+- [ ] **Create `components/version-analytics.tsx`**
+  - [ ] Change frequency chart
+  - [ ] Most changed variables
+  - [ ] User activity timeline
+  - [ ] Version usage statistics
+
+- [ ] **Create `app/(after-auth)/projects/[projectId]/versions/page.tsx`**
+  - [ ] Version history page
+  - [ ] Version comparison tools
+  - [ ] Version management actions
+
+- [ ] **Create `app/(after-auth)/projects/[projectId]/versions/[versionId]/page.tsx`**
+  - [ ] Individual version view
+  - [ ] Version details and metadata
+  - [ ] Version actions (rollback, tag, etc.)
+
+- [ ] **Create `app/(after-auth)/projects/[projectId]/versions/compare/page.tsx`**
+  - [ ] Version comparison page
+  - [ ] Side-by-side diff view
+  - [ ] Merge functionality
+
+- [ ] **Create `lib/diff-helpers.ts`**
+  - [ ] `compareVersions(version1: Record<string, string>, version2: Record<string, string>): DiffResult`
+  - [ ] `generateDiffReport(diff: DiffResult): string`
+  - [ ] `formatVersionChanges(changes: VersionChanges): string`
+
+- [ ] **Create `lib/version-helpers.ts`** (enhance existing)
+  - [ ] `getVersionAnalytics(projectId: string): Promise<VersionAnalytics>`
+  - [ ] `createVersionTag(versionId: string, tagName: string): Promise<VersionTag>`
+  - [ ] `mergeVersions(sourceVersionId: string, targetVersionId: string): Promise<VersionInfo>`
 
 ---
 

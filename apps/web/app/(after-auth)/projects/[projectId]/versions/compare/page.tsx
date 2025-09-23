@@ -88,11 +88,9 @@ export default function VersionComparePage() {
           return;
         }
 
-        data.map((item) => item.user);
-
         if (!data) return;
         console.log({ data });
-        setVersions(data as Array<EnvVersion & { user: User }>);
+        setVersions(data);
         // Set default versions if not provided in URL
         if (data.length > 1) {
           // @ts-ignore
