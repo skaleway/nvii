@@ -49,7 +49,7 @@ type ProjectsContextType = {
     projectId: string,
     userId: string,
     versionId: string
-  ) => Promise<EnvVersion>;
+  ) => Promise<EnvVersion & { user: User }>;
 };
 
 const ProjectsContext = React.createContext<ProjectsContextType | undefined>(

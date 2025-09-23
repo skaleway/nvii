@@ -45,7 +45,6 @@ export default function VersionDetailsPage() {
         versionId as string
       );
       console.log({ data });
-      // @ts-expect-error: Data type returned here behaves unexpectedly after fixing from the root
       return data;
     } catch (error) {
       toast.error("Failed to load version details");
@@ -92,15 +91,22 @@ export default function VersionDetailsPage() {
     toast.success("Copied to clipboard");
   };
 
+  type ChangeSet = {
+    added?: string[];
+    modified?: string[];
+    deleted?: string[];
+  };
+
   const getChangeType = (
     key: string
   ): "added" | "modified" | "deleted" | null => {
     if (!version?.changes) return null;
-    if ((version.changes as Record<string, string>).added?.includes(key))
+    const changes = version.changes as ChangeSet;
+    if (Array.isArray(changes.added) && changes.added.includes(key))
       return "added";
-    if ((version.changes as Record<string, string>).modified?.includes(key))
+    if (Array.isArray(changes.modified) && changes.modified.includes(key))
       return "modified";
-    if ((version.changes as Record<string, string>).deleted?.includes(key))
+    if (Array.isArray(changes.deleted) && changes.deleted.includes(key))
       return "deleted";
     return null;
   };

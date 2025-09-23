@@ -73,7 +73,7 @@ export async function GET(
     );
     return NextResponse.json({ ...version, content: decryptedContent });
   } catch (error) {
-    console.error("[VERSIONS_GET]", error);
+    console.error("[VERSIONS_PATCH]", error);
     return ErrorResponse("Internal Server Error", 500);
   }
 }
@@ -116,20 +116,40 @@ export async function PATCH(
     if (!project) {
       return ErrorResponse("Unauthorized", 401);
     }
-    // Verify user has access to the project
-    const version = await db.envVersion.update({
+
+    // Transaction: clear current, then set new current
+    const [_, setCurrentResult] = await db.$transaction([
+      db.envVersion.updateMany({
+        where: {
+          projectId,
+          isCurrent: true,
+        },
+        data: {
+          isCurrent: false,
+        },
+      }),
+      db.envVersion.updateMany({
+        where: {
+          id: versionId,
+          projectId,
+        },
+        data: {
+          isCurrent: true,
+        },
+      }),
+    ]);
+
+    if (!setCurrentResult || setCurrentResult.count === 0) {
+      return ErrorResponse("Version not found or unauthorized", 404);
+    }
+
+    // Optionally, fetch the updated version to return
+    const version = await db.envVersion.findUnique({
       where: {
         id: versionId,
         projectId,
       },
-      data: {
-        isCurrent: true,
-      },
     });
-
-    if (!version) {
-      return ErrorResponse("Version not found or unauthorized", 404);
-    }
 
     return NextResponse.json({
       version,

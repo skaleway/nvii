@@ -55,8 +55,18 @@ export function VersionDiff({
 
     let lineNumber = 1;
     for (const key of Array.from(allKeys).sort()) {
-      const oldValue = (leftVersion?.content as Record<string, string>)[key];
-      const newValue = (rightVersion?.content as Record<string, string>)[key];
+      const isStringRecord = (obj: unknown): obj is Record<string, string> => {
+        return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+      };
+
+      const leftContent = isStringRecord(leftVersion?.content)
+        ? leftVersion.content
+        : {};
+      const rightContent = isStringRecord(rightVersion?.content)
+        ? rightVersion.content
+        : {};
+      const oldValue = leftContent[key];
+      const newValue = rightContent[key];
 
       if (!oldValue && newValue) {
         lines.push({

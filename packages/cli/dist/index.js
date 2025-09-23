@@ -26676,7 +26676,7 @@ async function unlinkProject(checkProjects = true) {
     );
     if (checkProjects) {
       if (!project) {
-        console.log(import_picocolors5.default.red("Project not linked remote project yet."));
+        console.log(import_picocolors5.default.red("Project is not linked to a remote project yet."));
         return;
       }
     }
@@ -26695,7 +26695,7 @@ async function unlinkProject(checkProjects = true) {
       return;
     }
     console.log("\n");
-    const result = await (0, import_env_helpers5.unlinkProjectConfig)(project?.id);
+    const result = await (0, import_env_helpers5.unlinkProjectConfig)(project.id);
     if (!result) {
       console.log(
         import_picocolors5.default.yellow(

@@ -102,7 +102,7 @@ export async function readEnvFile(): Promise<Record<string, string>> {
       .filter((line) => line.trim() && !line.startsWith("#")) // Ignore empty lines and comments
       .reduce(
         (acc, line) => {
-          const [key, value] = line.replaceAll('"', "").split("="); // replace all the quotes with an empty space and then slit the string.
+          const [key, value] = line.replace(/^"(.*)"$/, "$1").split("="); // replace all the quotes with an empty space and then slit the string.
           if (key && value) {
             acc[key.trim()] = value.trim();
           }
@@ -137,7 +137,7 @@ export async function writeEnvFile(
     Object.entries(envs).map((item) => {
       envContent.split("\n").map(
         (line) => {
-          const [key, value] = line.replaceAll('"', "").split("="); // Replace all quotes with an empty space.
+          const [key, value] = line.replace(/^"(.*)"$/, "$1").split("="); // Replace all quotes with an empty space.
           // tackle empty commented lines
           if (!key && !value && line.startsWith("#")) {
             newEnvContent = { ...newEnvContent, "#": "" };
@@ -327,7 +327,7 @@ async function updateGitignore(): Promise<void> {
  */
 export async function writeProjectConfig(
   projectId: string,
-  brachName?: string
+  branchName?: string
 ): Promise<void> {
   try {
     const currentDir = process.cwd();
@@ -357,8 +357,8 @@ export async function writeProjectConfig(
       projectId,
     };
 
-    if (brachName && brachName.trim() !== "") {
-      updatedConfig.branch = brachName;
+    if (branchName && branchName.trim() !== "") {
+      updatedConfig.branch = branchName;
     }
 
     // Write the updated configuration
@@ -413,7 +413,9 @@ export async function unlinkProjectConfig(projectId: string): Promise<boolean> {
     }
 
     console.log(
-      pc.green(`✅ Project configuration ${projectId ? "updated" : "saved"}.`)
+      pc.green(
+        `✅ Project configuration for ${projectId} unlinked successfully.`
+      )
     );
     return success;
   } catch (error) {
