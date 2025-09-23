@@ -99,7 +99,7 @@ export const projectApi = {
   versions: async (
     projectId: string,
     userId: string
-  ): Promise<EnvVersion[]> => {
+  ): Promise<Array<EnvVersion & { user: User }>> => {
     const response = await fetch(
       `${API_BASE}/projects/${userId}/${projectId}/versions`
     );

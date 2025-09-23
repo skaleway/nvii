@@ -14,44 +14,14 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-import { Badge } from "@nvii/ui/components/badge";
 import { Button } from "@nvii/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@nvii/ui/components/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@nvii/ui/components/tabs";
 import { ScrollArea } from "@nvii/ui/components/scroll-area";
 import { cn } from "@nvii/ui/lib/utils";
-
-interface DiffItem {
-  key: string;
-  oldValue?: string;
-  newValue?: string;
-  type: "added" | "modified" | "deleted";
-}
-
-interface VersionInfo {
-  id: string;
-  description: string | null;
-  createdAt: Date;
-  user: {
-    name: string | null;
-    email: string | null;
-  };
-  content: Record<string, string>;
-}
+import { EnvVersion, User } from "@nvii/db";
 
 interface VersionDiffProps {
-  leftVersion: VersionInfo;
-  rightVersion: VersionInfo;
+  leftVersion: (EnvVersion & { user: User }) | null;
+  rightVersion: (EnvVersion & { user: User }) | null;
   onExport?: () => void;
   onCopy?: () => void;
 }
@@ -79,14 +49,14 @@ export function VersionDiff({
   const calculateFileDiff = (): FileDiff => {
     const lines: DiffLine[] = [];
     const allKeys = new Set([
-      ...Object.keys(leftVersion.content),
-      ...Object.keys(rightVersion.content),
+      ...Object.keys(leftVersion?.content || {}),
+      ...Object.keys(rightVersion?.content || {}),
     ]);
 
     let lineNumber = 1;
     for (const key of Array.from(allKeys).sort()) {
-      const oldValue = leftVersion.content[key];
-      const newValue = rightVersion.content[key];
+      const oldValue = (leftVersion?.content as Record<string, string>)[key];
+      const newValue = (rightVersion?.content as Record<string, string>)[key];
 
       if (!oldValue && newValue) {
         lines.push({
@@ -201,7 +171,7 @@ export function VersionDiff({
                           "bg-rose-400 bg-opacity-15": isDeleted,
                           "bg-transparent": isUnchanged,
                         },
-                        "h-10",
+                        "h-10"
                       )}
                     >
                       {/* Line number column */}

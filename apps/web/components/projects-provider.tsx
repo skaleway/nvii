@@ -44,7 +44,7 @@ type ProjectsContextType = {
   getProjectVersions: (
     projectId: string,
     userId: string
-  ) => Promise<EnvVersion[]>;
+  ) => Promise<Array<EnvVersion & { user: User }>>;
   getProjectVersion: (
     projectId: string,
     userId: string,
@@ -184,7 +184,10 @@ function ProjectsProviderInner({
   );
 
   const getProjectVersions = React.useCallback(
-    async (projectId: string, userId: string): Promise<EnvVersion[]> => {
+    async (
+      projectId: string,
+      userId: string
+    ): Promise<Array<EnvVersion & { user: User }>> => {
       return await projectApi.versions(projectId, userId);
     },
     []

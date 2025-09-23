@@ -15,8 +15,6 @@ This document outlines all tasks required to implement a complete version contro
 - [x] User-EnvVersion relationship
 - [x] Changes tracking (JSON field)
 
-### 🔄 **Pending Tasks**
-
 #### **Schema Enhancements**
 
 - [x] Add `VersionTag` model for version tagging
@@ -39,6 +37,8 @@ This document outlines all tasks required to implement a complete version contro
 - [x] Create version cleanup utilities (old versions)
 - [x] Add version statistics aggregation functions
 
+### 🔄 **Pending Tasks**
+
 ---
 
 ## 🔧 **CLI Layer (packages/cli)**
@@ -49,8 +49,6 @@ This document outlines all tasks required to implement a complete version contro
 - [x] Authentication commands (login, logout, whoami)
 - [x] Project management (new, link, update)
 - [x] Basic encryption utilities
-
-### 🔄 **Pending Tasks**
 
 #### **Core Version Control Commands**
 
@@ -125,6 +123,8 @@ This document outlines all tasks required to implement a complete version contro
   - [x] `nvii branches` - List branches
   - [x] `nvii merge <sourceVersionId> <targetVersionId>` - Merge versions
 
+### 🔄 **Pending Tasks**
+
 ---
 
 ## 🌐 **Web Application Layer (apps/web)**
@@ -135,8 +135,6 @@ This document outlines all tasks required to implement a complete version contro
 - [x] Automatic version creation on project update
 - [x] Change detection and calculation
 - [x] Version listing with user information
-
-### 🔄 **Pending Tasks**
 
 #### **API Endpoints Enhancement**
 
@@ -221,6 +219,8 @@ This document outlines all tasks required to implement a complete version contro
   - [x] `createVersionTag(versionId: string, tagName: string): Promise<VersionTag>`
   - [x] `mergeVersions(sourceVersionId: string, targetVersionId: string): Promise<VersionInfo>`
 
+### 🔄 **Pending Tasks**
+
 ---
 
 ## 📦 **Env-Helpers Layer (packages/env-helpers)**
@@ -234,15 +234,15 @@ This document outlines all tasks required to implement a complete version contro
 
 #### **Version Control Utilities**
 
-- [ ] **Create `src/version/` directory**
-  - [ ] `version-parser.ts` - Parse version metadata
-  - [ ] `version-validator.ts` - Validate version data
-  - [ ] `version-formatter.ts` - Format version output
-
 - [ ] **Create `src/diff/` directory**
   - [x] `diff-calculator.ts` - Calculate differences between versions
   - [x] `diff-formatter.ts` - Format diff output
   - [x] `diff-applier.ts` - Apply diff to environment
+
+- [ ] **Create `src/version/` directory**
+  - [ ] `version-parser.ts` - Parse version metadata
+  - [ ] `version-validator.ts` - Validate version data
+  - [ ] `version-formatter.ts` - Format version output
 
 - [ ] **Create `src/conflict/` directory**
   - [ ] `conflict-detector.ts` - Detect conflicts between versions
