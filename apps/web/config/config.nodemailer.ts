@@ -1,4 +1,4 @@
-import { createTransport } from "nodemailer";
+import { createTransport, TransportOptions } from "nodemailer";
 
 // Transporter setup
 export const transporter = createTransport({
@@ -9,4 +9,4 @@ export const transporter = createTransport({
     user: process.env.MAIL_FROM!,
     pass: process.env.MAIL_PASS,
   },
-} as any);
+} as TransportOptions);

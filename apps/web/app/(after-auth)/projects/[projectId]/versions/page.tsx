@@ -97,7 +97,7 @@ interface VersionAnalyticsData {
 }
 
 function generateEnvVersion(
-  content: any,
+  content: EnvVersion,
   format: "env" | "json" | "yaml" = "env"
 ): string {
   switch (format) {

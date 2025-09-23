@@ -202,6 +202,7 @@ exports.Prisma.EnvVersionScalarFieldEnum = {
   createdBy: 'createdBy',
   description: 'description',
   changes: 'changes',
+  isCurrent: 'isCurrent',
   branch: 'branch'
 };
 

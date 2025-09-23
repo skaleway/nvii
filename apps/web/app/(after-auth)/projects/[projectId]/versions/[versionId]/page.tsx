@@ -27,6 +27,7 @@ import { ScrollArea } from "@nvii/ui/components/scroll-area";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
 import { useQuery } from "@tanstack/react-query";
+import { EnvVersion, User as UserType } from "@nvii/db";
 
 export default function VersionDetailsPage() {
   const { projectId, versionId } = useParams();
@@ -34,7 +35,9 @@ export default function VersionDetailsPage() {
   const { user } = useSession();
 
   const { getProjectVersion } = useProjects();
-  const fetchVersionDetails = async (): Promise<any | null> => {
+  const fetchVersionDetails = async (): Promise<
+    (EnvVersion & { user: UserType }) | null
+  > => {
     try {
       const data = await getProjectVersion(
         projectId as string,
@@ -42,6 +45,7 @@ export default function VersionDetailsPage() {
         versionId as string
       );
       console.log({ data });
+      // @ts-expect-error: Data type returned here behaves unexpectedly after fixing from the root
       return data;
     } catch (error) {
       toast.error("Failed to load version details");
@@ -55,7 +59,7 @@ export default function VersionDetailsPage() {
     isError,
     refetch,
     isRefetching,
-  } = useQuery<any | null>({
+  } = useQuery<(EnvVersion & { user: UserType }) | null>({
     queryFn: fetchVersionDetails,
     queryKey: ["versionDetails", projectId, versionId],
     gcTime: 0,
@@ -92,9 +96,12 @@ export default function VersionDetailsPage() {
     key: string
   ): "added" | "modified" | "deleted" | null => {
     if (!version?.changes) return null;
-    if (version.changes.added.includes(key)) return "added";
-    if (version.changes.modified.includes(key)) return "modified";
-    if (version.changes.deleted.includes(key)) return "deleted";
+    if ((version.changes as Record<string, string>).added?.includes(key))
+      return "added";
+    if ((version.changes as Record<string, string>).modified?.includes(key))
+      return "modified";
+    if ((version.changes as Record<string, string>).deleted?.includes(key))
+      return "deleted";
     return null;
   };
 
@@ -181,14 +188,14 @@ export default function VersionDetailsPage() {
                 <Code className="h-5 w-5" />
                 <span>Environment Variables</span>
                 <Badge variant="outline">
-                  {Object.keys(version.content).length}
+                  {Object.keys(version.content || {}).length}
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[500px] pr-4">
                 <div className="space-y-3">
-                  {Object.entries(version.content).map(([key, value]) => {
+                  {Object.entries(version.content || {}).map(([key, value]) => {
                     const changeType = getChangeType(key);
                     return (
                       <div
