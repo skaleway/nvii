@@ -1,5 +1,7 @@
 "use client";
 
+import { EnvVersion, VersionTag } from "@nvii/db";
+
 type EnvContent = {
   [key: string]: string;
 };
@@ -8,26 +10,6 @@ interface VersionChanges {
   added: string[];
   modified: string[];
   deleted: string[];
-}
-
-interface VersionInfo {
-  id: string;
-  description: string | null;
-  createdAt: Date;
-  user: {
-    name: string | null;
-    email: string | null;
-  };
-  content: Record<string, string>;
-  tags?: string[];
-}
-
-interface VersionTag {
-  id: string;
-  name: string;
-  versionId: string;
-  createdAt: Date;
-  createdBy: string;
 }
 
 interface VersionAnalytics {
@@ -64,7 +46,7 @@ interface VersionAnalytics {
 
 export function calculateChanges(
   oldContent: EnvContent | null,
-  newContent: EnvContent,
+  newContent: EnvContent
 ): VersionChanges {
   const changes: VersionChanges = {
     added: [],
@@ -117,7 +99,7 @@ export function formatChangeSummary(changes: VersionChanges): string {
  * Get version analytics for a project
  */
 export async function getVersionAnalytics(
-  projectId: string,
+  projectId: string
 ): Promise<VersionAnalytics> {
   try {
     const response = await fetch(`/api/projects/${projectId}/analytics`);
@@ -136,7 +118,7 @@ export async function getVersionAnalytics(
  */
 export async function createVersionTag(
   versionId: string,
-  tagName: string,
+  tagName: string
 ): Promise<VersionTag> {
   try {
     const response = await fetch(`/api/versions/${versionId}/tags`, {
@@ -163,8 +145,8 @@ export async function createVersionTag(
  */
 export async function mergeVersions(
   sourceVersionId: string,
-  targetVersionId: string,
-): Promise<VersionInfo> {
+  targetVersionId: string
+): Promise<EnvVersion> {
   try {
     const response = await fetch(`/api/versions/merge`, {
       method: "POST",
@@ -199,8 +181,8 @@ export async function getVersionHistory(
     userId?: string;
     dateFrom?: Date;
     dateTo?: Date;
-  },
-): Promise<VersionInfo[]> {
+  }
+): Promise<EnvVersion[]> {
   try {
     const params = new URLSearchParams();
     if (options?.limit) params.append("limit", options.limit.toString());
@@ -211,7 +193,7 @@ export async function getVersionHistory(
     if (options?.dateTo) params.append("dateTo", options.dateTo.toISOString());
 
     const response = await fetch(
-      `/api/projects/${projectId}/versions?${params}`,
+      `/api/projects/${projectId}/versions?${params}`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch version history");
@@ -228,21 +210,21 @@ export async function getVersionHistory(
  * Export version as different formats
  */
 export function exportVersion(
-  version: VersionInfo,
-  format: "env" | "json" | "yaml" = "env",
+  version: EnvVersion,
+  format: "env" | "json" | "yaml" = "env"
 ): string {
   switch (format) {
     case "json":
       return JSON.stringify(version.content, null, 2);
 
     case "yaml":
-      return Object.entries(version.content)
+      return Object.entries(version.content || {})
         .map(([key, value]) => `${key}: ${value}`)
         .join("\n");
 
     case "env":
     default:
-      return Object.entries(version.content)
+      return Object.entries(version.content || {})
         .map(([key, value]) => `${key}=${value}`)
         .join("\n");
   }
@@ -252,13 +234,13 @@ export function exportVersion(
  * Generate an example env versions as different formats
  */
 export function generateEnvVersion(
-  version: VersionInfo,
-  format: "env" | "json" | "yaml" = "env",
+  version: EnvVersion,
+  format: "env" | "json" | "yaml" = "env"
 ): string {
   switch (format) {
     case "json": {
       let content = {};
-      Object.entries(version.content).map(([key]) => {
+      Object.entries(version.content || {}).map(([key]) => {
         content = { ...content, [key]: "" };
       });
       return JSON.stringify(content, null, 2);
@@ -266,14 +248,14 @@ export function generateEnvVersion(
     case "yaml":
       return (
         "nvii:\n" +
-        Object.entries(version.content)
+        Object.entries(version.content || {})
           .map(([key]) => `\t${key}: ${'""'}`)
           .join("\n")
       );
 
     case "env":
     default:
-      return Object.entries(version.content)
+      return Object.entries(version.content || {})
         .map(([key]) => `${key}=${'""'}`)
         .join("\n");
   }
@@ -297,7 +279,7 @@ export function validateVersionContent(content: Record<string, string>): {
     // Check for invalid characters in keys
     if (!/^[A-Z_][A-Z0-9_]*$/i.test(key)) {
       errors.push(
-        `Invalid key format: ${key}. Keys should contain only letters, numbers, and underscores.`,
+        `Invalid key format: ${key}. Keys should contain only letters, numbers, and underscores.`
       );
     }
   }

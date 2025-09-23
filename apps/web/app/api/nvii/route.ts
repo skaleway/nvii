@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!id || !redirect || !code)
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
 
     // find the user and with the opts code
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     if (!updatedUser) {
       return NextResponse.json(
         { error: "Unexpected error occurred." },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -74,9 +74,9 @@ export async function POST(request: Request) {
         username: session.user.name,
         email: session.user.email,
       },
-      { status: 201 },
+      { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: Error | any) {
     console.log(error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

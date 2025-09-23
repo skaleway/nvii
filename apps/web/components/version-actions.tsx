@@ -46,28 +46,17 @@ import {
 } from "@nvii/ui/components/alert-dialog";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-interface VersionInfo {
-  id: string;
-  description: string | null;
-  createdAt: Date;
-  user: {
-    name: string | null;
-    email: string | null;
-  };
-  tags?: string[];
-  isCurrent?: boolean;
-}
+import { EnvVersion } from "@nvii/db";
 
 interface VersionActionsProps {
-  version: VersionInfo;
+  version: EnvVersion;
   projectId: string;
   onRollback?: (versionId: string) => Promise<void>;
   onTag?: (versionId: string, tagName: string) => Promise<void>;
   onBranch?: (
     versionId: string,
     branchName: string,
-    description?: string,
+    description?: string
   ) => Promise<void>;
   onDelete?: (versionId: string) => Promise<void>;
   onExport?: (versionId: string) => Promise<void>;
@@ -132,7 +121,7 @@ export function VersionActions({
       await onBranch(
         version.id,
         branchName.trim(),
-        branchDescription.trim() || undefined,
+        branchDescription.trim() || undefined
       );
       toast.success(`Branch "${branchName}" created successfully`);
       setBranchName("");

@@ -38,7 +38,7 @@ export async function createBranch(args?: { name: string; version: string }) {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -47,8 +47,8 @@ export async function createBranch(args?: { name: string; version: string }) {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
@@ -76,7 +76,7 @@ export async function createBranch(args?: { name: string; version: string }) {
     // If no base version specified, get latest version
     if (!baseVersionId) {
       const versionsResponse = await client.get(
-        `/projects/${userConfig.userId}/${projectId}/versions?limit=1`,
+        `/projects/${userConfig.userId}/${projectId}/versions?limit=1`
       );
       const versions = versionsResponse.data;
       if (versions.length === 0) {
@@ -93,7 +93,7 @@ export async function createBranch(args?: { name: string; version: string }) {
         branchName,
         baseVersionId,
         projectId,
-      },
+      }
     );
 
     if (!response || !response.data) {
@@ -103,13 +103,13 @@ export async function createBranch(args?: { name: string; version: string }) {
 
     console.log(
       pc.green(
-        `✅ Successfully created branch '${branchName}' from version ${baseVersionId?.slice(0, 8)}`,
-      ),
+        `✅ Successfully created branch '${branchName}' from version ${baseVersionId?.slice(0, 8)}`
+      )
     );
   } catch (error: any) {
     if (error.response?.status === 409) {
       console.error(
-        pc.red("❌ Branch name already exists. Choose a different name."),
+        pc.red("❌ Branch name already exists. Choose a different name.")
       );
     } else {
       console.error(pc.red("Error creating branch:"), error.message);
@@ -137,7 +137,7 @@ export async function listBranches() {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -146,8 +146,8 @@ export async function listBranches() {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
@@ -155,7 +155,7 @@ export async function listBranches() {
     const client = await getConfiguredClient();
     const spinner = ora("Fetching project branches...\n").start();
     const response = await client.get(
-      `/projects/${userConfig.userId}/${projectId}/versions/branches`,
+      `/projects/${userConfig.userId}/${projectId}/versions/branches`
     );
     spinner.stop();
 
@@ -170,13 +170,13 @@ export async function listBranches() {
     console.log(pc.dim("--------------------------------------------------"));
     const projectConfig = await readProjectConfig();
 
-    branches.forEach((branch: any) => {
+    branches.forEach((branch: VersionBranch) => {
       const isActive = branch.isActive ? pc.green("* ") : "  ";
       console.log(
-        `${isActive}${pc.cyan(projectConfig?.branch === branch.name ? `*${branch.name}` : branch.name)} -> ${pc.dim(`version ${branch.baseVersion.id.slice(0, 8)}`)}`,
+        `${isActive}${pc.cyan(projectConfig?.branch === branch.name ? `*${branch.name}` : branch.name)} -> ${pc.dim(`version ${branch.baseVersionId.slice(0, 8)}`)}`
       );
       console.log(
-        `   Created: ${new Date(branch.createdAt).toLocaleDateString()}`,
+        `   Created: ${new Date(branch.createdAt).toLocaleDateString()}`
       );
       console.log(pc.dim("--------------------------------------------------"));
     });
@@ -217,7 +217,7 @@ export async function switchBranch(args?: { name: string }) {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -226,8 +226,8 @@ export async function switchBranch(args?: { name: string }) {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
@@ -237,7 +237,7 @@ export async function switchBranch(args?: { name: string }) {
     // If no branch name provided, show available branches to choose from
     if (!branchName) {
       const branchesResponse = await client.get(
-        `/projects/${userConfig.userId}/${projectId}/versions/branches`,
+        `/projects/${userConfig.userId}/${projectId}/versions/branches`
       );
       const branches = branchesResponse.data;
 
@@ -260,7 +260,7 @@ export async function switchBranch(args?: { name: string }) {
       branchName = selectedBranch;
     }
     const remoteUpdateResponse = await client.patch<VersionBranch>(
-      `/projects/${userConfig.userId}/${projectId}/versions/branches/${branchName}`,
+      `/projects/${userConfig.userId}/${projectId}/versions/branches/${branchName}`
     );
 
     branchName = remoteUpdateResponse.data.name;

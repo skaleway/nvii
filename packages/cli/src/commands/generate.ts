@@ -1,3 +1,4 @@
+import { EnvVersion } from "@nvii/db";
 import { generateEnvVersion, readEnvFile } from "@nvii/env-helpers";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
@@ -5,18 +6,6 @@ import pc from "picocolors";
 
 interface FileError extends Error {
   code?: string;
-}
-
-interface VersionInfo {
-  id: string;
-  description: string | null;
-  createdAt: Date;
-  user: {
-    name: string | null;
-    email: string | null;
-  };
-  content: Record<string, string>;
-  tags?: string[];
 }
 
 export async function generateExample(args?: {
@@ -53,7 +42,7 @@ export async function generateExample(args?: {
       sourceFile = ".env.local";
     } else {
       throw new Error(
-        "No .env or .env.local file found in the current directory",
+        "No .env or .env.local file found in the current directory"
       );
     }
 
@@ -78,10 +67,7 @@ export async function generateExample(args?: {
       filePath = outPutPath;
     } else if (resultFormat && resultFormat.trim() !== "") {
       const content = { content: existingEnvs };
-      newEnvContent = generateEnvVersion(
-        content as Record<string, string> & VersionInfo,
-        resultFormat,
-      );
+      newEnvContent = generateEnvVersion(content as EnvVersion, resultFormat);
       filePath = `${resultFormat === "env" ? examplePath : `.env.${resultFormat}`}`;
     }
 
@@ -99,7 +85,7 @@ export async function generateExample(args?: {
     console.error(
       pc.red("✗"),
       "Failed to generate .env.<format> file:",
-      fileError.message,
+      fileError.message
     );
     process.exit(1);
   }
