@@ -67,7 +67,7 @@ export async function generateExample(args?: {
       filePath = outPutPath;
     } else if (resultFormat && resultFormat.trim() !== "") {
       const content = { content: existingEnvs };
-      newEnvContent = generateEnvVersion(content as EnvVersion, resultFormat);
+      newEnvContent = generateEnvVersion(content as any, resultFormat);
       filePath = `${resultFormat === "env" ? examplePath : `.env.${resultFormat}`}`;
     }
 
