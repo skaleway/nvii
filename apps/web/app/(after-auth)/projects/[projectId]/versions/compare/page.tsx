@@ -24,25 +24,16 @@ import { Label } from "@nvii/ui/components/label";
 import { VersionActions } from "@/components/version-actions";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
-import { EnvVersion } from "@nvii/db";
-
-interface VersionInfo {
-  id: string;
-  description: string | null;
-  createdAt: Date;
-  user: {
-    name: string | null;
-    email: string | null;
-  };
-  content: Record<string, string>;
-}
+import { EnvVersion, User } from "@nvii/db";
 
 export default function VersionComparePage() {
   const { projectId } = useParams();
   const searchParams = useSearchParams();
   const { user } = useSession();
 
-  const [versions, setVersions] = useState<VersionInfo[]>([]);
+  const [versions, setVersions] = useState<Array<EnvVersion & { user: User }>>(
+    []
+  );
   const { getProjectVersions, getProjectAccess } = useProjects();
 
   const [users, setUsers] = useState<
@@ -50,13 +41,17 @@ export default function VersionComparePage() {
   >([]);
 
   const [leftVersionId, setLeftVersionId] = useState<string>(
-    searchParams.get("left") || "",
+    searchParams.get("left") || ""
   );
   const [rightVersionId, setRightVersionId] = useState<string>(
-    searchParams.get("right") || "",
+    searchParams.get("right") || ""
   );
-  const [leftVersion, setLeftVersion] = useState<VersionInfo | null>(null);
-  const [rightVersion, setRightVersion] = useState<VersionInfo | null>(null);
+  const [leftVersion, setLeftVersion] = useState<
+    (EnvVersion & { user: User }) | null
+  >(null);
+  const [rightVersion, setRightVersion] = useState<
+    (EnvVersion & { user: User }) | null
+  >(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadUsers = useCallback(async () => {
@@ -64,7 +59,7 @@ export default function VersionComparePage() {
     try {
       const projectAccess = await getProjectAccess(
         projectId as string,
-        user.id,
+        user.id
       );
       setUsers(projectAccess.map((access) => access.user));
     } catch (error) {
@@ -85,7 +80,7 @@ export default function VersionComparePage() {
       try {
         const data = await getProjectVersions(
           projectId as string,
-          user.id as string,
+          user.id as string
         );
 
         if (!data) {
@@ -95,7 +90,7 @@ export default function VersionComparePage() {
 
         if (!data) return;
         console.log({ data });
-        setVersions(data as VersionInfo[] & EnvVersion[]);
+        setVersions(data);
         // Set default versions if not provided in URL
         if (data.length > 1) {
           // @ts-ignore
@@ -168,8 +163,8 @@ export default function VersionComparePage() {
   };
 
   const generateDiffExport = (
-    left: VersionInfo,
-    right: VersionInfo,
+    left: EnvVersion & { user: User },
+    right: EnvVersion & { user: User }
   ): string => {
     const lines = [
       `Version Comparison Report`,
@@ -190,13 +185,13 @@ export default function VersionComparePage() {
     ];
 
     const allKeys = new Set([
-      ...Object.keys(left.content),
-      ...Object.keys(right.content),
+      ...Object.keys(left.content || {}),
+      ...Object.keys(right.content || {}),
     ]);
 
     for (const key of Array.from(allKeys).sort()) {
-      const leftValue = left.content[key];
-      const rightValue = right.content[key];
+      const leftValue = (left.content as Record<string, string>)[key];
+      const rightValue = (right.content as Record<string, string>)[key];
 
       if (!leftValue && rightValue) {
         lines.push(`+ ${key}=${rightValue}`);

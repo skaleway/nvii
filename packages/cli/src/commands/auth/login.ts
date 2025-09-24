@@ -95,6 +95,7 @@ export async function login() {
 
   const redirect = `http://127.0.0.1:${port}`;
   const code = nanoid();
+  // TODO: Change this later when the web app is hosted.
   const confirmationUrl = new URL(`http://localhost:3000/auth/devices`);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);

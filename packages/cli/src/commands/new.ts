@@ -11,8 +11,6 @@ import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
 import { unlinkProject } from "./unlink";
-import path from "path";
-import { appendFile } from "fs/promises";
 import { Project, VersionBranch } from "@nvii/db";
 
 /**
@@ -49,13 +47,13 @@ export async function createProject() {
     }
 
     const projectDescription = await promptUser(
-      "Enter project description (optional):",
+      "Enter project description (optional):"
     );
 
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
-        pc.red("❌ Invalid user credentials. Please log in again."),
+        pc.red("❌ Invalid user credentials. Please log in again.")
       );
       await login();
       return;
@@ -66,7 +64,7 @@ export async function createProject() {
     const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
 
     // unlink from the existing project and delete it from the db
-    await unlinkProject();
+    await unlinkProject(false);
 
     // contact the api
     const client = await getConfiguredClient();

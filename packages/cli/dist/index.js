@@ -23988,10 +23988,7 @@ async function generateExample(args) {
       filePath = outPutPath;
     } else if (resultFormat && resultFormat.trim() !== "") {
       const content = { content: existingEnvs };
-      newEnvContent = (0, import_env_helpers2.generateEnvVersion)(
-        content,
-        resultFormat
-      );
+      newEnvContent = (0, import_env_helpers2.generateEnvVersion)(content, resultFormat);
       filePath = `${resultFormat === "env" ? examplePath : `.env.${resultFormat}`}`;
     }
     (0, import_fs.writeFileSync)(filePath, newEnvContent);
@@ -26652,7 +26649,7 @@ var import_picocolors6 = __toESM(require_picocolors());
 // src/commands/unlink.ts
 var import_env_helpers5 = require("@nvii/env-helpers");
 var import_picocolors5 = __toESM(require_picocolors());
-async function unlinkProject() {
+async function unlinkProject(checkProjects = true) {
   try {
     if (!(0, import_env_helpers5.isLogedIn)()) {
       console.log(import_picocolors5.default.red("You must be logged in to link a project."));
@@ -26668,7 +26665,7 @@ async function unlinkProject() {
     const client = await (0, import_env_helpers5.getConfiguredClient)();
     const response = await client.get(`/projects/${userConfig.userId}`);
     const projects = response.data;
-    if (!projects.length) {
+    if (checkProjects && !projects.length) {
       console.log(
         import_picocolors5.default.yellow("No projects found for current user. Run 'nvii new'.")
       );
@@ -26677,8 +26674,13 @@ async function unlinkProject() {
     const project = projects.find(
       (item) => item.id === projectConfig?.projectId
     );
+    if (checkProjects) {
+      if (!project) {
+        console.log(import_picocolors5.default.red("Project is not linked to a remote project yet."));
+        return;
+      }
+    }
     if (!project) {
-      console.log(import_picocolors5.default.red("Project not linked remote project yet."));
       return;
     }
     const { unLinkProject } = await esm_default12.prompt([
@@ -26753,7 +26755,7 @@ async function createProject() {
     }
     const envs = await (0, import_env_helpers6.readEnvFile)();
     const encryptedEnvs = (0, import_env_helpers6.encryptEnvValues)(envs, userConfig.userId);
-    await unlinkProject();
+    await unlinkProject(false);
     const client = await (0, import_env_helpers6.getConfiguredClient)();
     const response = await client.post(`/projects/${userConfig.userId}`, {
       name: projectName,
@@ -27659,9 +27661,9 @@ async function listTags() {
     console.log(import_picocolors14.default.dim("--------------------------------------------------"));
     tags.forEach((tag) => {
       console.log(
-        `${import_picocolors14.default.yellow(tag.name)} -> ${import_picocolors14.default.dim(`version ${tag.version.id.slice(0, 8)}`)}`
+        `${import_picocolors14.default.yellow(tag.name)} -> ${import_picocolors14.default.dim(`version ${tag.versionId.slice(0, 8)}`)}`
       );
-      console.log(`   ${tag.version.description || "No description"}`);
+      console.log(`   ${tag.description || "No description"}`);
       console.log(`   ${new Date(tag.createdAt).toLocaleDateString()}`);
       console.log(import_picocolors14.default.dim("--------------------------------------------------"));
     });
@@ -27826,7 +27828,7 @@ async function listBranches() {
     branches.forEach((branch) => {
       const isActive = branch.isActive ? import_picocolors15.default.green("* ") : "  ";
       console.log(
-        `${isActive}${import_picocolors15.default.cyan(projectConfig?.branch === branch.name ? `*${branch.name}` : branch.name)} -> ${import_picocolors15.default.dim(`version ${branch.baseVersion.id.slice(0, 8)}`)}`
+        `${isActive}${import_picocolors15.default.cyan(projectConfig?.branch === branch.name ? `*${branch.name}` : branch.name)} -> ${import_picocolors15.default.dim(`version ${branch.baseVersionId.slice(0, 8)}`)}`
       );
       console.log(
         `   Created: ${new Date(branch.createdAt).toLocaleDateString()}`
@@ -28094,7 +28096,7 @@ program2.command("logout").option(
   "-u, --username <username>",
   "The username of the account to logout from."
 ).option(
-  "-id, --email <email>",
+  "-e, --email <email>",
   "The email of the user account to logout from."
 ).description(
   "Terminate your current session and clear authentication credentials"

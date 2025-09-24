@@ -53,7 +53,7 @@ export async function linkProject(args?: { token: string }) {
 
     if (!projects.length) {
       console.log(
-        pc.yellow("No projects found for this directory. Run 'nvii new'."),
+        pc.yellow("No projects found for this directory. Run 'nvii new'.")
       );
       return;
     }
@@ -82,6 +82,8 @@ export async function linkProject(args?: { token: string }) {
     }
 
     createEnvFiles(enviDirPath, enviFilePath);
+    // update current env version in the db
+    // const updateResponse = await client.patch(`/projects/${userConfig.userId}/${projectId}/versions/${versionId}`);
     await writeProjectConfig(projectId, "main");
     console.log(pc.green("Project linked successfully!"));
   } catch (error: Error | any) {

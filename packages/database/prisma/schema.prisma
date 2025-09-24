@@ -134,6 +134,7 @@ model EnvVersion {
   user          User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   description   String? // Optional description of what changed
   changes       Json? // Stores what was added/modified/deleted
+  isCurrent     Boolean? // Determine if a version is the current version.
   branch        String          @default("main")
   VersionTag    VersionTag[]
   basedBranches VersionBranch[] @relation("BaseBranch")

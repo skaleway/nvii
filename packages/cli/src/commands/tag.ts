@@ -7,6 +7,7 @@ import {
 import pc from "picocolors";
 import { login } from "./auth/login";
 import inquirer from "inquirer";
+import { VersionTag } from "@nvii/db";
 
 export async function createTag(args?: { version: string; name: string }) {
   const oraModule = await import("ora");
@@ -39,7 +40,7 @@ export async function createTag(args?: { version: string; name: string }) {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -48,8 +49,8 @@ export async function createTag(args?: { version: string; name: string }) {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
@@ -59,7 +60,7 @@ export async function createTag(args?: { version: string; name: string }) {
     // If no version specified, get latest version
     if (!versionId) {
       const versionsResponse = await client.get(
-        `/projects/${userConfig.userId}/${projectId}/versions?limit=1`,
+        `/projects/${userConfig.userId}/${projectId}/versions?limit=1`
       );
       const versions = versionsResponse.data;
       if (versions.length === 0) {
@@ -93,18 +94,18 @@ export async function createTag(args?: { version: string; name: string }) {
       {
         versionId,
         tagName,
-      },
+      }
     );
 
     console.log(
       pc.green(
-        `✅ Successfully created tag '${tagName}' for version ${versionId?.slice(0, 8)}`,
-      ),
+        `✅ Successfully created tag '${tagName}' for version ${versionId?.slice(0, 8)}`
+      )
     );
   } catch (error: any) {
     if (error.response?.status === 409) {
       console.error(
-        pc.red("❌ Tag name already exists. Choose a different name."),
+        pc.red("❌ Tag name already exists. Choose a different name.")
       );
     } else {
       console.error(pc.red("Error creating tag:"), error.message);
@@ -130,7 +131,7 @@ export async function listTags() {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -139,15 +140,15 @@ export async function listTags() {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
 
     const client = await getConfiguredClient();
     const response = await client.get(
-      `/projects/${userConfig.userId}/${projectId}/versions/tags`,
+      `/projects/${userConfig.userId}/${projectId}/versions/tags`
     );
 
     const tags = response.data;
@@ -160,11 +161,11 @@ export async function listTags() {
     console.log(pc.bold(`\n🏷️ Tags for project ${pc.cyan(projectId)}`));
     console.log(pc.dim("--------------------------------------------------"));
 
-    tags.forEach((tag: any) => {
+    tags.forEach((tag: VersionTag) => {
       console.log(
-        `${pc.yellow(tag.name)} -> ${pc.dim(`version ${tag.version.id.slice(0, 8)}`)}`,
+        `${pc.yellow(tag.name)} -> ${pc.dim(`version ${tag.versionId.slice(0, 8)}`)}`
       );
-      console.log(`   ${tag.version.description || "No description"}`);
+      console.log(`   ${tag.description || "No description"}`);
       console.log(`   ${new Date(tag.createdAt).toLocaleDateString()}`);
       console.log(pc.dim("--------------------------------------------------"));
     });

@@ -45,24 +45,7 @@ import {
 import { Badge } from "@nvii/ui/components/badge";
 import { useProjects } from "@/components/projects-provider";
 import { useSession } from "@/provider/session";
-import { EnvVersion } from "@nvii/db";
-
-interface Version {
-  id: string;
-  description: string | null;
-  createdAt: Date;
-  changes: {
-    added: string[];
-    modified: string[];
-    deleted: string[];
-  } | null;
-  user: {
-    name: string | null;
-    email: string | null;
-  };
-  tags: string[];
-  isCurrent: boolean;
-}
+import { EnvVersion, User as UserType } from "@nvii/db";
 
 interface VersionAnalyticsData {
   changeFrequency: {
@@ -97,16 +80,16 @@ interface VersionAnalyticsData {
 }
 
 function generateEnvVersion(
-  content: any,
+  content: EnvVersion,
   format: "env" | "json" | "yaml" = "env"
 ): string {
   switch (format) {
     case "json": {
-      let content = {};
+      let jsonContent = {};
       Object.entries(content).map(([key, value]) => {
-        content = { ...content, [key]: value };
+        jsonContent = { ...jsonContent, [key]: value };
       });
-      return JSON.stringify(content, null, 2);
+      return JSON.stringify(jsonContent, null, 2);
     }
     case "yaml":
       return (
@@ -134,7 +117,9 @@ export default function VersionsPage() {
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "changes">("date");
   const [activeTab, setActiveTab] = useState("history");
-  const [versions, setVersions] = useState<Version[]>([]);
+  const [versions, setVersions] = useState<
+    Array<EnvVersion & { user: UserType }>
+  >([]);
   const { getProjectVersions, getProjectAccess, getProjectVersion } =
     useProjects();
 
@@ -173,7 +158,7 @@ export default function VersionsPage() {
           return;
         }
 
-        setVersions(data as Version[] & EnvVersion[]);
+        setVersions(data as Array<EnvVersion & { user: UserType }>);
         // (data as Version[] & EnvVersion[]).map((item) =>{
         //   const changeFrequency = {
         //     date: item.createdAt,
@@ -290,14 +275,28 @@ export default function VersionsPage() {
     if (sortBy === "date") {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     } else {
-      const aChanges =
-        (a.changes?.added.length || 0) +
-        (a.changes?.modified.length || 0) +
-        (a.changes?.deleted.length || 0);
-      const bChanges =
-        (b.changes?.added.length || 0) +
-        (b.changes?.modified.length || 0) +
-        (b.changes?.deleted.length || 0);
+      const getChangeCount = (changes: any) => {
+        if (
+          changes &&
+          typeof changes === "object" &&
+          "added" in changes &&
+          "modified" in changes &&
+          "deleted" in changes &&
+          Array.isArray(changes.added) &&
+          Array.isArray(changes.modified) &&
+          Array.isArray(changes.deleted)
+        ) {
+          return (
+            changes.added.length +
+            changes.modified.length +
+            changes.deleted.length
+          );
+        }
+        return 0;
+      };
+
+      const aChanges = getChangeCount(a.changes);
+      const bChanges = getChangeCount(b.changes);
       return bChanges - aChanges;
     }
   });
@@ -472,32 +471,45 @@ export default function VersionsPage() {
                           </Badge>
                         </div>
 
-                        {version.changes && (
-                          <div className="flex items-center space-x-4">
-                            {version.changes.added.length > 0 && (
-                              <Badge
-                                variant="outline"
-                                className="text-green-600"
-                              >
-                                <Plus className="mr-1 h-3 w-3" />
-                                {version.changes.added.length} added
-                              </Badge>
-                            )}
-                            {version.changes.modified.length > 0 && (
-                              <Badge
-                                variant="outline"
-                                className="text-blue-600"
-                              >
-                                {version.changes.modified.length} modified
-                              </Badge>
-                            )}
-                            {version.changes.deleted.length > 0 && (
-                              <Badge variant="outline" className="text-red-600">
-                                {version.changes.deleted.length} deleted
-                              </Badge>
-                            )}
-                          </div>
-                        )}
+                        {version.changes &&
+                          typeof version.changes === "object" &&
+                          version.changes !== null &&
+                          "added" in version.changes &&
+                          "modified" in version.changes &&
+                          "deleted" in version.changes &&
+                          Array.isArray((version.changes as any).added) &&
+                          Array.isArray((version.changes as any).modified) &&
+                          Array.isArray((version.changes as any).deleted) && (
+                            <div className="flex items-center space-x-4">
+                              {(version.changes as any).added.length > 0 && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-green-600"
+                                >
+                                  <Plus className="mr-1 h-3 w-3" />
+                                  {(version.changes as any).added.length} added
+                                </Badge>
+                              )}
+                              {(version.changes as any).modified.length > 0 && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-blue-600"
+                                >
+                                  {(version.changes as any).modified.length}{" "}
+                                  modified
+                                </Badge>
+                              )}
+                              {(version.changes as any).deleted.length > 0 && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-red-600"
+                                >
+                                  {(version.changes as any).deleted.length}{" "}
+                                  deleted
+                                </Badge>
+                              )}
+                            </div>
+                          )}
                       </div>
 
                       <VersionActions
