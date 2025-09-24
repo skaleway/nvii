@@ -252,7 +252,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/tembeng/Documents/new_projects/nvii/packages/database/generated/client",
+      "value": "/home/bkm/Projects/skaleway/nvii/packages/database/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -266,7 +266,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/tembeng/Documents/new_projects/nvii/packages/database/prisma/schema.prisma",
+    "sourceFilePath": "/home/bkm/Projects/skaleway/nvii/packages/database/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

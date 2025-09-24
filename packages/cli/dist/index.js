@@ -26530,7 +26530,7 @@ async function login() {
   });
   const redirect = `http://127.0.0.1:${port}`;
   const code = nanoid();
-  const confirmationUrl = new URL(`${process.env.CLIENT_URL}/auth/devices`);
+  const confirmationUrl = new URL(`http://localhost:3000/auth/devices`);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
   console.log(`Confirmation code: ${import_picocolors3.default.bold(code)}
