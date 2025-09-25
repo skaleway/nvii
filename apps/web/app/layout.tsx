@@ -1,5 +1,4 @@
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@nvii/ui/components/toaster";
 import "@nvii/ui/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -27,16 +26,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="flex-1 bg-muted/30 w-full h-screen min-h-[calc(100vh-64px)]">
+          <main className="flex-1 bg-muted/10 w-full h-screen min-h-[calc(100vh-64px)]">
             {children}
-          </main>
-          <Toaster />
-          <Toast
-            className="bg-background"
-            theme="system"
-            richColors
-            closeButton
-          />
+          </main>{" "}
         </ThemeProvider>
       </body>
     </html>

@@ -24,16 +24,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
 
 import { ErrorContext } from "@better-fetch/fetch";
 import { GithubIcon, Loader2 } from "lucide-react";
 import { Button } from "@nvii/ui/components/button";
 import { cn } from "@nvii/ui/lib/utils";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const router = useRouter();
-  const { toast } = useToast();
   const [pendingCredentials, setPendingCredentials] = useState(false);
   const [pendingGithub, setPendingGithub] = useState(false);
 
@@ -46,7 +45,7 @@ export default function SignIn() {
   });
 
   const handleCredentialsSignIn = async (
-    values: z.infer<typeof signInSchema>,
+    values: z.infer<typeof signInSchema>
   ) => {
     await authClient.signIn.email(
       {
@@ -60,13 +59,12 @@ export default function SignIn() {
           router.refresh();
         },
         onError: (ctx: ErrorContext) => {
-          toast({
-            title: "Login failed",
-            description: ctx.error.message ?? "Unknown error.",
-            variant: "destructive",
+          console.log(ctx.error);
+          toast.error(ctx.error.message ?? "Unknown error.", {
+            description: "Login failed",
           });
         },
-      },
+      }
     );
     setPendingCredentials(false);
   };
@@ -81,25 +79,23 @@ export default function SignIn() {
           router.refresh();
         },
         onError: (ctx: ErrorContext) => {
-          toast({
-            title: "GitHub sign-in failed",
-            description: ctx.error.message ?? "Unknown error.",
-            variant: "destructive",
+          toast.error(ctx.error.message ?? "Unknown error.", {
+            description: "GitHub sign-in failed",
           });
         },
-      },
+      }
     );
     setPendingGithub(false);
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4">
-      <Card className="w-full max-w-md rounded-2xl shadow-xl border border-transbg-transparent bg-background text-white">
+      <Card className="w-full max-w-md rounded-2xl shadow-xl border border-transbg-transparent bg-background">
         <CardHeader>
           <CardTitle className="text-4xl font-extrabold text-center">
             Sign In
           </CardTitle>
-          <p className="text-sm text-center text-gray-400">
+          <p className="text-sm text-center text-muted-foreground">
             Welcome back! Login to your account
           </p>
         </CardHeader>
@@ -120,10 +116,10 @@ export default function SignIn() {
                         className={cn(
                           field === "password"
                             ? "flex items-center justify-between w-full"
-                            : "",
+                            : ""
                         )}
                       >
-                        <FormLabel className="capitalize text-gray-300">
+                        <FormLabel className="capitalize text-muted-foreground">
                           {field === "email" ? "Email Address" : "Password"}
                         </FormLabel>
                         {field === "password" && (
@@ -139,7 +135,7 @@ export default function SignIn() {
                       </div>
                       <FormControl>
                         <Input
-                          className="bg-transparent border border-gray-700 text-white placeholder:text-gray-500 focus:ring-primary focus:border-primary"
+                          className="bg-transparent border  placeholder:text-muted-foreground focus:ring-primary focus:border-primary"
                           type={field === "password" ? "password" : "email"}
                           placeholder={`Enter your ${field}`}
                           autoComplete={

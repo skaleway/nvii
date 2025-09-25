@@ -16,7 +16,6 @@ import {
 } from "@nvii/ui/components/card";
 import { Input } from "@nvii/ui/components/input";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
 import { authClient } from "@/lib/auth-client";
 import { signUpSchema } from "@/lib/verification";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,10 +24,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const [pending, setPending] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -50,30 +49,28 @@ export default function SignUp() {
       {
         onRequest: () => setPending(true),
         onSuccess: () => {
-          toast({
-            title: "Account created",
+          toast.success("Account created", {
             description: "Check your email for a verification link.",
           });
         },
         onError: (ctx: any) => {
-          toast({
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Unknown error.",
+          toast.error(ctx.error.message ?? "Unknown error.", {
+            description: "Something went wrong",
           });
         },
-      },
+      }
     );
     setPending(false);
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4">
-      <Card className="w-full max-w-md rounded-2xl shadow-xl border border-tranbg-transparent bg-background text-white">
+      <Card className="w-full max-w-md rounded-2xl shadow-xl border bg-background">
         <CardHeader>
           <CardTitle className="text-4xl font-extrabold text-center">
             Create Account
           </CardTitle>
-          <p className="text-sm text-center text-gray-400">
+          <p className="text-sm text-center text-muted-foreground">
             Join us and get started instantly
           </p>
         </CardHeader>
@@ -87,14 +84,14 @@ export default function SignUp() {
                   name={field as keyof z.infer<typeof signUpSchema>}
                   render={({ field: fieldProps }) => (
                     <FormItem>
-                      <FormLabel className="capitalize text-gray-300">
+                      <FormLabel className="capitalize text-muted-foreground">
                         {field.replace("Password", " password")}
                       </FormLabel>
                       <FormControl>
                         <Input
-                          className="bg-transparent border border-gray-700 text-white placeholder:text-gray-500 focus:ring-primary focus:border-primary"
+                          className="bg-transparent border placeholder:text-muted-foreground focus:ring-primary focus:border-primary"
                           type={
-                            field.includes("password")
+                            field.toLowerCase().includes("password")
                               ? "password"
                               : field === "email"
                                 ? "email"
@@ -119,7 +116,7 @@ export default function SignUp() {
               </Button>
             </form>
           </Form>
-          <div className="mt-6 text-center text-sm text-gray-400">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link
               href="/auth/sign-in"

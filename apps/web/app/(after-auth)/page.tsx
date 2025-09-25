@@ -30,10 +30,10 @@ export default function Dashboard() {
 
   return (
     <div className="flex-1 space-y-8 p-8 pt-6 max-w-7xl mx-auto container">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="md:text-sm text-xs text-muted-foreground">
             Manage your environment variables across all projects
           </p>
         </div>

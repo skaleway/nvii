@@ -9,21 +9,24 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@nvii/ui/components/dropdown-menu";
 import Profile from "@nvii/ui/components/user-profile";
 import { useSession } from "@/provider/session";
 import Link from "next/link";
 import { cn } from "@nvii/ui/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AddProjectDialog } from "./add-project-dialog";
+import { authClient } from "@/lib/auth-client";
 
 export function Header() {
   const { setTheme } = useTheme();
   const { user } = useSession();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-
+  const router = useRouter();
   const navItems = [
     { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
@@ -31,15 +34,24 @@ export function Header() {
     { label: "Settings", href: "/settings" },
   ];
 
+  const themes = [
+    { label: "Light", value: "light" },
+    { label: "Dark", value: "dark" },
+    { label: "System", value: "system" },
+  ];
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    router.refresh();
+  };
+
   return (
     <header className="border-b bg-background sticky top-0 z-30">
       <div className="flex items-center justify-between px-4 md:px-6 h-16 w-full max-w-7xl mx-auto container">
-        {/* Left: Logo & Desktop Nav */}
         <div className="flex items-center gap-4 md:gap-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="font-bold text-xl">Nvii</div>
           </Link>
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
@@ -49,7 +61,7 @@ export function Header() {
                   "text-sm text-muted-foreground hover:text-foreground transition-colors",
                   pathname === item.href
                     ? "text-primary font-semibold hover:text-primary"
-                    : "",
+                    : ""
                 )}
               >
                 {item.label}
@@ -58,10 +70,8 @@ export function Header() {
           </nav>
         </div>
 
-        {/* Right: Actions */}
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Search (hidden on xs) */}
-          <div className="relative max-w-[160px] hidden sm:block">
+          <div className="relative max-w-[200px] hidden sm:block">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -69,17 +79,9 @@ export function Header() {
               className="w-full bg-background pl-8 shadow-none focus-visible:ring-1"
             />
           </div>
-          {/* New Project Button */}
           <AddProjectDialog>
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden md:flex bg-primary hover:bg-primary/96 text-white"
-            >
-              + New Project
-            </Button>
+            <Button size="sm">New Project</Button>
           </AddProjectDialog>
-          {/* Theme, Bell, Profile */}
           <div className="flex items-center gap-1 md:gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -90,23 +92,46 @@ export function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                  System
-                </DropdownMenuItem>
+                {themes.map((theme) => (
+                  <DropdownMenuItem
+                    key={theme.value}
+                    onClick={() => setTheme(theme.value)}
+                  >
+                    {theme.label}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
             <Button variant="ghost" size="icon" className="h-9 w-9">
               <Bell className="h-5 w-5" />
             </Button>
-            <Profile name={user.name} url={user?.image ?? ""} />
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Profile name={user.name} url={user?.image ?? ""} />
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/settings" className="w-full">
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          {/* Mobile Hamburger */}
           <Button
             variant="ghost"
             size="icon"
@@ -131,7 +156,6 @@ export function Header() {
           </Button>
         </div>
       </div>
-      {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 md:hidden"
@@ -178,7 +202,7 @@ export function Header() {
                   href={item.href}
                   className={cn(
                     "text-base text-muted-foreground hover:text-foreground py-2 px-2 rounded transition-colors",
-                    pathname === item.href ? "text-primary font-semibold" : "",
+                    pathname === item.href ? "text-primary font-semibold" : ""
                   )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
