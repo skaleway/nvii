@@ -25,7 +25,6 @@ export default function Dashboard() {
   const missingCount = projects.filter((p) => p.status === "missing").length;
   const invalidCount = projects.filter((p) => p.status === "invalid").length;
 
-  // Get filtered projects based on current filter
   const displayedProjects = filteredProjects(filterValue);
 
   return (

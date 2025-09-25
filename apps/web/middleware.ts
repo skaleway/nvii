@@ -3,10 +3,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Session } from "@/lib/auth";
 
 const authRoutes = ["/auth"];
+const publicRoutes = ["/"];
 
 export default async function authMiddleware(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathName);
+  const isPublicRoute = publicRoutes.includes(pathName);
 
   const { data: session } = await betterFetch<Session>(
     "/api/auth/get-session",
@@ -22,11 +24,15 @@ export default async function authMiddleware(request: NextRequest) {
     if (isAuthRoute) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
   if (isAuthRoute) {
     return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  if (isPublicRoute && session) {
+    return NextResponse.redirect(new URL("/app", request.url));
   }
 
   return NextResponse.next();

@@ -14,7 +14,10 @@ export const AuthButton = () => {
 
   const handleSignInWithGithub = async () => {
     await authClient.signIn.social(
-      { provider: "github" },
+      {
+        provider: "github",
+        callbackURL: process.env.CALLBACK_URL as string,
+      },
       {
         onRequest: () => setPendingGithub(true),
         onSuccess: async () => {
