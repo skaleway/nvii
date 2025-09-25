@@ -1,4 +1,3 @@
-import { EnvVersion } from "@nvii/db";
 import { generateEnvVersion, readEnvFile } from "@nvii/env-helpers";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
