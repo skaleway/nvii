@@ -2,15 +2,11 @@ import { betterFetch } from "@better-fetch/fetch";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Session } from "@/lib/auth";
 
-const authRoutes = ["/auth/sign-in", "/auth/sign-up", "/auth/forgot-password"];
-const passwordRoutes = ["/auth/reset-password"];
-const adminRoutes = ["/admin"];
+const authRoutes = ["/auth"];
 
 export default async function authMiddleware(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathName);
-  const isPasswordRoute = passwordRoutes.includes(pathName);
-  const isAdminRoute = adminRoutes.includes(pathName);
 
   const { data: session } = await betterFetch<Session>(
     "/api/auth/get-session",
@@ -19,7 +15,7 @@ export default async function authMiddleware(request: NextRequest) {
       headers: {
         cookie: request.headers.get("cookie") || "",
       },
-    },
+    }
   );
 
   if (!session) {
@@ -29,13 +25,9 @@ export default async function authMiddleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
 
-  if (isAuthRoute || isPasswordRoute) {
+  if (isAuthRoute) {
     return NextResponse.redirect(new URL("/", request.url));
   }
-
-  // if (isAdminRoute && session.user.role !== "admin") {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
 
   return NextResponse.next();
 }

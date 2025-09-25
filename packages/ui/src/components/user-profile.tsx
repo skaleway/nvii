@@ -21,7 +21,7 @@ const iconvVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  },
+  }
 );
 
 interface ProfileProps extends VariantProps<typeof iconvVariants> {
@@ -39,7 +39,7 @@ const Profile = ({ className, url, name, size }: ProfileProps) => {
   return (
     <Avatar className={cn(iconvVariants({ size, className }))}>
       <AvatarImage src={url as string} />
-      <AvatarFallback className="text-sm font-semibold rounded-md">
+      <AvatarFallback className="text-sm font-semibold rounded-md capitalize">
         {twoLettersName}
       </AvatarFallback>
     </Avatar>
