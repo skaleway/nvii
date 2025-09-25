@@ -3,13 +3,7 @@
 import { notFound, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import {
-  CheckCircle,
-  Fingerprint,
-  Loader2,
-  PartyPopper,
-  XCircle,
-} from "lucide-react";
+import { Fingerprint, PartyPopper, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { useSession } from "@/provider/session";
@@ -17,7 +11,7 @@ import { Button } from "@nvii/ui/components/button";
 
 function CodeCharacter({ char }: { char: string }) {
   return (
-    <div className="p-2 lg:p-4 font-mono text-xl lg:text-4xl text-primary-foreground rounded bg-primary">
+    <div className="size-10 lg:size-12 font-mono font-bold text-xl lg:text-4xl text-secondary-foreground flex items-center justify-center bg-secondary">
       {char}
     </div>
   );
@@ -73,7 +67,6 @@ export default function Page() {
   }) {
     setLoading(true);
     try {
-      // validate the code first
       const data = await fetch("/api/nvii/opts", {
         method: "POST",
         body: JSON.stringify({ code: opts.code }),
@@ -119,7 +112,7 @@ export default function Page() {
 
         if (cliServerRes.status === 400) {
           toast.error(
-            "Invalid opts code. Copy and paste the url displayed in your terminal.",
+            "Invalid opts code. Copy and paste the url displayed in your terminal."
           );
           return;
         }
@@ -130,7 +123,7 @@ export default function Page() {
         console.error(_error);
         setLoading(false);
         toast.error(
-          "Error redirecting back to local CLI. Is your CLI running?",
+          "Error redirecting back to local CLI. Is your CLI running?"
         );
       }
     } catch (_error) {
@@ -187,29 +180,26 @@ export default function Page() {
             </p>
           </div>
         </div>
-        <div>
+        <div className="flex flex-col gap-6">
           <div className="grid grid-flow-col gap-1 pt-6 leading-none lg:gap-3 auto-cols-auto">
             {code?.split("").map((char, i) => (
               <CodeCharacter char={char} key={`${char}-${i}`} />
             ))}
           </div>
-          <div className="flex justify-center pt-6">
-            <div className="flex items-center">
+          <div className="flex justify-center">
+            <div className="flex items-center w-full">
               <Button
-                variant="default"
-                className="mr-2"
+                className="mr-2 flex-1"
                 onClick={() => verify(opts)}
                 disabled={loading}
               >
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                )}
-                Confirm code
+                {loading ? "Confirming..." : "Confirm code"}
               </Button>
-              <Button variant="outline" onClick={() => cancel()}>
-                <XCircle className="mr-2 h-4 w-4" />
+              <Button
+                variant="outline"
+                onClick={() => cancel()}
+                className="flex-1"
+              >
                 Cancel
               </Button>
             </div>
