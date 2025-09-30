@@ -18,7 +18,7 @@ import {
 } from "../lib/api-client";
 import { Project } from "../types/project";
 import { useSession } from "@/provider/session";
-import { EnvVersion } from "@nvii/db";
+import { EnvVersion, User } from "@nvii/db";
 
 type ProjectsContextType = {
   projects: Project[];
@@ -33,27 +33,27 @@ type ProjectsContextType = {
   setFilterValue: (filter: string) => void;
   getProjectAccess: (
     projectId: string,
-    userId: string,
+    userId: string
   ) => Promise<ProjectAccess[]>;
   addProjectAccess: (
     projectId: string,
     userEmail: string,
-    userId: string,
+    userId: string
   ) => Promise<void>;
   removeProjectAccess: (projectId: string, userId: string) => Promise<void>;
   getProjectVersions: (
     projectId: string,
-    userId: string,
-  ) => Promise<EnvVersion[]>;
+    userId: string
+  ) => Promise<Array<EnvVersion & { user: User }>>;
   getProjectVersion: (
     projectId: string,
     userId: string,
-    versionId: string,
-  ) => Promise<EnvVersion>;
+    versionId: string
+  ) => Promise<EnvVersion & { user: User }>;
 };
 
 const ProjectsContext = React.createContext<ProjectsContextType | undefined>(
-  undefined,
+  undefined
 );
 
 // Create a client
@@ -129,14 +129,14 @@ function ProjectsProviderInner({
     async (project: CreateProjectInput) => {
       await addProjectMutation.mutateAsync(project);
     },
-    [addProjectMutation],
+    [addProjectMutation]
   );
 
   const removeProject = React.useCallback(
     async (id: string) => {
       await removeProjectMutation.mutateAsync(id);
     },
-    [removeProjectMutation],
+    [removeProjectMutation]
   );
 
   const filteredProjects = React.useCallback(
@@ -144,7 +144,7 @@ function ProjectsProviderInner({
       if (filter === "all") return projects;
       return projects.filter((project) => project.status === filter);
     },
-    [projects],
+    [projects]
   );
 
   // Project access mutations
@@ -180,25 +180,28 @@ function ProjectsProviderInner({
     async (projectId: string, userId: string) => {
       return projectAccessApi.list(projectId, userId);
     },
-    [],
+    []
   );
 
   const getProjectVersions = React.useCallback(
-    async (projectId: string, userId: string): Promise<EnvVersion[]> => {
+    async (
+      projectId: string,
+      userId: string
+    ): Promise<Array<EnvVersion & { user: User }>> => {
       return await projectApi.versions(projectId, userId);
     },
-    [],
+    []
   );
 
   const getProjectVersion = React.useCallback(
     async (
       projectId: string,
       userId: string,
-      versionId: string,
-    ): Promise<EnvVersion> => {
+      versionId: string
+    ): Promise<EnvVersion & { user: User }> => {
       return await projectApi.version(projectId, userId, versionId);
     },
-    [],
+    []
   );
 
   const addProjectAccess = React.useCallback(
@@ -209,14 +212,14 @@ function ProjectsProviderInner({
         userId,
       });
     },
-    [addProjectAccessMutation],
+    [addProjectAccessMutation]
   );
 
   const removeProjectAccess = React.useCallback(
     async (projectId: string, userId: string) => {
       await removeProjectAccessMutation.mutateAsync({ projectId, userId });
     },
-    [removeProjectAccessMutation],
+    [removeProjectAccessMutation]
   );
 
   return (
