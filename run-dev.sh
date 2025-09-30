@@ -1,5 +1,3 @@
-#!/bin/bash
-
 echo "Installing global packages"
 pnpm install
 
@@ -19,7 +17,7 @@ echo "Running prisma migrate..."
 cd packages/database && pnpm prisma migrate dev
 
 echo "Removing node_modules in apps/web (not sure why but this is necessary)"
-cd ../apps/web
+cd apps/web
 
 if [ ! -f ".env" ]; then
     echo ".env file does not exist in apps/web"
