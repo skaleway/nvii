@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Installing global packages"
 pnpm install
 
