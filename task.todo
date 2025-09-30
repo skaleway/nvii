@@ -1,0 +1,3 @@
+[] Remove quotes from the env credentials
+[] The copy function on the web should copy both the key and the value ("key=value")
+[] Check if there is a .env file when pulling and then fill it.

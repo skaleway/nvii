@@ -49,7 +49,7 @@ program
 program
     .command("logout")
     .option("-u, --username <username>", "The username of the account to logout from.")
-    .option("-id, --email <email>", "The email of the user account to logout from.")
+    .option("-e, --email <email>", "The email of the user account to logout from.")
     .description("Terminate your current session and clear authentication credentials")
     .action(commands_1.logout);
 program

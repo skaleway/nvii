@@ -56,7 +56,7 @@ export async function login() {
       res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
       res.setHeader(
         "Access-Control-Allow-Headers",
-        "Content-Type, Authorization",
+        "Content-Type, Authorization"
       );
 
       if (req.method === "OPTIONS") {
@@ -74,8 +74,8 @@ export async function login() {
           if (!isValidCode) {
             console.log(
               pc.yellow(
-                "Login failed. Use a valid url, refresh your browser and try again.",
-              ),
+                "Login failed. Use a valid url, refresh your browser and try again."
+              )
             );
             res.writeHead(400);
             res.end();
@@ -95,13 +95,14 @@ export async function login() {
 
   const redirect = `http://127.0.0.1:${port}`;
   const code = nanoid();
-  const confirmationUrl = new URL(`${process.env.CLIENT_URL}/auth/devices`);
+  // TODO: Change this later when the web app is hosted.
+  const confirmationUrl = new URL(`http://localhost:3000/auth/devices`);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
 
   console.log(`Confirmation code: ${pc.bold(code)}\n`);
   console.log(
-    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`,
+    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`
   );
 
   spawn("open", [confirmationUrl.toString()]);

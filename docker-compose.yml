@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: envi
       POSTGRES_PASSWORD: envi_password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - envi_data:/var/lib/postgresql/data
     healthcheck:

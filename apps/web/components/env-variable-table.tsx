@@ -58,7 +58,7 @@ export function EnvVariableTable({
       isEditing: false,
       status: value ? "valid" : "missing",
       requiredBy: [],
-    })),
+    }))
   );
 
   const toggleVisibility = (id: string) => {
@@ -66,8 +66,8 @@ export function EnvVariableTable({
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isVisible: !variable.isVisible }
-          : variable,
-      ),
+          : variable
+      )
     );
   };
 
@@ -77,8 +77,8 @@ export function EnvVariableTable({
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isEditing: !variable.isEditing }
-          : variable,
-      ),
+          : variable
+      )
     );
   };
 
@@ -91,8 +91,8 @@ export function EnvVariableTable({
               value,
               status: value ? "valid" : "missing",
             }
-          : variable,
-      ),
+          : variable
+      )
     );
   };
 
@@ -101,14 +101,16 @@ export function EnvVariableTable({
       prevVars.map((variable) =>
         variable.id === id
           ? { ...variable, isPublic: !variable.isPublic }
-          : variable,
-      ),
+          : variable
+      )
     );
   };
 
   const copyToClipboard = async (variable: Variable) => {
     try {
-      await navigator.clipboard.writeText(variable.value);
+      await navigator.clipboard.writeText(
+        `${variable.key} = ${variable.value}`
+      );
       setCopiedId(variable.id);
       toast({
         title: "Copied!",
@@ -187,7 +189,7 @@ export function EnvVariableTable({
               key={variable.id}
               className={cn(
                 variable.status === "missing" && "bg-amber-500/5",
-                variable.status === "invalid" && "bg-rose-500/5",
+                variable.status === "invalid" && "bg-rose-500/5"
               )}
             >
               <TableCell className="font-mono text-sm">
@@ -288,7 +290,7 @@ export function EnvVariableTable({
                     size="icon"
                     className={cn(
                       "h-8 w-8 transition-colors",
-                      copiedId === variable.id && "text-green-500",
+                      copiedId === variable.id && "text-green-500"
                     )}
                     onClick={() => copyToClipboard(variable)}
                     disabled={!variable.value}
