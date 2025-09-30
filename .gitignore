@@ -38,6 +38,11 @@ npm-debug.log*
 .env*.local
 *.env
 
+# all dist folders and nested ones
+**/dist
+**/build
+**/out
+
 packages/database/generated
 
 # local editor files
