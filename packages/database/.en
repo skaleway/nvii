@@ -1,2 +1,0 @@
-# data base
-DATABASE_URL="postgresql://nvii:envi_password@localhost:5432/envincible"
