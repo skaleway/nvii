@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "postinstall": "turbo run build --filter=./packages/env-helpers --filter=./packages/database",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
@@ -39,7 +40,9 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
     "@nvii/env-helpers": "workspace:*",
+    "@nvii/typescript-config": "workspace:*",
     "@prisma/client": "^6.9.0",
+    "changeset": "^0.2.6",
     "next-auth": "^4.24.11"
   }
 }

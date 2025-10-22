@@ -45,3 +45,4 @@ packages/database/generated
 
 # local todo list
 task.todo
+.nvii/
