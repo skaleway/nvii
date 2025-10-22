@@ -118,7 +118,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-muted/50 text-foreground;
+    @apply bg-sidebar/50 dark:bg-background/65;
   }
 }
 

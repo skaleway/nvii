@@ -37,10 +37,8 @@ const Page = async ({ params }: PageProps) => {
   });
 
   return (
-    <div className="lg:px-0 px-4">
-      <div className="max-w-3xl mx-auto w-full min-h-screen space-y-6 py-20">
-        <MDXContent doc={doc} headings={headings} sections={sections} />
-      </div>
+    <div className="max-w-3xl px-4 mx-auto bg-background md:border-x w-full min-h-screen space-y-6 py-20">
+      <MDXContent doc={doc} headings={headings} sections={sections} />
     </div>
   );
 };

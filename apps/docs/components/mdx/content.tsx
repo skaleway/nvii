@@ -23,6 +23,8 @@ export const MDXContent = ({
   headings: Heading[];
   sections: Section[];
 }) => {
+  console.log(sections);
+
   return (
     <MDXContentComponent
       components={{
@@ -54,6 +56,7 @@ export const MDXContent = ({
               language={(props as CodeProps).language}
               title={(props as CodeProps).title}
               code={(props as CodeProps).code}
+              resolvedTheme="light"
             />
           );
         },
