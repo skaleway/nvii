@@ -20,11 +20,8 @@ export const MDXContent = ({
   sections,
 }: {
   doc: Doc;
-  headings: Heading[];
   sections: Section[];
 }) => {
-  console.log(sections);
-
   return (
     <MDXContentComponent
       components={{
@@ -74,7 +71,7 @@ export const MDXContent = ({
         ),
         code: (props) => {
           return (
-            <code className="px-1.5 py-0.5 rounded bg-background border">
+            <code className="px-1.5 py-0.5 rounded bg-sidebar/50 border font-mono!">
               {props.children}
             </code>
           );

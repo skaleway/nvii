@@ -27,7 +27,8 @@ const docs = defineCollection({
       ],
     });
 
-    const regXHeader = /^(?:[\n\r]|)(#{1,6})\s+(.+)/g;
+    const regXHeader = /^(?:[\n\r]|)(#{1,6})\s+(.+)/gm;
+
     const headings = Array.from(document.content.matchAll(regXHeader)).map(
       (match) => {
         const flag = match[1];

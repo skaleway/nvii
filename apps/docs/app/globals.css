@@ -116,9 +116,20 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scroll-behavior: smooth;
+    scroll-margin-top: 100px;
   }
   body {
     @apply bg-sidebar/50 dark:bg-background/65;
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 

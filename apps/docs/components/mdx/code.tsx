@@ -37,7 +37,7 @@ export async function Code({
   return (
     <div className="border rounded-md">
       {newTitle ? (
-        <div className="rounded-t-md flex items-center justify-between py-3 px-4 border-b">
+        <div className="rounded-t-md flex items-center bg-sidebar/50 justify-between py-3 px-4 border-b">
           <div className="flex items-center gap-2.5">
             {Icon && <Icon className="grayscale size-4" />}
             <p className="text-sm font-mono">{newTitle}</p>

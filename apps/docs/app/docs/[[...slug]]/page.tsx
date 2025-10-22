@@ -1,7 +1,10 @@
+import { Intersection } from "@/components/intersection";
+import { MDXContent } from "@/components/mdx/content";
+import { Timeline } from "@/components/navigation";
+import { Heading } from "@/lib/types";
+import { slugify } from "@/lib/utils";
 import { allDocs, Doc } from "content-collections";
 import { notFound } from "next/navigation";
-import { MDXContent } from "@/components/mdx/content";
-import { Heading, Section } from "@/lib/types";
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -27,19 +30,24 @@ const Page = async ({ params }: PageProps) => {
     notFound();
   }
 
-  const headings = doc!.headings as Heading[];
-  const sections = headings.map((heading, i) => {
+  const headings = doc.headings as Heading[];
+
+  const sections = headings.map((heading: Heading, i: number) => {
     return {
       id: i,
       title: heading.text,
       offsetRem: undefined,
+      slug: slugify(heading.text.toLowerCase()),
     };
   });
 
   return (
-    <div className="max-w-3xl px-4 mx-auto bg-background md:border-x w-full min-h-screen space-y-6 py-20">
-      <MDXContent doc={doc} headings={headings} sections={sections} />
-    </div>
+    <Intersection headings={headings}>
+      <div className="max-w-3xl px-4 mx-auto bg-background md:border-x w-full min-h-screen space-y-6 py-20">
+        <MDXContent doc={doc} sections={sections} />
+        <Timeline />
+      </div>
+    </Intersection>
   );
 };
 

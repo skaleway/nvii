@@ -7,4 +7,5 @@ export interface Section {
   id: number;
   title: string;
   offsetRem: number | undefined;
+  slug: string;
 }
