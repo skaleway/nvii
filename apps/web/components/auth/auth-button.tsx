@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@nvii/ui/components/button";
+import LoadingButton from "@nvii/ui/components/loading-button";
 import { Icons } from "@nvii/ui/components/icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -34,9 +34,14 @@ export const AuthButton = () => {
   };
 
   return (
-    <Button onClick={handleSignInWithGithub} disabled={pendingGithub}>
+    <LoadingButton
+      onClick={handleSignInWithGithub}
+      disabled={pendingGithub}
+      className="!px-10"
+      loading={pendingGithub}
+    >
       <Icons.github />{" "}
       {pendingGithub ? "Signing in with GitHub..." : "Sign in with GitHub"}
-    </Button>
+    </LoadingButton>
   );
 };
