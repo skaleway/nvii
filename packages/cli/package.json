@@ -1,6 +1,6 @@
 {
   "name": "nvii",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Secure environment variable management CLI for modern development teams",
   "keywords": [
     "environment",
