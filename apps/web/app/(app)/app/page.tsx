@@ -1,4 +1,5 @@
 "use client";
+
 import { AddProjectDialog } from "@/components/add-project-dialog";
 import { ProjectCard } from "@/components/project-card";
 import { useProjects } from "@/components/projects-provider";
