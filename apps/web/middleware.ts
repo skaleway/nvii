@@ -1,6 +1,5 @@
-import { betterFetch } from "@better-fetch/fetch";
+import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
-import type { Session } from "@/lib/auth";
 
 const authRoutes = ["/auth"];
 const publicRoutes = ["/"];
@@ -10,15 +9,9 @@ export default async function authMiddleware(request: NextRequest) {
   const isAuthRoute = authRoutes.includes(pathName);
   const isPublicRoute = publicRoutes.includes(pathName);
 
-  const { data: session } = await betterFetch<Session>(
-    "/api/auth/get-session",
-    {
-      baseURL: process.env.BETTER_AUTH_URL,
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
-    }
-  );
+  const session = getSessionCookie(request.headers, {});
+
+  console.log({ session });
 
   if (!session) {
     if (isAuthRoute) {
