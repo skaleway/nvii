@@ -1,6 +1,6 @@
 {
   "name": "nvii",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Secure environment variable management CLI for modern development teams",
   "keywords": [
     "environment",
@@ -11,10 +11,10 @@
     "encryption",
     "development"
   ],
-  "homepage": "https://nvii.dev",
+  "homepage": "https://nvii.bossadizenith.me",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nvii/nvii.git",
+    "url": "https://github.com/bossadizenith/nvii.git",
     "directory": "packages/cli"
   },
   "main": "./dist/index.js",
@@ -23,6 +23,7 @@
   },
   "types": "./dist/index.d.ts",
   "module": "./dist/index.mjs",
+  "private": false,
   "scripts": {
     "build": "tsup",
     "dev": "tsc && pnpm chmod && tsc -w",
@@ -40,6 +41,8 @@
   "devDependencies": {
     "@nvii/typescript-config": "workspace:*",
     "@swc/core": "^1.3.99",
+    "@nvii/db": "workspace:*",
+    "@nvii/env-helpers": "workspace:*",
     "@types/node": "^20.17.10",
     "commander": "^11.1.0",
     "concurrently": "^9.2.0",
@@ -50,8 +53,6 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@nvii/db": "workspace:*",
-    "@nvii/env-helpers": "workspace:*",
     "async-listen": "^3.0.1",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",

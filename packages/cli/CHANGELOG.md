@@ -1,5 +1,17 @@
 # nvii
 
+## 1.0.2
+
+### Patch Changes
+
+- nothing
+
+## 2.0.0
+
+### Major Changes
+
+- nothing
+
 ## 1.0.0
 
 ### Major Changes

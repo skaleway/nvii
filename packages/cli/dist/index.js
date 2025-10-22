@@ -937,8 +937,8 @@ var require_command = __commonJS({
     "use strict";
     var EventEmitter = require("events").EventEmitter;
     var childProcess = require("child_process");
-    var path4 = require("path");
-    var fs3 = require("fs");
+    var path5 = require("path");
+    var fs4 = require("fs");
     var process4 = require("process");
     var { Argument: Argument2, humanReadableArgName } = require_argument();
     var { CommanderError: CommanderError2 } = require_error();
@@ -1770,12 +1770,12 @@ Expecting one of '${allowedValues.join("', '")}'`);
         let launchWithNode = false;
         const sourceExt = [".js", ".ts", ".tsx", ".mjs", ".cjs"];
         function findFile(baseDir, baseName) {
-          const localBin = path4.resolve(baseDir, baseName);
-          if (fs3.existsSync(localBin))
+          const localBin = path5.resolve(baseDir, baseName);
+          if (fs4.existsSync(localBin))
             return localBin;
-          if (sourceExt.includes(path4.extname(baseName)))
+          if (sourceExt.includes(path5.extname(baseName)))
             return void 0;
-          const foundExt = sourceExt.find((ext) => fs3.existsSync(`${localBin}${ext}`));
+          const foundExt = sourceExt.find((ext) => fs4.existsSync(`${localBin}${ext}`));
           if (foundExt)
             return `${localBin}${foundExt}`;
           return void 0;
@@ -1787,23 +1787,23 @@ Expecting one of '${allowedValues.join("', '")}'`);
         if (this._scriptPath) {
           let resolvedScriptPath;
           try {
-            resolvedScriptPath = fs3.realpathSync(this._scriptPath);
+            resolvedScriptPath = fs4.realpathSync(this._scriptPath);
           } catch (err) {
             resolvedScriptPath = this._scriptPath;
           }
-          executableDir = path4.resolve(path4.dirname(resolvedScriptPath), executableDir);
+          executableDir = path5.resolve(path5.dirname(resolvedScriptPath), executableDir);
         }
         if (executableDir) {
           let localFile = findFile(executableDir, executableFile);
           if (!localFile && !subcommand._executableFile && this._scriptPath) {
-            const legacyName = path4.basename(this._scriptPath, path4.extname(this._scriptPath));
+            const legacyName = path5.basename(this._scriptPath, path5.extname(this._scriptPath));
             if (legacyName !== this._name) {
               localFile = findFile(executableDir, `${legacyName}-${subcommand._name}`);
             }
           }
           executableFile = localFile || executableFile;
         }
-        launchWithNode = sourceExt.includes(path4.extname(executableFile));
+        launchWithNode = sourceExt.includes(path5.extname(executableFile));
         let proc;
         if (process4.platform !== "win32") {
           if (launchWithNode) {
@@ -2605,7 +2605,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @return {Command}
        */
       nameFromFilename(filename) {
-        this._name = path4.basename(filename, path4.extname(filename));
+        this._name = path5.basename(filename, path5.extname(filename));
         return this;
       }
       /**
@@ -2619,10 +2619,10 @@ Expecting one of '${allowedValues.join("', '")}'`);
        * @param {string} [path]
        * @return {string|null|Command}
        */
-      executableDir(path5) {
-        if (path5 === void 0)
+      executableDir(path6) {
+        if (path6 === void 0)
           return this._executableDir;
-        this._executableDir = path5;
+        this._executableDir = path6;
         return this;
       }
       /**
@@ -3979,15 +3979,15 @@ var require_route = __commonJS({
       };
     }
     function wrapConversion(toModel, graph) {
-      const path4 = [graph[toModel].parent, toModel];
+      const path5 = [graph[toModel].parent, toModel];
       let fn = conversions[graph[toModel].parent][toModel];
       let cur = graph[toModel].parent;
       while (graph[cur].parent) {
-        path4.unshift(graph[cur].parent);
+        path5.unshift(graph[cur].parent);
         fn = link(conversions[graph[cur].parent][cur], fn);
         cur = graph[cur].parent;
       }
-      fn.conversion = path4;
+      fn.conversion = path5;
       return fn;
     }
     module2.exports = function(fromModel) {
@@ -9932,7 +9932,7 @@ var require_iso2022 = __commonJS({
 var require_chardet = __commonJS({
   "../../node_modules/.pnpm/chardet@0.7.0/node_modules/chardet/index.js"(exports2, module2) {
     "use strict";
-    var fs3 = require("fs");
+    var fs4 = require("fs");
     var utf8 = require_utf8();
     var unicode = require_unicode();
     var mbcs = require_mbcs();
@@ -10006,29 +10006,29 @@ var require_chardet = __commonJS({
       var fd;
       var handler = function(err, buffer) {
         if (fd) {
-          fs3.closeSync(fd);
+          fs4.closeSync(fd);
         }
         if (err)
           return cb(err, null);
         cb(null, self.detect(buffer, opts));
       };
       if (opts && opts.sampleSize) {
-        fd = fs3.openSync(filepath, "r"), sample = Buffer.allocUnsafe(opts.sampleSize);
-        fs3.read(fd, sample, 0, opts.sampleSize, null, function(err) {
+        fd = fs4.openSync(filepath, "r"), sample = Buffer.allocUnsafe(opts.sampleSize);
+        fs4.read(fd, sample, 0, opts.sampleSize, null, function(err) {
           handler(err, sample);
         });
         return;
       }
-      fs3.readFile(filepath, handler);
+      fs4.readFile(filepath, handler);
     };
     module2.exports.detectFileSync = function(filepath, opts) {
       if (opts && opts.sampleSize) {
-        var fd = fs3.openSync(filepath, "r"), sample2 = Buffer.allocUnsafe(opts.sampleSize);
-        fs3.readSync(fd, sample2, 0, opts.sampleSize);
-        fs3.closeSync(fd);
+        var fd = fs4.openSync(filepath, "r"), sample2 = Buffer.allocUnsafe(opts.sampleSize);
+        fs4.readSync(fd, sample2, 0, opts.sampleSize);
+        fs4.closeSync(fd);
         return self.detect(sample2, opts);
       }
-      return self.detect(fs3.readFileSync(filepath), opts);
+      return self.detect(fs4.readFileSync(filepath), opts);
     };
     module2.exports.detectAll = function(buffer, opts) {
       if (typeof opts !== "object") {
@@ -13514,16 +13514,16 @@ var require_os_tmpdir = __commonJS({
     var isWindows = process.platform === "win32";
     var trailingSlashRe = isWindows ? /[^:]\\$/ : /.\/$/;
     module2.exports = function() {
-      var path4;
+      var path5;
       if (isWindows) {
-        path4 = process.env.TEMP || process.env.TMP || (process.env.SystemRoot || process.env.windir) + "\\temp";
+        path5 = process.env.TEMP || process.env.TMP || (process.env.SystemRoot || process.env.windir) + "\\temp";
       } else {
-        path4 = process.env.TMPDIR || process.env.TMP || process.env.TEMP || "/tmp";
+        path5 = process.env.TMPDIR || process.env.TMP || process.env.TEMP || "/tmp";
       }
-      if (trailingSlashRe.test(path4)) {
-        path4 = path4.slice(0, -1);
+      if (trailingSlashRe.test(path5)) {
+        path5 = path5.slice(0, -1);
       }
-      return path4;
+      return path5;
     };
   }
 });
@@ -13532,8 +13532,8 @@ var require_os_tmpdir = __commonJS({
 var require_tmp = __commonJS({
   "../../node_modules/.pnpm/tmp@0.0.33/node_modules/tmp/lib/tmp.js"(exports2, module2) {
     "use strict";
-    var fs3 = require("fs");
-    var path4 = require("path");
+    var fs4 = require("fs");
+    var path5 = require("path");
     var crypto = require("crypto");
     var osTmpDir = require_os_tmpdir();
     var _c = process.binding("constants");
@@ -13575,7 +13575,7 @@ var require_tmp = __commonJS({
     }
     function _generateTmpName(opts) {
       if (opts.name) {
-        return path4.join(opts.dir || tmpDir, opts.name);
+        return path5.join(opts.dir || tmpDir, opts.name);
       }
       if (opts.template) {
         return opts.template.replace(TEMPLATE_PATTERN, _randomChars(6));
@@ -13586,7 +13586,7 @@ var require_tmp = __commonJS({
         _randomChars(12),
         opts.postfix || ""
       ].join("");
-      return path4.join(opts.dir || tmpDir, name);
+      return path5.join(opts.dir || tmpDir, name);
     }
     function tmpName(options, callback) {
       var args = _parseArguments(options, callback), opts = args[0], cb = args[1], tries = opts.name ? 1 : opts.tries || DEFAULT_TRIES;
@@ -13596,7 +13596,7 @@ var require_tmp = __commonJS({
         return cb(new Error("Invalid template provided"));
       (function _getUniqueName() {
         const name = _generateTmpName(opts);
-        fs3.stat(name, function(err) {
+        fs4.stat(name, function(err) {
           if (!err) {
             if (tries-- > 0)
               return _getUniqueName();
@@ -13615,7 +13615,7 @@ var require_tmp = __commonJS({
       do {
         const name = _generateTmpName(opts);
         try {
-          fs3.statSync(name);
+          fs4.statSync(name);
         } catch (e) {
           return name;
         }
@@ -13628,14 +13628,14 @@ var require_tmp = __commonJS({
       tmpName(opts, function _tmpNameCreated(err, name) {
         if (err)
           return cb(err);
-        fs3.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err2, fd) {
+        fs4.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err2, fd) {
           if (err2)
             return cb(err2);
           if (opts.discardDescriptor) {
-            return fs3.close(fd, function _discardCallback(err3) {
+            return fs4.close(fd, function _discardCallback(err3) {
               if (err3) {
                 try {
-                  fs3.unlinkSync(name);
+                  fs4.unlinkSync(name);
                 } catch (e) {
                   if (!isENOENT(e)) {
                     err3 = e;
@@ -13658,9 +13658,9 @@ var require_tmp = __commonJS({
       opts.postfix = opts.postfix || ".tmp";
       const discardOrDetachDescriptor = opts.discardDescriptor || opts.detachDescriptor;
       const name = tmpNameSync(opts);
-      var fd = fs3.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
+      var fd = fs4.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
       if (opts.discardDescriptor) {
-        fs3.closeSync(fd);
+        fs4.closeSync(fd);
         fd = void 0;
       }
       return {
@@ -13672,9 +13672,9 @@ var require_tmp = __commonJS({
     function _rmdirRecursiveSync(root) {
       const dirs = [root];
       do {
-        var dir2 = dirs.pop(), deferred = false, files = fs3.readdirSync(dir2);
+        var dir2 = dirs.pop(), deferred = false, files = fs4.readdirSync(dir2);
         for (var i = 0, length = files.length; i < length; i++) {
-          var file2 = path4.join(dir2, files[i]), stat = fs3.lstatSync(file2);
+          var file2 = path5.join(dir2, files[i]), stat = fs4.lstatSync(file2);
           if (stat.isDirectory()) {
             if (!deferred) {
               deferred = true;
@@ -13682,11 +13682,11 @@ var require_tmp = __commonJS({
             }
             dirs.push(file2);
           } else {
-            fs3.unlinkSync(file2);
+            fs4.unlinkSync(file2);
           }
         }
         if (!deferred) {
-          fs3.rmdirSync(dir2);
+          fs4.rmdirSync(dir2);
         }
       } while (dirs.length !== 0);
     }
@@ -13695,7 +13695,7 @@ var require_tmp = __commonJS({
       tmpName(opts, function _tmpNameCreated(err, name) {
         if (err)
           return cb(err);
-        fs3.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err2) {
+        fs4.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err2) {
           if (err2)
             return cb(err2);
           cb(null, name, _prepareTmpDirRemoveCallback(name, opts));
@@ -13705,7 +13705,7 @@ var require_tmp = __commonJS({
     function dirSync(options) {
       var args = _parseArguments(options), opts = args[0];
       const name = tmpNameSync(opts);
-      fs3.mkdirSync(name, opts.mode || DIR_MODE);
+      fs4.mkdirSync(name, opts.mode || DIR_MODE);
       return {
         name,
         removeCallback: _prepareTmpDirRemoveCallback(name, opts)
@@ -13715,7 +13715,7 @@ var require_tmp = __commonJS({
       const removeCallback = _prepareRemoveCallback(function _removeCallback(fdPath) {
         try {
           if (0 <= fdPath[0]) {
-            fs3.closeSync(fdPath[0]);
+            fs4.closeSync(fdPath[0]);
           }
         } catch (e) {
           if (!isEBADF(e) && !isENOENT(e)) {
@@ -13723,7 +13723,7 @@ var require_tmp = __commonJS({
           }
         }
         try {
-          fs3.unlinkSync(fdPath[1]);
+          fs4.unlinkSync(fdPath[1]);
         } catch (e) {
           if (!isENOENT(e)) {
             throw e;
@@ -13736,7 +13736,7 @@ var require_tmp = __commonJS({
       return removeCallback;
     }
     function _prepareTmpDirRemoveCallback(name, opts) {
-      const removeFunction = opts.unsafeCleanup ? _rmdirRecursiveSync : fs3.rmdirSync.bind(fs3);
+      const removeFunction = opts.unsafeCleanup ? _rmdirRecursiveSync : fs4.rmdirSync.bind(fs4);
       const removeCallback = _prepareRemoveCallback(removeFunction, name);
       if (!opts.keep) {
         _removeObjects.unshift(removeCallback);
@@ -23916,103 +23916,13 @@ var {
   Help
 } = import_index.default;
 
-// src/commands/crypt.ts
-var import_env_helpers = require("@nvii/env-helpers");
-var import_picocolors = __toESM(require_picocolors());
-async function testEncryption() {
-  try {
-    const config = await (0, import_env_helpers.readConfigFile)();
-    if (!config?.userId) {
-      console.error(
-        "You must be logged in to test encryption. Run 'nvii login' first."
-      );
-      process.exit(1);
-    }
-    const envs = await (0, import_env_helpers.readEnvFile)();
-    const encryptedEnv = (0, import_env_helpers.encryptEnvValues)(envs, config.userId);
-    const decryptedEnv = (0, import_env_helpers.decryptEnvValues)(encryptedEnv, config.userId);
-    console.log("Encrypted Env:", encryptedEnv);
-    console.log("Decrypted Env:", decryptedEnv);
-  } catch (error) {
-    console.error(import_picocolors.default.red("\nError testing encryption:"), error.message);
-    process.exit(1);
-  }
-}
-
-// src/commands/generate.ts
-var import_env_helpers2 = require("@nvii/env-helpers");
+// ../env-helpers/dist/index.mjs
+var import_crypto = __toESM(require("crypto"), 1);
 var import_fs = require("fs");
-var import_path = require("path");
-var import_picocolors2 = __toESM(require_picocolors());
-async function generateExample(args) {
-  let outPutPath = "";
-  let resultFormat = "";
-  if (args) {
-    if (args.format) {
-      resultFormat = args.format;
-    }
-    if (args.output) {
-      outPutPath = args.output;
-    }
-  }
-  try {
-    const cwd = process.cwd();
-    const envPath = (0, import_path.join)(cwd, ".env");
-    const envLocalPath = (0, import_path.join)(cwd, ".env.local");
-    const examplePath = ".env.example";
-    let envContent;
-    let sourceFile;
-    if ((0, import_fs.existsSync)(envPath)) {
-      envContent = (0, import_fs.readFileSync)(envPath, "utf-8");
-      sourceFile = ".env";
-    } else if ((0, import_fs.existsSync)(envLocalPath)) {
-      envContent = (0, import_fs.readFileSync)(envLocalPath, "utf-8");
-      sourceFile = ".env.local";
-    } else {
-      throw new Error(
-        "No .env or .env.local file found in the current directory"
-      );
-    }
-    const existingEnvs = await (0, import_env_helpers2.readEnvFile)();
-    let newEnvContent = envContent.split("\n").filter((line) => line.trim() !== "").map((line) => {
-      if (line.startsWith("#")) {
-        return line;
-      }
-      const key = line.split("=")[0];
-      if (!key)
-        return null;
-      return `${key}=""`;
-    }).filter(Boolean).join("\n");
-    let filePath = examplePath;
-    if (outPutPath && outPutPath.trim() !== "") {
-      filePath = outPutPath;
-    } else if (resultFormat && resultFormat.trim() !== "") {
-      const content = { content: existingEnvs };
-      newEnvContent = (0, import_env_helpers2.generateEnvVersion)(content, resultFormat);
-      filePath = `${resultFormat === "env" ? examplePath : `.env.${resultFormat}`}`;
-    }
-    (0, import_fs.writeFileSync)(filePath, newEnvContent);
-    console.log(import_picocolors2.default.green("\u2713"), ` Generated ${filePath} file successfully!`);
-    console.log(import_picocolors2.default.dim("Source:"), sourceFile);
-    console.log(import_picocolors2.default.dim("Location:"), filePath);
-  } catch (error) {
-    const fileError = error;
-    if (fileError.code === "ENOENT") {
-      console.error(import_picocolors2.default.red("\u2717"), fileError.message);
-      return;
-    }
-    console.error(
-      import_picocolors2.default.red("\u2717"),
-      "Failed to generate .env.<format> file:",
-      fileError.message
-    );
-    process.exit(1);
-  }
-}
-
-// src/commands/link.ts
-var import_env_helpers4 = require("@nvii/env-helpers");
-var import_fs3 = require("fs");
+var import_os = __toESM(require("os"), 1);
+var import_path = __toESM(require("path"), 1);
+var import_picocolors = __toESM(require_picocolors(), 1);
+var import_axios = __toESM(require("axios"), 1);
 
 // ../../node_modules/.pnpm/@inquirer+core@10.1.15_@types+node@20.19.9/node_modules/@inquirer/core/dist/esm/lib/key.js
 var isUpKey = (key) => (
@@ -26176,9 +26086,9 @@ var import_run_async = __toESM(require_run_async(), 1);
 var import_mute_stream2 = __toESM(require_lib(), 1);
 var import_ansi_escapes5 = __toESM(require_ansi_escapes(), 1);
 var _ = {
-  set: (obj, path4 = "", value) => {
+  set: (obj, path5 = "", value) => {
     let pointer = obj;
-    path4.split(".").forEach((key, index, arr) => {
+    path5.split(".").forEach((key, index, arr) => {
       if (key === "__proto__" || key === "constructor")
         return;
       if (index === arr.length - 1) {
@@ -26189,8 +26099,8 @@ var _ = {
       pointer = pointer[key];
     });
   },
-  get: (obj, path4 = "", defaultValue) => {
-    const travel = (regexp) => String.prototype.split.call(path4, regexp).filter(Boolean).reduce(
+  get: (obj, path5 = "", defaultValue) => {
+    const travel = (regexp) => String.prototype.split.call(path5, regexp).filter(Boolean).reduce(
       // @ts-expect-error implicit any on res[key]
       (res, key) => res == null ? res : res[key],
       obj
@@ -26437,21 +26347,435 @@ var inquirer = {
 };
 var esm_default12 = inquirer;
 
+// ../env-helpers/dist/index.mjs
+var API_URLS = {
+  BASE_URL: "https://nvii.bossadizenith.me/api",
+  AUTH_DEVICES_URL: "https://nvii.bossadizenith.me/auth/devices"
+};
+var apiClient = import_axios.default.create({
+  baseURL: API_URLS.BASE_URL,
+  headers: {}
+});
+async function getConfiguredClient() {
+  const config = await readConfigFile();
+  if (!config) {
+    return apiClient;
+  }
+  return import_axios.default.create({
+    baseURL: API_URLS.BASE_URL,
+    headers: {
+      "X-Auth-Code": config.code,
+      "X-User-Id": config.userId,
+      "X-Device-Id": config.deviceId
+    }
+  });
+}
+async function fetchVersions(userId, projectId, limit) {
+  const client = await getConfiguredClient();
+  if (!client) {
+    throw new Error("Failed to obtain configured API client.");
+  }
+  const limitQuery = limit ? `?limit=${limit}` : "";
+  const response = await client.get(
+    `/projects/${userId}/${projectId}/versions${limitQuery}`
+  );
+  return response.data;
+}
+function generateDiff(oldContent, newContent) {
+  const oldKeys = new Set(Object.keys(oldContent));
+  const newKeys = new Set(Object.keys(newContent));
+  const added = [...newKeys].filter((key) => !oldKeys.has(key));
+  const removed = [...oldKeys].filter((key) => !newKeys.has(key));
+  const updated = [];
+  for (const key of oldKeys) {
+    if (newKeys.has(key) && oldContent[key] !== newContent[key]) {
+      updated.push([key, { old: oldContent[key], new: newContent[key] }]);
+    }
+  }
+  return { added, removed, updated };
+}
+function generateEnvVersion(version, format = "env") {
+  switch (format) {
+    case "json": {
+      let content = {};
+      Object.entries(version.content || {}).map(([key]) => {
+        content = { ...content, [key]: "" };
+      });
+      return JSON.stringify(content, null, 2);
+    }
+    case "yaml":
+      return "nvii:\n" + Object.entries(version.content || {}).map(([key]) => `	${key}: ${'""'}`).join("\n");
+    case "env":
+    default:
+      return Object.entries(version.content || {}).map(([key]) => `${key}=${'""'}`).join("\n");
+  }
+}
+var FILENAME = process.env.FILENAME || ".nvii";
+var ENCRYPTION_KEY = Buffer.from(
+  process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD",
+  "utf8"
+).slice(0, 32);
+var IV_LENGTH = 16;
+async function readConfigFile() {
+  try {
+    const homeDir = import_os.default.homedir();
+    const filePath = import_path.default.join(homeDir, FILENAME);
+    const fileContent = await import_fs.promises.readFile(filePath, "utf-8");
+    return JSON.parse(fileContent);
+  } catch (error) {
+    console.error(
+      import_picocolors.default.red("Oups! you're not yet logged-in. run npm install -g @nvii/cli")
+    );
+    return null;
+  }
+}
+async function checkLoginStats() {
+  try {
+    const homeDir = import_os.default.homedir();
+    const filePath = import_path.default.join(homeDir, FILENAME);
+    const fileContent = await import_fs.promises.readFile(filePath, "utf-8");
+    if (!fileContent) {
+      return { success: false };
+    }
+    const file = JSON.parse(fileContent);
+    console.log(import_picocolors.default.green(`Logged in as ${file.username} (${file.email})`));
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+function isLogedIn() {
+  const filePath = import_path.default.join(import_os.default.homedir(), FILENAME);
+  return (0, import_fs.existsSync)(filePath);
+}
+async function readEnvFile() {
+  try {
+    const envPath = import_path.default.join(process.cwd(), ".env");
+    if (!(0, import_fs.existsSync)(envPath)) {
+      console.log(import_picocolors.default.yellow(".env file not found."));
+      return {};
+    }
+    const envContent = await import_fs.promises.readFile(envPath, "utf-8");
+    return envContent.split("\n").filter((line) => line.trim() && !line.startsWith("#")).reduce(
+      (acc, line) => {
+        const [key, value] = line.replace(/^"(.*)"$/, "$1").split("=");
+        if (key && value) {
+          acc[key.trim()] = value.trim();
+        }
+        return acc;
+      },
+      {}
+    );
+  } catch (error) {
+    console.error(import_picocolors.default.yellow("\u26A0\uFE0F No .env file found or unable to read it."));
+    return {};
+  }
+}
+async function writeEnvFile(envs) {
+  try {
+    const envPath = import_path.default.join(process.cwd(), ".env");
+    if (!(0, import_fs.existsSync)(envPath)) {
+      console.log(import_picocolors.default.yellow(".env file not found. A new one will be created."));
+      (0, import_fs.writeFileSync)(envPath, "");
+    }
+    const envContent = await import_fs.promises.readFile(envPath, "utf-8");
+    let newEnvContent = {};
+    Object.entries(envs).map((item) => {
+      envContent.split("\n").map(
+        (line) => {
+          const [key, value] = line.replace(/^"(.*)"$/, "$1").split("=");
+          if (!key && !value && line.startsWith("#")) {
+            newEnvContent = { ...newEnvContent, "#": "" };
+          }
+          if (key && value) {
+            if (line.startsWith("#")) {
+              newEnvContent[key.trim()] = value.trim();
+            } else {
+              if (envs[key.trim()]) {
+                newEnvContent[key.trim()] = envs[key.trim()];
+              }
+            }
+          }
+        },
+        {}
+      );
+      newEnvContent[item[0]] = item[1];
+    });
+    const finalEnvContent = Object.entries(newEnvContent).map(([key, value]) => `${key}=${value}`).join("\n");
+    (0, import_fs.writeFileSync)(envPath, finalEnvContent);
+    return envs;
+  } catch (error) {
+    console.log(import_picocolors.default.red(error));
+    console.error(import_picocolors.default.yellow("\u26A0\uFE0F No .env file found or unable to write in it."));
+    return {};
+  }
+}
+function deriveKey(userId) {
+  return import_crypto.default.createHash("sha256").update(ENCRYPTION_KEY).update(userId).digest().slice(0, 32);
+}
+function encrypt(text, userId) {
+  const key = deriveKey(userId);
+  const iv = import_crypto.default.randomBytes(IV_LENGTH);
+  const cipher = import_crypto.default.createCipheriv("aes-256-cbc", key, iv);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return iv.toString("hex") + ":" + encrypted;
+}
+function decrypt(text, userId) {
+  const key = deriveKey(userId);
+  const textParts = text.split(":");
+  const iv = Buffer.from(textParts[0], "hex");
+  const encryptedText = Buffer.from(textParts[1], "hex");
+  const decipher = import_crypto.default.createDecipheriv("aes-256-cbc", key, iv);
+  let decrypted = decipher.update(encryptedText, void 0, "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+}
+function encryptEnvValues(envObject, userId) {
+  const encryptedEnv = {};
+  for (const key in envObject) {
+    encryptedEnv[key] = encrypt(envObject[key], userId);
+  }
+  return encryptedEnv;
+}
+function decryptEnvValues(encryptedEnv, userId) {
+  const decryptedEnv = {};
+  for (const key in encryptedEnv) {
+    decryptedEnv[key] = decrypt(encryptedEnv[key], userId);
+  }
+  return decryptedEnv;
+}
+async function readProjectConfig() {
+  try {
+    const currentDir = process.cwd();
+    const enviDirPath = import_path.default.join(currentDir, ".nvii");
+    const enviFilePath = import_path.default.join(enviDirPath, "nvii.json");
+    if (!(0, import_fs.existsSync)(enviDirPath) || !(0, import_fs.existsSync)(enviFilePath)) {
+      console.warn(
+        import_picocolors.default.yellow("No project configuration found. A new one will be created.")
+      );
+      return null;
+    }
+    const fileContent = await import_fs.promises.readFile(enviFilePath, "utf-8");
+    const config = JSON.parse(fileContent);
+    if (!config.projectId) {
+      console.warn(
+        import_picocolors.default.yellow(
+          "\u26A0\uFE0F Invalid project configuration: missing projectId for some projects."
+        )
+      );
+      return null;
+    }
+    return config;
+  } catch (error) {
+    console.error(import_picocolors.default.red("Error reading project configuration:"), error);
+    return null;
+  }
+}
+async function updateGitignore() {
+  try {
+    const currentDir = process.cwd();
+    const gitignorePath = import_path.default.join(currentDir, ".gitignore");
+    const enviEntry = ".nvii/";
+    let content = "";
+    if ((0, import_fs.existsSync)(gitignorePath)) {
+      content = await import_fs.promises.readFile(gitignorePath, "utf-8");
+      if (content.split("\n").some((line) => line.trim() === enviEntry)) {
+        return;
+      }
+      if (content.length > 0 && !content.endsWith("\n")) {
+        content += "\n";
+      }
+    }
+    content += `${enviEntry}
+`;
+    await import_fs.promises.writeFile(gitignorePath, content, "utf-8");
+    console.log(import_picocolors.default.green("\u2705 Updated .gitignore to exclude .nvii folder"));
+  } catch (error) {
+    console.error(import_picocolors.default.red("Error updating .gitignore:"), error);
+  }
+}
+async function writeProjectConfig(projectId, branchName) {
+  try {
+    const currentDir = process.cwd();
+    const enviDirPath = import_path.default.join(currentDir, ".nvii");
+    const enviFilePath = import_path.default.join(enviDirPath, "nvii.json");
+    if (!projectId || projectId.trim() === "") {
+      console.log(
+        import_picocolors.default.red(
+          "Invalid project id. To write project config, a valid project Id must be provided."
+        )
+      );
+      process.exit(1);
+    }
+    if (!(0, import_fs.existsSync)(enviDirPath)) {
+      await import_fs.promises.mkdir(enviDirPath, { recursive: true });
+    }
+    await updateGitignore();
+    const updatedConfig = {
+      projectId
+    };
+    if (branchName && branchName.trim() !== "") {
+      updatedConfig.branch = branchName;
+    }
+    await import_fs.promises.writeFile(
+      enviFilePath,
+      JSON.stringify(updatedConfig, null, 2),
+      "utf-8"
+    );
+    console.log(
+      import_picocolors.default.green(
+        `\u2705 Project configuration ${projectId ? "updated" : "saved"} at ${enviFilePath}`
+      )
+    );
+  } catch (error) {
+    console.error(import_picocolors.default.red("Error writing project configuration:"), error);
+    throw error;
+  }
+}
+async function unlinkProjectConfig(projectId) {
+  let success = false;
+  try {
+    const currentDir = process.cwd();
+    const enviDirPath = import_path.default.join(currentDir, ".nvii");
+    const enviFilePath = import_path.default.join(enviDirPath, "nvii.json");
+    if ((0, import_fs.existsSync)(enviDirPath)) {
+      if ((0, import_fs.existsSync)(enviFilePath)) {
+        try {
+          const config = await readProjectConfig();
+          if (config) {
+            await import_fs.promises.unlink(enviFilePath);
+            await import_fs.promises.rmdir(enviDirPath);
+          }
+          success = true;
+        } catch (error) {
+          console.warn(import_picocolors.default.yellow("Warning: Could not delete nvii.json."));
+          return success;
+        }
+      }
+    } else {
+      console.warn(import_picocolors.default.yellow("Warning: .nvii directory not found."));
+      return success;
+    }
+    console.log(
+      import_picocolors.default.green(
+        `\u2705 Project configuration for ${projectId} unlinked successfully.`
+      )
+    );
+    return success;
+  } catch (error) {
+    console.error(import_picocolors.default.red("Error writing project configuration:"), error);
+    return success;
+  }
+}
+
+// src/commands/crypt.ts
+var import_picocolors2 = __toESM(require_picocolors());
+async function testEncryption() {
+  try {
+    const config = await readConfigFile();
+    if (!config?.userId) {
+      console.error(
+        "You must be logged in to test encryption. Run 'nvii login' first."
+      );
+      process.exit(1);
+    }
+    const envs = await readEnvFile();
+    const encryptedEnv = encryptEnvValues(envs, config.userId);
+    const decryptedEnv = decryptEnvValues(encryptedEnv, config.userId);
+    console.log("Encrypted Env:", encryptedEnv);
+    console.log("Decrypted Env:", decryptedEnv);
+  } catch (error) {
+    console.error(import_picocolors2.default.red("\nError testing encryption:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/generate.ts
+var import_fs2 = require("fs");
+var import_path2 = require("path");
+var import_picocolors3 = __toESM(require_picocolors());
+async function generateExample(args) {
+  let outPutPath = "";
+  let resultFormat = "";
+  if (args) {
+    if (args.format) {
+      resultFormat = args.format;
+    }
+    if (args.output) {
+      outPutPath = args.output;
+    }
+  }
+  try {
+    const cwd = process.cwd();
+    const envPath = (0, import_path2.join)(cwd, ".env");
+    const envLocalPath = (0, import_path2.join)(cwd, ".env.local");
+    const examplePath = ".env.example";
+    let envContent;
+    let sourceFile;
+    if ((0, import_fs2.existsSync)(envPath)) {
+      envContent = (0, import_fs2.readFileSync)(envPath, "utf-8");
+      sourceFile = ".env";
+    } else if ((0, import_fs2.existsSync)(envLocalPath)) {
+      envContent = (0, import_fs2.readFileSync)(envLocalPath, "utf-8");
+      sourceFile = ".env.local";
+    } else {
+      throw new Error(
+        "No .env or .env.local file found in the current directory"
+      );
+    }
+    const existingEnvs = await readEnvFile();
+    let newEnvContent = envContent.split("\n").filter((line) => line.trim() !== "").map((line) => {
+      if (line.startsWith("#")) {
+        return line;
+      }
+      const key = line.split("=")[0];
+      if (!key)
+        return null;
+      return `${key}=""`;
+    }).filter(Boolean).join("\n");
+    let filePath = examplePath;
+    if (outPutPath && outPutPath.trim() !== "") {
+      filePath = outPutPath;
+    } else if (resultFormat && resultFormat.trim() !== "") {
+      const content = { content: existingEnvs };
+      newEnvContent = generateEnvVersion(content, resultFormat);
+      filePath = `${resultFormat === "env" ? examplePath : `.env.${resultFormat}`}`;
+    }
+    (0, import_fs2.writeFileSync)(filePath, newEnvContent);
+    console.log(import_picocolors3.default.green("\u2713"), ` Generated ${filePath} file successfully!`);
+    console.log(import_picocolors3.default.dim("Source:"), sourceFile);
+    console.log(import_picocolors3.default.dim("Location:"), filePath);
+  } catch (error) {
+    const fileError = error;
+    if (fileError.code === "ENOENT") {
+      console.error(import_picocolors3.default.red("\u2717"), fileError.message);
+      return;
+    }
+    console.error(
+      import_picocolors3.default.red("\u2717"),
+      "Failed to generate .env.<format> file:",
+      fileError.message
+    );
+    process.exit(1);
+  }
+}
+
 // src/commands/link.ts
-var import_path3 = __toESM(require("path"));
-var import_picocolors4 = __toESM(require_picocolors());
+var import_fs4 = require("fs");
+var import_path4 = __toESM(require("path"));
+var import_picocolors5 = __toESM(require_picocolors());
 
 // src/commands/auth/login.ts
-var import_env_helpers3 = require("@nvii/env-helpers");
 var import_async_listen = require("async-listen");
 var import_child_process = require("child_process");
 var import_config = require("dotenv/config");
-var import_fs2 = require("fs");
+var import_fs3 = require("fs");
 var import_http = __toESM(require("http"));
 var import_nanoid = require("nanoid");
-var import_os = __toESM(require("os"));
-var import_path2 = __toESM(require("path"));
-var import_picocolors3 = __toESM(require_picocolors());
+var import_os2 = __toESM(require("os"));
+var import_path3 = __toESM(require("path"));
+var import_picocolors4 = __toESM(require_picocolors());
 var import_url = __toESM(require("url"));
 var UserCancellationError = class extends Error {
   constructor(message) {
@@ -26461,11 +26785,11 @@ var UserCancellationError = class extends Error {
 };
 async function writeToConfigFile(data) {
   try {
-    const homeDir = import_os.default.homedir();
-    const filePath = import_path2.default.join(homeDir, import_env_helpers3.FILENAME);
-    (0, import_fs2.writeFileSync)(filePath, JSON.stringify(data, null, 2));
-    const userData = (0, import_fs2.readFileSync)(filePath, "utf-8");
-    const dirname = import_path2.default.dirname(filePath);
+    const homeDir = import_os2.default.homedir();
+    const filePath = import_path3.default.join(homeDir, FILENAME);
+    (0, import_fs3.writeFileSync)(filePath, JSON.stringify(data, null, 2));
+    const userData = (0, import_fs3.readFileSync)(filePath, "utf-8");
+    const dirname = import_path3.default.dirname(filePath);
     return {
       filePath,
       userData,
@@ -26477,7 +26801,7 @@ async function writeToConfigFile(data) {
 }
 var nanoid = (0, import_nanoid.customAlphabet)("123456789QAZWSXEDCRFVTGBYHNUJMIKOLP", 8);
 async function login() {
-  const res = await (0, import_env_helpers3.checkLoginStats)();
+  const res = await checkLoginStats();
   if (res?.success) {
     return;
   }
@@ -26506,7 +26830,7 @@ async function login() {
           const isValidCode = parsedUrl.query.authCode === code;
           if (!isValidCode) {
             console.log(
-              import_picocolors3.default.yellow(
+              import_picocolors4.default.yellow(
                 "Login failed. Use a valid url, refresh your browser and try again."
               )
             );
@@ -26527,14 +26851,14 @@ async function login() {
   });
   const redirect = `http://127.0.0.1:${port}`;
   const code = nanoid();
-  const confirmationUrl = new URL(import_env_helpers3.API_URLS.AUTH_DEVICES_URL);
+  const confirmationUrl = new URL(API_URLS.AUTH_DEVICES_URL);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
-  console.log(`Confirmation code: ${import_picocolors3.default.bold(code)}
+  console.log(`Confirmation code: ${import_picocolors4.default.bold(code)}
 `);
   console.log(
     `If something goes wrong, copy and paste this URL into your browser:
-${import_picocolors3.default.bold(confirmationUrl.toString())}
+${import_picocolors4.default.bold(confirmationUrl.toString())}
 `
   );
   (0, import_child_process.spawn)("open", [confirmationUrl.toString()]);
@@ -26543,8 +26867,8 @@ ${import_picocolors3.default.bold(confirmationUrl.toString())}
     const authData = await authPromise;
     spinner.stop();
     await writeToConfigFile(authData);
-    console.log(import_picocolors3.default.green("Authentication successful!"));
-    console.log(`Config saved at: ~/ ${import_env_helpers3.FILENAME}
+    console.log(import_picocolors4.default.green("Authentication successful!"));
+    console.log(`Config saved at: ~/ ${FILENAME}
 `);
     server.close();
     process.exit(0);
@@ -26552,14 +26876,14 @@ ${import_picocolors3.default.bold(confirmationUrl.toString())}
     spinner.stop();
     server.close();
     if (error.response) {
-      console.error(import_picocolors3.default.yellow(`
+      console.error(import_picocolors4.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error instanceof UserCancellationError) {
-      console.log(import_picocolors3.default.yellow("Authentication cancelled.\n"));
+      console.log(import_picocolors4.default.yellow("Authentication cancelled.\n"));
     } else {
-      console.error(import_picocolors3.default.red("Authentication failed:"), error);
+      console.error(import_picocolors4.default.red("Authentication failed:"), error);
     }
     process.exit(1);
   }
@@ -26567,10 +26891,10 @@ ${error.response.data.error}`));
 
 // src/commands/link.ts
 var createEnvFiles = (enviDirPath, enviFilePath) => {
-  if (!(0, import_fs3.existsSync)(enviDirPath)) {
-    (0, import_fs3.mkdirSync)(enviDirPath);
-    if (!(0, import_fs3.existsSync)(enviFilePath)) {
-      (0, import_fs3.writeFileSync)(enviFilePath, "", { encoding: "utf-8" });
+  if (!(0, import_fs4.existsSync)(enviDirPath)) {
+    (0, import_fs4.mkdirSync)(enviDirPath);
+    if (!(0, import_fs4.existsSync)(enviFilePath)) {
+      (0, import_fs4.writeFileSync)(enviFilePath, "", { encoding: "utf-8" });
     }
   }
   console.log("\n");
@@ -26583,25 +26907,25 @@ async function linkProject(args) {
     }
   }
   try {
-    if (!(0, import_env_helpers4.isLogedIn)()) {
-      console.log(import_picocolors4.default.red("You must be logged in to link a project."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors5.default.red("You must be logged in to link a project."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers4.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors4.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors5.default.red("No user ID found. Please log in again."));
       return;
     }
-    const client = await (0, import_env_helpers4.getConfiguredClient)();
+    const client = await getConfiguredClient();
     const currentDir = process.cwd();
-    const enviDirPath = import_path3.default.join(currentDir, ".nvii");
-    const enviFilePath = import_path3.default.join(enviDirPath, "nvii.json");
+    const enviDirPath = import_path4.default.join(currentDir, ".nvii");
+    const enviFilePath = import_path4.default.join(enviDirPath, "nvii.json");
     const response = await client.get(`/projects/${userConfig.userId}`);
     const projects = response.data;
     if (!projects.length) {
       console.log(
-        import_picocolors4.default.yellow("No projects found for this directory. Run 'nvii new'.")
+        import_picocolors5.default.yellow("No projects found for this directory. Run 'nvii new'.")
       );
       return;
     }
@@ -26621,53 +26945,51 @@ async function linkProject(args) {
     }
     const selectedProject = projects.find((proj) => proj.id === projectId);
     if (!selectedProject) {
-      console.log(import_picocolors4.default.red(`Project with id <${projectId}> not found.`));
+      console.log(import_picocolors5.default.red(`Project with id <${projectId}> not found.`));
       process.exit(1);
     }
     createEnvFiles(enviDirPath, enviFilePath);
-    await (0, import_env_helpers4.writeProjectConfig)(projectId, "main");
-    console.log(import_picocolors4.default.green("Project linked successfully!"));
+    await writeProjectConfig(projectId, "main");
+    console.log(import_picocolors5.default.green("Project linked successfully!"));
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors4.default.yellow(`
+      console.error(import_picocolors5.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors4.default.yellow("\nLink process cancelled."));
+      console.log(import_picocolors5.default.yellow("\nLink process cancelled."));
       return;
     }
-    console.error(import_picocolors4.default.red("\nError linking project:"), error.message);
+    console.error(import_picocolors5.default.red("\nError linking project:"), error.message);
     process.exit(1);
   }
 }
 
 // src/commands/new.ts
-var import_env_helpers6 = require("@nvii/env-helpers");
-var import_picocolors6 = __toESM(require_picocolors());
+var import_picocolors7 = __toESM(require_picocolors());
 
 // src/commands/unlink.ts
-var import_env_helpers5 = require("@nvii/env-helpers");
-var import_picocolors5 = __toESM(require_picocolors());
+var import_picocolors6 = __toESM(require_picocolors());
 async function unlinkProject(checkProjects = true) {
   try {
-    if (!(0, import_env_helpers5.isLogedIn)()) {
-      console.log(import_picocolors5.default.red("You must be logged in to link a project."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors6.default.red("You must be logged in to link a project."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers5.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors5.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors6.default.red("No user ID found. Please log in again."));
       return;
     }
-    const projectConfig = await (0, import_env_helpers5.readProjectConfig)();
-    const client = await (0, import_env_helpers5.getConfiguredClient)();
+    const projectConfig = await readProjectConfig();
+    const client = await getConfiguredClient();
     const response = await client.get(`/projects/${userConfig.userId}`);
     const projects = response.data;
     if (checkProjects && !projects.length) {
       console.log(
-        import_picocolors5.default.yellow("No projects found for current user. Run 'nvii new'.")
+        import_picocolors6.default.yellow("No projects found for current user. Run 'nvii new'.")
       );
       return;
     }
@@ -26676,7 +26998,7 @@ async function unlinkProject(checkProjects = true) {
     );
     if (checkProjects) {
       if (!project) {
-        console.log(import_picocolors5.default.red("Project is not linked to a remote project yet."));
+        console.log(import_picocolors6.default.red("Project is not linked to a remote project yet."));
         return;
       }
     }
@@ -26687,7 +27009,7 @@ async function unlinkProject(checkProjects = true) {
       {
         type: "confirm",
         name: "unLinkProject",
-        message: `Are you sure you want to unlink from ${import_picocolors5.default.dim(project?.name)}`
+        message: `Are you sure you want to unlink from ${import_picocolors6.default.dim(project?.name)}`
       }
     ]);
     if (!unLinkProject) {
@@ -26695,27 +27017,27 @@ async function unlinkProject(checkProjects = true) {
       return;
     }
     console.log("\n");
-    const result = await (0, import_env_helpers5.unlinkProjectConfig)(project.id);
+    const result = await unlinkProjectConfig(project.id);
     if (!result) {
       console.log(
-        import_picocolors5.default.yellow(
+        import_picocolors6.default.yellow(
           "Oops. An error occurred deleting the local .nvii directory. You can delete it manually."
         )
       );
       process.exit(1);
     }
-    console.log(import_picocolors5.default.green(`Project unlinked successfully!`));
+    console.log(import_picocolors6.default.green(`Project unlinked successfully!`));
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors5.default.yellow(`
+      console.error(import_picocolors6.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors5.default.yellow("\nUnlink cancelled."));
+      console.log(import_picocolors6.default.yellow("\nUnlink cancelled."));
       return;
     }
-    console.error(import_picocolors5.default.red("\nError linking project:"), error.message);
+    console.error(import_picocolors6.default.red("\nError linking project:"), error.message);
     process.exit(1);
   }
 }
@@ -26726,37 +27048,37 @@ async function promptUser(message) {
     {
       type: "input",
       name: "answer",
-      message: import_picocolors6.default.cyan(message)
+      message: import_picocolors7.default.cyan(message)
     }
   ]);
   return response.answer.trim();
 }
 async function createProject() {
   try {
-    if (!(0, import_env_helpers6.isLogedIn)()) {
-      console.log(import_picocolors6.default.red("You must be logged in to create a new project."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors7.default.red("You must be logged in to create a new project."));
       await login();
     }
     const projectName = await promptUser("Enter your project name:");
     if (!projectName) {
-      console.error(import_picocolors6.default.red("\u274C Project name cannot be empty."));
+      console.error(import_picocolors7.default.red("\u274C Project name cannot be empty."));
       process.exit(1);
     }
     const projectDescription = await promptUser(
       "Enter project description (optional):"
     );
-    const userConfig = await (0, import_env_helpers6.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
       console.error(
-        import_picocolors6.default.red("\u274C Invalid user credentials. Please log in again.")
+        import_picocolors7.default.red("\u274C Invalid user credentials. Please log in again.")
       );
       await login();
       return;
     }
-    const envs = await (0, import_env_helpers6.readEnvFile)();
-    const encryptedEnvs = (0, import_env_helpers6.encryptEnvValues)(envs, userConfig.userId);
+    const envs = await readEnvFile();
+    const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
     await unlinkProject(false);
-    const client = await (0, import_env_helpers6.getConfiguredClient)();
+    const client = await getConfiguredClient();
     const response = await client.post(`/projects/${userConfig.userId}`, {
       name: projectName,
       content: encryptedEnvs,
@@ -26765,82 +27087,7 @@ async function createProject() {
     });
     const projectId = response.data.data.id;
     const branchName = "main";
-    await (0, import_env_helpers6.writeProjectConfig)(projectId, branchName);
-  } catch (error) {
-    if (error.response) {
-      console.error(import_picocolors6.default.yellow(`
-${error.response.data.error}`));
-      return;
-    }
-    if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors6.default.yellow("\nProject create cancelled."));
-      return;
-    }
-    console.error(import_picocolors6.default.red("\u274C Error creating project:"), error.message);
-    process.exit(1);
-  }
-}
-
-// src/commands/update.ts
-var import_picocolors7 = __toESM(require_picocolors());
-var import_env_helpers7 = require("@nvii/env-helpers");
-async function updateProject() {
-  try {
-    const userData = await (0, import_env_helpers7.readConfigFile)();
-    if (!(0, import_env_helpers7.isLogedIn)()) {
-      console.log(import_picocolors7.default.red("You must be logged in to update a project."));
-      await login();
-    }
-    if (!userData) {
-      console.log(import_picocolors7.default.red("You must be logged in to update a project."));
-      await login();
-    }
-    const config = await (0, import_env_helpers7.readProjectConfig)();
-    if (!config) {
-      console.log(
-        import_picocolors7.default.red("Cannot read local .nvii folder currently. Try again.")
-      );
-      process.exit(1);
-    }
-    const projectId = config.projectId;
-    if (!projectId) {
-      console.error(
-        import_picocolors7.default.red(
-          "\u274C Project not linked. Please run 'nvii link' to link your project first."
-        )
-      );
-      process.exit(1);
-    }
-    const envVars = await (0, import_env_helpers7.readEnvFile)();
-    const encryptedEnv = (0, import_env_helpers7.encryptEnvValues)(envVars, userData.userId);
-    const client = await (0, import_env_helpers7.getConfiguredClient)();
-    const versions = await client.get(
-      `/projects/${userData.userId}/${projectId}/versions/latest`
-    );
-    if (!versions || !versions.data) {
-      console.error(import_picocolors7.default.red("\u274C Project not found or no data available."));
-      process.exit(1);
-    }
-    const versionToUpdateTo = versions.data[0];
-    if (!versionToUpdateTo.content) {
-      console.error(import_picocolors7.default.red("\u274C No content found for this project envs."));
-      process.exit(1);
-    }
-    const decryptedEnv = (0, import_env_helpers7.decryptEnvValues)(
-      versionToUpdateTo?.content,
-      userData?.userId
-    );
-    const data = await (0, import_env_helpers7.writeEnvFile)(decryptedEnv);
-    if (!data) {
-      console.error(
-        import_picocolors7.default.red("\u274C Failed to write environment variables to .env file.")
-      );
-      process.exit(1);
-    }
-    console.log(import_picocolors7.default.cyan("Updated environment variables:"));
-    console.log(
-      import_picocolors7.default.green("\u2705 Project updated successfully with new .env variables.")
-    );
+    await writeProjectConfig(projectId, branchName);
   } catch (error) {
     if (error.response) {
       console.error(import_picocolors7.default.yellow(`
@@ -26848,17 +27095,90 @@ ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors7.default.yellow("\nUpdate cancelled."));
+      console.log(import_picocolors7.default.yellow("\nProject create cancelled."));
       return;
     }
-    console.error(import_picocolors7.default.red("\u274C Error updating project:"), error.message);
+    console.error(import_picocolors7.default.red("\u274C Error creating project:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/update.ts
+var import_picocolors8 = __toESM(require_picocolors());
+async function updateProject() {
+  try {
+    const userData = await readConfigFile();
+    if (!isLogedIn()) {
+      console.log(import_picocolors8.default.red("You must be logged in to update a project."));
+      await login();
+    }
+    if (!userData) {
+      console.log(import_picocolors8.default.red("You must be logged in to update a project."));
+      await login();
+    }
+    const config = await readProjectConfig();
+    if (!config) {
+      console.log(
+        import_picocolors8.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors8.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const envVars = await readEnvFile();
+    const encryptedEnv = encryptEnvValues(envVars, userData.userId);
+    const client = await getConfiguredClient();
+    const versions = await client.get(
+      `/projects/${userData.userId}/${projectId}/versions/latest`
+    );
+    if (!versions || !versions.data) {
+      console.error(import_picocolors8.default.red("\u274C Project not found or no data available."));
+      process.exit(1);
+    }
+    const versionToUpdateTo = versions.data[0];
+    if (!versionToUpdateTo.content) {
+      console.error(import_picocolors8.default.red("\u274C No content found for this project envs."));
+      process.exit(1);
+    }
+    const decryptedEnv = decryptEnvValues(
+      versionToUpdateTo?.content,
+      userData?.userId
+    );
+    const data = await writeEnvFile(decryptedEnv);
+    if (!data) {
+      console.error(
+        import_picocolors8.default.red("\u274C Failed to write environment variables to .env file.")
+      );
+      process.exit(1);
+    }
+    console.log(import_picocolors8.default.cyan("Updated environment variables:"));
+    console.log(
+      import_picocolors8.default.green("\u2705 Project updated successfully with new .env variables.")
+    );
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors8.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors8.default.yellow("\nUpdate cancelled."));
+      return;
+    }
+    console.error(import_picocolors8.default.red("\u274C Error updating project:"), error.message);
     process.exit(1);
   }
 }
 
 // src/commands/pull.ts
-var import_picocolors8 = __toESM(require_picocolors());
-var import_env_helpers8 = require("@nvii/env-helpers");
+var import_picocolors9 = __toESM(require_picocolors());
 
 // src/lib/conflict.ts
 function detectConflicts(localEnv, remoteEnv) {
@@ -26910,13 +27230,12 @@ function mergeEnvironments(localEnv, remoteEnv) {
 }
 
 // src/commands/pull.ts
-var import_env_helpers9 = require("@nvii/env-helpers");
 var handleSummary = ({
   projectId,
   localEnvs,
   prevVersion
 }) => {
-  const diff = (0, import_env_helpers9.generateDiff)(prevVersion, localEnvs);
+  const diff = generateDiff(prevVersion, localEnvs);
   const changesSummary = {
     added: diff.added,
     modified: diff.updated.map(([key, { old, new: newValue }]) => ({
@@ -26928,35 +27247,35 @@ var handleSummary = ({
   };
   if (changesSummary.added.length > 0 || changesSummary.modified.length > 0 || changesSummary.removed.length > 0) {
     console.log(
-      import_picocolors8.default.bold(`
-\u{1F4DC} Change summary for project: ${import_picocolors8.default.cyan(`${projectId}`)}`)
+      import_picocolors9.default.bold(`
+\u{1F4DC} Change summary for project: ${import_picocolors9.default.cyan(`${projectId}`)}`)
     );
-    console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+    console.log(import_picocolors9.default.dim("--------------------------------------------------"));
     changesSummary.added.forEach((key) => {
       console.log(
-        `${import_picocolors8.default.yellow(`${key}:`)} added with value: ${localEnvs[key]}`
+        `${import_picocolors9.default.yellow(`${key}:`)} added with value: ${localEnvs[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
-      console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors9.default.dim("--------------------------------------------------"));
     });
     changesSummary.modified.forEach((change) => {
       console.log(
-        `${import_picocolors8.default.yellow(`${change.key}:`)} changed from ${change.value} (local) to ${change.original} (remote)`
+        `${import_picocolors9.default.yellow(`${change.key}:`)} changed from ${change.value} (local) to ${change.original} (remote)`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
-      console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors9.default.dim("--------------------------------------------------"));
     });
     changesSummary.removed.forEach((key) => {
       console.log(
-        `${import_picocolors8.default.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
+        `${import_picocolors9.default.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
-      console.log(import_picocolors8.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors9.default.dim("--------------------------------------------------"));
     });
   } else {
     console.log(
-      import_picocolors8.default.bold(`
-No changes detected for project: ${import_picocolors8.default.cyan(`${projectId}`)}`)
+      import_picocolors9.default.bold(`
+No changes detected for project: ${import_picocolors9.default.cyan(`${projectId}`)}`)
     );
   }
 };
@@ -26976,38 +27295,38 @@ async function pullRemoteChanges(args) {
     }
   }
   try {
-    if (!(0, import_env_helpers8.isLogedIn)()) {
-      console.log(import_picocolors8.default.red("You must be logged in to pull a project."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors9.default.red("You must be logged in to pull a project."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers8.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors8.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors9.default.red("No user ID found. Please log in again."));
       return;
     }
-    const existingEnv = await (0, import_env_helpers8.readEnvFile)();
-    const config = await (0, import_env_helpers8.readProjectConfig)();
+    const existingEnv = await readEnvFile();
+    const config = await readProjectConfig();
     if (!config) {
       console.log(
-        import_picocolors8.default.red("Cannot read local .nvii folder currently. Try again.")
+        import_picocolors9.default.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
-        import_picocolors8.default.red(
+        import_picocolors9.default.red(
           "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
     }
-    const client = await (0, import_env_helpers8.getConfiguredClient)();
+    const client = await getConfiguredClient();
     const response = await client.get(`/projects/${userConfig.userId}/${projectId}`);
     let { versions, project } = response.data;
     if (!project) {
-      console.log(import_picocolors8.default.yellow("No project found for this user or repository."));
+      console.log(import_picocolors9.default.yellow("No project found for this user or repository."));
       process.exit(1);
     }
     versions = versions.sort(
@@ -27015,7 +27334,7 @@ async function pullRemoteChanges(args) {
     );
     const newVersion = versions[versions.length - 1];
     if (!project.content) {
-      console.log(import_picocolors8.default.yellow("No content found for this project envs."));
+      console.log(import_picocolors9.default.yellow("No content found for this project envs."));
       process.exit(1);
     }
     if (dryRun) {
@@ -27034,7 +27353,7 @@ async function pullRemoteChanges(args) {
     if (!skipResolve) {
       if (conflicts.length > 0) {
         console.log(
-          import_picocolors8.default.yellow(
+          import_picocolors9.default.yellow(
             `
 \u26A0\uFE0F  Found ${conflicts.length} conflict(s) between local and remote versions.`
           )
@@ -27052,9 +27371,9 @@ async function pullRemoteChanges(args) {
         );
       }
     }
-    const values = await (0, import_env_helpers8.writeEnvFile)(finalContent);
+    const values = await writeEnvFile(finalContent);
     if (!values) {
-      console.error(import_picocolors8.default.red("\nOops an unexpected error occurred."));
+      console.error(import_picocolors9.default.red("\nOops an unexpected error occurred."));
       process.exit(1);
     }
     handleSummary({
@@ -27062,54 +27381,53 @@ async function pullRemoteChanges(args) {
       localEnvs: existingEnv,
       prevVersion: finalContent
     });
-    console.log(import_picocolors8.default.green(".env file updated successfully!"));
-  } catch (error) {
-    if (error.response) {
-      console.error(import_picocolors8.default.yellow(`
-${error.response.data.error}`));
-      return;
-    }
-    if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors8.default.yellow("\nPull cancelled."));
-      return;
-    }
-    console.error(import_picocolors8.default.red("\nError linking project:"), error.message);
-    process.exit(1);
-  }
-}
-
-// src/commands/some.ts
-var import_picocolors9 = __toESM(require_picocolors());
-async function some() {
-  try {
+    console.log(import_picocolors9.default.green(".env file updated successfully!"));
   } catch (error) {
     if (error.response) {
       console.error(import_picocolors9.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors9.default.yellow("\nPull cancelled."));
+      return;
+    }
+    console.error(import_picocolors9.default.red("\nError linking project:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/some.ts
+var import_picocolors10 = __toESM(require_picocolors());
+async function some() {
+  try {
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors10.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
     console.error(
-      import_picocolors9.default.red("\nError merging env branches (versions):"),
+      import_picocolors10.default.red("\nError merging env branches (versions):"),
       error.message
     );
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors9.default.yellow("\nSome cancelled."));
+      console.log(import_picocolors10.default.yellow("\nSome cancelled."));
       return;
     }
-    console.error(import_picocolors9.default.red("Error soming versions:"), error.message);
+    console.error(import_picocolors10.default.red("Error soming versions:"), error.message);
     process.exit(1);
   }
 }
 
 // src/commands/push.ts
-var import_env_helpers10 = require("@nvii/env-helpers");
-var import_picocolors10 = __toESM(require_picocolors());
+var import_picocolors11 = __toESM(require_picocolors());
 var handleSummary2 = ({
   projectId,
   localEnvs,
   prevVersion
 }) => {
-  const diff = (0, import_env_helpers10.generateDiff)(prevVersion, localEnvs);
+  const diff = generateDiff(prevVersion, localEnvs);
   const changesSummary = {
     added: diff.added,
     modified: diff.updated.map(([key, { old, new: newValue }]) => ({
@@ -27121,35 +27439,35 @@ var handleSummary2 = ({
   };
   if (changesSummary.added.length > 0 || changesSummary.modified.length > 0 || changesSummary.removed.length > 0) {
     console.log(
-      import_picocolors10.default.bold(`
-\u{1F4DC} Change summary for project: ${import_picocolors10.default.cyan(`${projectId}`)}`)
+      import_picocolors11.default.bold(`
+\u{1F4DC} Change summary for project: ${import_picocolors11.default.cyan(`${projectId}`)}`)
     );
-    console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+    console.log(import_picocolors11.default.dim("--------------------------------------------------"));
     changesSummary.added.forEach((key) => {
       console.log(
-        `${import_picocolors10.default.yellow(`${key}:`)} added with value: ${localEnvs[key]}`
+        `${import_picocolors11.default.yellow(`${key}:`)} added with value: ${localEnvs[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
-      console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors11.default.dim("--------------------------------------------------"));
     });
     changesSummary.modified.forEach((change) => {
       console.log(
-        `${import_picocolors10.default.yellow(`${change.key}:`)} changed from ${change.original} (remote) to ${change.value} (local)`
+        `${import_picocolors11.default.yellow(`${change.key}:`)} changed from ${change.original} (remote) to ${change.value} (local)`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
-      console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors11.default.dim("--------------------------------------------------"));
     });
     changesSummary.removed.forEach((key) => {
       console.log(
-        `${import_picocolors10.default.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
+        `${import_picocolors11.default.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
-      console.log(import_picocolors10.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors11.default.dim("--------------------------------------------------"));
     });
   } else {
     console.log(
-      import_picocolors10.default.bold(`
-No changes detected for project: ${import_picocolors10.default.cyan(`${projectId}`)}`)
+      import_picocolors11.default.bold(`
+No changes detected for project: ${import_picocolors11.default.cyan(`${projectId}`)}`)
     );
   }
 };
@@ -27169,24 +27487,24 @@ async function pushLatestChanges(args) {
     }
   }
   try {
-    if (!(0, import_env_helpers10.isLogedIn)()) {
-      console.log(import_picocolors10.default.red("You must be logged in to push changes."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors11.default.red("You must be logged in to push changes."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers10.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors10.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors11.default.red("No user ID found. Please log in again."));
       return;
     }
-    let config = await (0, import_env_helpers10.readProjectConfig)();
+    let config = await readProjectConfig();
     if (!config) {
       await linkProject();
     }
-    config = await (0, import_env_helpers10.readProjectConfig)();
+    config = await readProjectConfig();
     if (!config) {
       console.log(
-        import_picocolors10.default.red(
+        import_picocolors11.default.red(
           "An error occurred reading local .nvii folder currently. Try again."
         )
       );
@@ -27195,15 +27513,15 @@ async function pushLatestChanges(args) {
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
-        import_picocolors10.default.red(
+        import_picocolors11.default.red(
           "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
     }
-    const localEnvs = await (0, import_env_helpers10.readEnvFile)();
+    const localEnvs = await readEnvFile();
     if (Object.keys(localEnvs).length === 0) {
-      console.log(import_picocolors10.default.yellow("Local .env file is empty. Nothing to push."));
+      console.log(import_picocolors11.default.yellow("Local .env file is empty. Nothing to push."));
       return;
     }
     if (message.trim() === "" && !dryRun) {
@@ -27217,14 +27535,14 @@ async function pushLatestChanges(args) {
       ]);
       message = description;
     }
-    const client = await (0, import_env_helpers10.getConfiguredClient)();
+    const client = await getConfiguredClient();
     if (dryRun) {
       const response = await client.get(
         `/projects/${userConfig.userId}/${projectId}/versions`
       );
       if (!response) {
         console.log(
-          import_picocolors10.default.red(`bad: unable to access '${process.env.CLIENT_URL}'`)
+          import_picocolors11.default.red(`bad: unable to access '${process.env.CLIENT_URL}'`)
         );
       }
       let versions = response.data;
@@ -27244,26 +27562,25 @@ async function pushLatestChanges(args) {
       message
     });
     console.log(
-      import_picocolors10.default.green("\n\u2705 Successfully pushed changes and created a new version.")
+      import_picocolors11.default.green("\n\u2705 Successfully pushed changes and created a new version.")
     );
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors10.default.yellow(`
+      console.error(import_picocolors11.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors10.default.yellow("\nPush cancelled."));
+      console.log(import_picocolors11.default.yellow("\nPush cancelled."));
       return;
     }
-    console.error(import_picocolors10.default.red("\nError pushing local changes:"), error.message);
+    console.error(import_picocolors11.default.red("\nError pushing local changes:"), error.message);
     process.exit(1);
   }
 }
 
 // src/commands/history.ts
-var import_env_helpers11 = require("@nvii/env-helpers");
-var import_picocolors11 = __toESM(require_picocolors());
+var import_picocolors12 = __toESM(require_picocolors());
 async function getHistory(args) {
   let limit = 0;
   let oneline = false;
@@ -27274,12 +27591,12 @@ async function getHistory(args) {
     }
     if (args.limit) {
       if (!Number(args.limit)) {
-        console.warn(import_picocolors11.default.yellow("Invalid limit (must be of type number)"));
+        console.warn(import_picocolors12.default.yellow("Invalid limit (must be of type number)"));
         process.exit(1);
       }
       const limitNumber = Number(args.limit);
       if (limitNumber <= 0) {
-        console.warn(import_picocolors11.default.yellow("Invalid limit (must be at least 1)"));
+        console.warn(import_picocolors12.default.yellow("Invalid limit (must be at least 1)"));
         process.exit(1);
       }
       limit = limitNumber;
@@ -27289,48 +27606,48 @@ async function getHistory(args) {
     }
   }
   try {
-    if (!(0, import_env_helpers11.isLogedIn)()) {
-      console.log(import_picocolors11.default.red("You must be logged in to view project history."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors12.default.red("You must be logged in to view project history."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers11.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors11.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors12.default.red("No user ID found. Please log in again."));
       return;
     }
-    const config = await (0, import_env_helpers11.readProjectConfig)();
+    const config = await readProjectConfig();
     if (!config) {
       console.log(
-        import_picocolors11.default.red("Cannot read local .nvii folder currently. Try again.")
+        import_picocolors12.default.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
-        import_picocolors11.default.red(
+        import_picocolors12.default.red(
           "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
     }
-    const client = await (0, import_env_helpers11.getConfiguredClient)();
+    const client = await getConfiguredClient();
     const response = await client.get(
       `/projects/${userConfig.userId}/${projectId}`
     );
     const project = response.data.project;
     if (!project) {
-      console.log(import_picocolors11.default.yellow("No project found for this user or repository."));
+      console.log(import_picocolors12.default.yellow("No project found for this user or repository."));
       process.exit(1);
     }
     if (!project.content) {
-      console.log(import_picocolors11.default.yellow("No content found for this project envs."));
+      console.log(import_picocolors12.default.yellow("No content found for this project envs."));
       process.exit(1);
     }
-    const versions = await (0, import_env_helpers11.fetchVersions)(userConfig.userId, projectId, limit);
+    const versions = await fetchVersions(userConfig.userId, projectId, limit);
     if (!versions || versions.length === 0) {
-      console.log(import_picocolors11.default.yellow("No version history found for this project."));
+      console.log(import_picocolors12.default.yellow("No version history found for this project."));
       return;
     }
     let filteredVersions = versions;
@@ -27339,21 +27656,21 @@ async function getHistory(args) {
         (version) => version.user.email?.toLowerCase().includes(author.toLowerCase()) || version.user.name && version.user.name.toLowerCase().includes(author.toLowerCase())
       );
       if (filteredVersions.length === 0) {
-        console.log(import_picocolors11.default.yellow(`No versions found for author: ${author}`));
+        console.log(import_picocolors12.default.yellow(`No versions found for author: ${author}`));
         return;
       }
     }
     console.log(
-      import_picocolors11.default.bold(
+      import_picocolors12.default.bold(
         `
-\u{1F4DC} Version history for project ${import_picocolors11.default.cyan(`${project.name} - ${project.id}`)}`
+\u{1F4DC} Version history for project ${import_picocolors12.default.cyan(`${project.name} - ${project.id}`)}`
       )
     );
     if (author) {
-      console.log(import_picocolors11.default.dim(`Filtered by author: ${author}`));
+      console.log(import_picocolors12.default.dim(`Filtered by author: ${author}`));
     }
     if (!oneline) {
-      console.log(import_picocolors11.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors12.default.dim("--------------------------------------------------"));
     }
     filteredVersions.forEach((version) => {
       if (oneline) {
@@ -27362,49 +27679,48 @@ async function getHistory(args) {
         const date = new Date(version.createdAt).toLocaleDateString();
         const message = version.description || "No description";
         console.log(
-          `${import_picocolors11.default.yellow(shortId)} ${import_picocolors11.default.dim(date)} ${import_picocolors11.default.cyan(author2)} ${message}`
+          `${import_picocolors12.default.yellow(shortId)} ${import_picocolors12.default.dim(date)} ${import_picocolors12.default.cyan(author2)} ${message}`
         );
       } else {
         console.log(
-          `${import_picocolors11.default.yellow(`version ${version.id}`)} ${import_picocolors11.default.dim(`(by ${version.user.name || version.user.email})`)}`
+          `${import_picocolors12.default.yellow(`version ${version.id}`)} ${import_picocolors12.default.dim(`(by ${version.user.name || version.user.email})`)}`
         );
         console.log(`Date:    ${new Date(version.createdAt).toLocaleString()}`);
         console.log(
-          `Message: ${version.description || import_picocolors11.default.dim("No description")}`
+          `Message: ${version.description || import_picocolors12.default.dim("No description")}`
         );
         console.log(
-          import_picocolors11.default.dim("--------------------------------------------------")
+          import_picocolors12.default.dim("--------------------------------------------------")
         );
       }
     });
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors11.default.yellow(`
+      console.error(import_picocolors12.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors11.default.yellow("\nHistory log cancelled."));
+      console.log(import_picocolors12.default.yellow("\nHistory log cancelled."));
       return;
     }
-    console.error(import_picocolors11.default.red("\nError fetching history:"), error.message);
+    console.error(import_picocolors12.default.red("\nError fetching history:"), error.message);
     process.exit(1);
   }
 }
 
 // src/commands/auth/logout.ts
-var import_env_helpers12 = require("@nvii/env-helpers");
-var import_os2 = __toESM(require("os"));
-var import_path4 = __toESM(require("path"));
-var import_picocolors12 = __toESM(require_picocolors());
-var import_fs4 = __toESM(require("fs"));
+var import_os3 = __toESM(require("os"));
+var import_path5 = __toESM(require("path"));
+var import_picocolors13 = __toESM(require_picocolors());
+var import_fs5 = __toESM(require("fs"));
 async function logout(args) {
   let username = "";
   let email = "";
   if (args) {
     if (args.username && args.email) {
       console.log(
-        import_picocolors12.default.yellow(
+        import_picocolors13.default.yellow(
           "Unexpected input. Ether provide your email or username to logout. NOT BOTH"
         )
       );
@@ -27418,9 +27734,9 @@ async function logout(args) {
     }
   }
   try {
-    const config = await (0, import_env_helpers12.readConfigFile)();
+    const config = await readConfigFile();
     if (!config) {
-      console.log(import_picocolors12.default.yellow("You are not logged in."));
+      console.log(import_picocolors13.default.yellow("You are not logged in."));
       return;
     }
     if (!username && !email) {
@@ -27455,12 +27771,12 @@ async function logout(args) {
       ]);
       email = userId;
     }
-    const homeDir = import_os2.default.homedir();
-    const filePath = import_path4.default.join(homeDir, import_env_helpers12.FILENAME);
+    const homeDir = import_os3.default.homedir();
+    const filePath = import_path5.default.join(homeDir, FILENAME);
     if (email) {
       if (config.email !== email) {
         console.log(
-          import_picocolors12.default.redBright("Oops, Invalid email. Check your email and try again.")
+          import_picocolors13.default.redBright("Oops, Invalid email. Check your email and try again.")
         );
         process.exit(1);
       }
@@ -27468,7 +27784,7 @@ async function logout(args) {
     if (username) {
       if (config.username !== username) {
         console.log(
-          import_picocolors12.default.redBright(
+          import_picocolors13.default.redBright(
             "Oops, Invalid username. Check your username and try again."
           )
         );
@@ -27484,38 +27800,37 @@ async function logout(args) {
       }
     ]);
     if (!confirm) {
-      console.log(import_picocolors12.default.yellow("Logout cancelled."));
+      console.log(import_picocolors13.default.yellow("Logout cancelled."));
       return;
     }
-    import_fs4.default.unlinkSync(filePath);
-    console.log(import_picocolors12.default.green("Successfully logged out!"));
+    import_fs5.default.unlinkSync(filePath);
+    console.log(import_picocolors13.default.green("Successfully logged out!"));
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors12.default.yellow(`
+      console.error(import_picocolors13.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors12.default.yellow("\nLogout cancelled."));
+      console.log(import_picocolors13.default.yellow("\nLogout cancelled."));
       return;
     }
-    console.error(import_picocolors12.default.red("Error during logout:"), error.message);
+    console.error(import_picocolors13.default.red("Error during logout:"), error.message);
     process.exit(1);
   }
 }
 
 // src/commands/auth/whoami.ts
-var import_env_helpers13 = require("@nvii/env-helpers");
-var import_picocolors13 = __toESM(require_picocolors());
+var import_picocolors14 = __toESM(require_picocolors());
 var whoami = async () => {
   try {
-    const file = await (0, import_env_helpers13.readConfigFile)();
+    const file = await readConfigFile();
     if (!file)
       return;
-    console.log(import_picocolors13.default.green(`Logged in as ${file.username} (${file.email})`));
+    console.log(import_picocolors14.default.green(`Logged in as ${file.username} (${file.email})`));
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors13.default.yellow(`
+      console.error(import_picocolors14.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
@@ -27525,8 +27840,7 @@ ${error.response.data.error}`));
 };
 
 // src/commands/tag.ts
-var import_env_helpers14 = require("@nvii/env-helpers");
-var import_picocolors14 = __toESM(require_picocolors());
+var import_picocolors15 = __toESM(require_picocolors());
 async function createTag(args) {
   const oraModule = await import("ora");
   const ora = oraModule.spinners.aesthetic;
@@ -27541,40 +27855,40 @@ async function createTag(args) {
     }
   }
   try {
-    if (!(0, import_env_helpers14.isLogedIn)()) {
-      console.log(import_picocolors14.default.red("You must be logged in to create tags."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors15.default.red("You must be logged in to create tags."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers14.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors14.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors15.default.red("No user ID found. Please log in again."));
       return;
     }
-    const config = await (0, import_env_helpers14.readProjectConfig)();
+    const config = await readProjectConfig();
     if (!config) {
       console.log(
-        import_picocolors14.default.red("Cannot read local .nvii folder currently. Try again.")
+        import_picocolors15.default.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
-        import_picocolors14.default.red(
+        import_picocolors15.default.red(
           "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
     }
-    const client = await (0, import_env_helpers14.getConfiguredClient)();
+    const client = await getConfiguredClient();
     if (!versionId) {
       const versionsResponse = await client.get(
         `/projects/${userConfig.userId}/${projectId}/versions?limit=1`
       );
       const versions = versionsResponse.data;
       if (versions.length === 0) {
-        console.log(import_picocolors14.default.yellow("No versions available to tag."));
+        console.log(import_picocolors15.default.yellow("No versions available to tag."));
         return;
       }
       versionId = versions[0].id;
@@ -27604,110 +27918,34 @@ async function createTag(args) {
       }
     );
     console.log(
-      import_picocolors14.default.green(
+      import_picocolors15.default.green(
         `\u2705 Successfully created tag '${tagName}' for version ${versionId?.slice(0, 8)}`
       )
     );
   } catch (error) {
     if (error.response?.status === 409) {
       console.error(
-        import_picocolors14.default.red("\u274C Tag name already exists. Choose a different name.")
+        import_picocolors15.default.red("\u274C Tag name already exists. Choose a different name.")
       );
     } else {
-      console.error(import_picocolors14.default.red("Error creating tag:"), error.message);
+      console.error(import_picocolors15.default.red("Error creating tag:"), error.message);
     }
     process.exit(1);
   }
 }
 async function listTags() {
   try {
-    if (!(0, import_env_helpers14.isLogedIn)()) {
-      console.log(import_picocolors14.default.red("You must be logged in to list tags."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors15.default.red("You must be logged in to list tags."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers14.readConfigFile)();
-    if (!userConfig?.userId) {
-      console.log(import_picocolors14.default.red("No user ID found. Please log in again."));
-      return;
-    }
-    const config = await (0, import_env_helpers14.readProjectConfig)();
-    if (!config) {
-      console.log(
-        import_picocolors14.default.red("Cannot read local .nvii folder currently. Try again.")
-      );
-      process.exit(1);
-    }
-    const projectId = config.projectId;
-    if (!projectId) {
-      console.error(
-        import_picocolors14.default.red(
-          "\u274C Project not linked. Please run 'nvii link' to link your project first."
-        )
-      );
-      process.exit(1);
-    }
-    const client = await (0, import_env_helpers14.getConfiguredClient)();
-    const response = await client.get(
-      `/projects/${userConfig.userId}/${projectId}/versions/tags`
-    );
-    const tags = response.data;
-    if (!tags || tags.length === 0) {
-      console.log(import_picocolors14.default.yellow("No tags found for this project."));
-      return;
-    }
-    console.log(import_picocolors14.default.bold(`
-\u{1F3F7}\uFE0F Tags for project ${import_picocolors14.default.cyan(projectId)}`));
-    console.log(import_picocolors14.default.dim("--------------------------------------------------"));
-    tags.forEach((tag) => {
-      console.log(
-        `${import_picocolors14.default.yellow(tag.name)} -> ${import_picocolors14.default.dim(`version ${tag.versionId.slice(0, 8)}`)}`
-      );
-      console.log(`   ${tag.description || "No description"}`);
-      console.log(`   ${new Date(tag.createdAt).toLocaleDateString()}`);
-      console.log(import_picocolors14.default.dim("--------------------------------------------------"));
-    });
-  } catch (error) {
-    if (error.response) {
-      console.error(import_picocolors14.default.yellow(`
-${error.response.data.error}`));
-      return;
-    }
-    if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors14.default.yellow("\nTag cancelled."));
-      return;
-    }
-    console.error(import_picocolors14.default.red("Error listing tags:"), error.message);
-    process.exit(1);
-  }
-}
-
-// src/commands/branch.ts
-var import_env_helpers15 = require("@nvii/env-helpers");
-var import_picocolors15 = __toESM(require_picocolors());
-async function createBranch(args) {
-  let branchName = "";
-  let baseVersionId = "";
-  if (args) {
-    if (args.name) {
-      branchName = args.name;
-    }
-    if (args.version) {
-      baseVersionId = args.version;
-    }
-  }
-  try {
-    if (!(0, import_env_helpers15.isLogedIn)()) {
-      console.log(import_picocolors15.default.red("You must be logged in to create branches."));
-      await login();
-      return;
-    }
-    const userConfig = await (0, import_env_helpers15.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
       console.log(import_picocolors15.default.red("No user ID found. Please log in again."));
       return;
     }
-    const config = await (0, import_env_helpers15.readProjectConfig)();
+    const config = await readProjectConfig();
     if (!config) {
       console.log(
         import_picocolors15.default.red("Cannot read local .nvii folder currently. Try again.")
@@ -27723,7 +27961,82 @@ async function createBranch(args) {
       );
       process.exit(1);
     }
-    const client = await (0, import_env_helpers15.getConfiguredClient)();
+    const client = await getConfiguredClient();
+    const response = await client.get(
+      `/projects/${userConfig.userId}/${projectId}/versions/tags`
+    );
+    const tags = response.data;
+    if (!tags || tags.length === 0) {
+      console.log(import_picocolors15.default.yellow("No tags found for this project."));
+      return;
+    }
+    console.log(import_picocolors15.default.bold(`
+\u{1F3F7}\uFE0F Tags for project ${import_picocolors15.default.cyan(projectId)}`));
+    console.log(import_picocolors15.default.dim("--------------------------------------------------"));
+    tags.forEach((tag) => {
+      console.log(
+        `${import_picocolors15.default.yellow(tag.name)} -> ${import_picocolors15.default.dim(`version ${tag.versionId.slice(0, 8)}`)}`
+      );
+      console.log(`   ${tag.description || "No description"}`);
+      console.log(`   ${new Date(tag.createdAt).toLocaleDateString()}`);
+      console.log(import_picocolors15.default.dim("--------------------------------------------------"));
+    });
+  } catch (error) {
+    if (error.response) {
+      console.error(import_picocolors15.default.yellow(`
+${error.response.data.error}`));
+      return;
+    }
+    if (error.message.includes("User force closed the prompt with SIGINT")) {
+      console.log(import_picocolors15.default.yellow("\nTag cancelled."));
+      return;
+    }
+    console.error(import_picocolors15.default.red("Error listing tags:"), error.message);
+    process.exit(1);
+  }
+}
+
+// src/commands/branch.ts
+var import_picocolors16 = __toESM(require_picocolors());
+async function createBranch(args) {
+  let branchName = "";
+  let baseVersionId = "";
+  if (args) {
+    if (args.name) {
+      branchName = args.name;
+    }
+    if (args.version) {
+      baseVersionId = args.version;
+    }
+  }
+  try {
+    if (!isLogedIn()) {
+      console.log(import_picocolors16.default.red("You must be logged in to create branches."));
+      await login();
+      return;
+    }
+    const userConfig = await readConfigFile();
+    if (!userConfig?.userId) {
+      console.log(import_picocolors16.default.red("No user ID found. Please log in again."));
+      return;
+    }
+    const config = await readProjectConfig();
+    if (!config) {
+      console.log(
+        import_picocolors16.default.red("Cannot read local .nvii folder currently. Try again.")
+      );
+      process.exit(1);
+    }
+    const projectId = config.projectId;
+    if (!projectId) {
+      console.error(
+        import_picocolors16.default.red(
+          "\u274C Project not linked. Please run 'nvii link' to link your project first."
+        )
+      );
+      process.exit(1);
+    }
+    const client = await getConfiguredClient();
     if (!branchName) {
       const { inputBranchName } = await esm_default12.prompt([
         {
@@ -27747,7 +28060,7 @@ async function createBranch(args) {
       );
       const versions = versionsResponse.data;
       if (versions.length === 0) {
-        console.log(import_picocolors15.default.yellow("No versions available to branch from."));
+        console.log(import_picocolors16.default.yellow("No versions available to branch from."));
         return;
       }
       baseVersionId = versions[0].id;
@@ -27761,21 +28074,21 @@ async function createBranch(args) {
       }
     );
     if (!response || !response.data) {
-      console.log(import_picocolors15.default.yellow("Oops an error occurred creating new branch."));
+      console.log(import_picocolors16.default.yellow("Oops an error occurred creating new branch."));
       process.exit(1);
     }
     console.log(
-      import_picocolors15.default.green(
+      import_picocolors16.default.green(
         `\u2705 Successfully created branch '${branchName}' from version ${baseVersionId?.slice(0, 8)}`
       )
     );
   } catch (error) {
     if (error.response?.status === 409) {
       console.error(
-        import_picocolors15.default.red("\u274C Branch name already exists. Choose a different name.")
+        import_picocolors16.default.red("\u274C Branch name already exists. Choose a different name.")
       );
     } else {
-      console.error(import_picocolors15.default.red("Error creating branch:"), error.message);
+      console.error(import_picocolors16.default.red("Error creating branch:"), error.message);
     }
     process.exit(1);
   }
@@ -27784,33 +28097,33 @@ async function listBranches() {
   const oraModule = await import("ora");
   const ora = oraModule.default;
   try {
-    if (!(0, import_env_helpers15.isLogedIn)()) {
-      console.log(import_picocolors15.default.red("You must be logged in to list branches."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors16.default.red("You must be logged in to list branches."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers15.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors15.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors16.default.red("No user ID found. Please log in again."));
       return;
     }
-    const config = await (0, import_env_helpers15.readProjectConfig)();
+    const config = await readProjectConfig();
     if (!config) {
       console.log(
-        import_picocolors15.default.red("Cannot read local .nvii folder currently. Try again.")
+        import_picocolors16.default.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
-        import_picocolors15.default.red(
+        import_picocolors16.default.red(
           "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
     }
-    const client = await (0, import_env_helpers15.getConfiguredClient)();
+    const client = await getConfiguredClient();
     const spinner = ora("Fetching project branches...\n").start();
     const response = await client.get(
       `/projects/${userConfig.userId}/${projectId}/versions/branches`
@@ -27818,34 +28131,34 @@ async function listBranches() {
     spinner.stop();
     const branches = response.data;
     if (!branches || branches.length === 0) {
-      console.log(import_picocolors15.default.yellow("No branches found for this project."));
+      console.log(import_picocolors16.default.yellow("No branches found for this project."));
       return;
     }
-    console.log(import_picocolors15.default.bold(`
-\u{1F33F} Branches for project ${import_picocolors15.default.cyan(projectId)}`));
-    console.log(import_picocolors15.default.dim("--------------------------------------------------"));
-    const projectConfig = await (0, import_env_helpers15.readProjectConfig)();
+    console.log(import_picocolors16.default.bold(`
+\u{1F33F} Branches for project ${import_picocolors16.default.cyan(projectId)}`));
+    console.log(import_picocolors16.default.dim("--------------------------------------------------"));
+    const projectConfig = await readProjectConfig();
     branches.forEach((branch) => {
-      const isActive = branch.isActive ? import_picocolors15.default.green("* ") : "  ";
+      const isActive = branch.isActive ? import_picocolors16.default.green("* ") : "  ";
       console.log(
-        `${isActive}${import_picocolors15.default.cyan(projectConfig?.branch === branch.name ? `*${branch.name}` : branch.name)} -> ${import_picocolors15.default.dim(`version ${branch.baseVersionId.slice(0, 8)}`)}`
+        `${isActive}${import_picocolors16.default.cyan(projectConfig?.branch === branch.name ? `*${branch.name}` : branch.name)} -> ${import_picocolors16.default.dim(`version ${branch.baseVersionId.slice(0, 8)}`)}`
       );
       console.log(
         `   Created: ${new Date(branch.createdAt).toLocaleDateString()}`
       );
-      console.log(import_picocolors15.default.dim("--------------------------------------------------"));
+      console.log(import_picocolors16.default.dim("--------------------------------------------------"));
     });
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors15.default.yellow(`
+      console.error(import_picocolors16.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors15.default.yellow("\nBranch create cancelled."));
+      console.log(import_picocolors16.default.yellow("\nBranch create cancelled."));
       return;
     }
-    console.error(import_picocolors15.default.red("Error listing branches:"), error.message);
+    console.error(import_picocolors16.default.red("Error listing branches:"), error.message);
     process.exit(1);
   }
 }
@@ -27857,40 +28170,40 @@ async function switchBranch(args) {
     }
   }
   try {
-    if (!(0, import_env_helpers15.isLogedIn)()) {
-      console.log(import_picocolors15.default.red("You must be logged in to switch branches."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors16.default.red("You must be logged in to switch branches."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers15.readConfigFile)();
+    const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(import_picocolors15.default.red("No user ID found. Please log in again."));
+      console.log(import_picocolors16.default.red("No user ID found. Please log in again."));
       return;
     }
-    const config = await (0, import_env_helpers15.readProjectConfig)();
+    const config = await readProjectConfig();
     if (!config) {
       console.log(
-        import_picocolors15.default.red("Cannot read local .nvii folder currently. Try again.")
+        import_picocolors16.default.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
-        import_picocolors15.default.red(
+        import_picocolors16.default.red(
           "\u274C Project not linked. Please run 'nvii link' to link your project first."
         )
       );
       process.exit(1);
     }
-    const client = await (0, import_env_helpers15.getConfiguredClient)();
+    const client = await getConfiguredClient();
     if (!branchName) {
       const branchesResponse = await client.get(
         `/projects/${userConfig.userId}/${projectId}/versions/branches`
       );
       const branches = branchesResponse.data;
       if (!branches || branches.length === 0) {
-        console.log(import_picocolors15.default.yellow("No branches found for this project."));
+        console.log(import_picocolors16.default.yellow("No branches found for this project."));
         return;
       }
       const { selectedBranch } = await esm_default12.prompt([
@@ -27910,41 +28223,40 @@ async function switchBranch(args) {
       `/projects/${userConfig.userId}/${projectId}/versions/branches/${branchName}`
     );
     branchName = remoteUpdateResponse.data.name;
-    await (0, import_env_helpers15.writeProjectConfig)(projectId, branchName);
-    console.log(import_picocolors15.default.green(`\u2705 Switched to branch '${branchName}'`));
+    await writeProjectConfig(projectId, branchName);
+    console.log(import_picocolors16.default.green(`\u2705 Switched to branch '${branchName}'`));
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors15.default.yellow(`
+      console.error(import_picocolors16.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors15.default.yellow("\nBranch switch cancelled."));
+      console.log(import_picocolors16.default.yellow("\nBranch switch cancelled."));
       return;
     }
     if (error.response?.status === 404) {
-      console.error(import_picocolors15.default.red("\u274C Branch not found."));
+      console.error(import_picocolors16.default.red("\u274C Branch not found."));
     } else {
-      console.error(import_picocolors15.default.red("Error switching branch:"), error.message);
+      console.error(import_picocolors16.default.red("Error switching branch:"), error.message);
     }
     process.exit(1);
   }
 }
 
 // src/commands/rollback.ts
-var import_env_helpers16 = require("@nvii/env-helpers");
-var import_picocolors16 = __toESM(require_picocolors());
+var import_picocolors17 = __toESM(require_picocolors());
 var skipConfirmationPrompt = async (skipConfirmation, description, id) => {
   if (!skipConfirmation) {
     const { confirmRollback } = await esm_default12.prompt([
       {
         type: "confirm",
         name: "confirmRollback",
-        message: `Are you sure you want to rollback to <${import_picocolors16.default.dim(`${description} - id: ${id}`)}>?`
+        message: `Are you sure you want to rollback to <${import_picocolors17.default.dim(`${description} - id: ${id}`)}>?`
       }
     ]);
     if (!confirmRollback) {
-      console.log(import_picocolors16.default.cyan("Skipping rollback..."));
+      console.log(import_picocolors17.default.cyan("Skipping rollback..."));
       process.exit(0);
     }
   }
@@ -27961,36 +28273,36 @@ async function rollback(args) {
     }
   }
   try {
-    if (!(0, import_env_helpers16.isLogedIn)()) {
-      console.log(import_picocolors16.default.red("You must be logged in to roll back."));
+    if (!isLogedIn()) {
+      console.log(import_picocolors17.default.red("You must be logged in to roll back."));
       await login();
       return;
     }
-    const userConfig = await (0, import_env_helpers16.readConfigFile)();
-    const config = await (0, import_env_helpers16.readProjectConfig)();
+    const userConfig = await readConfigFile();
+    const config = await readProjectConfig();
     if (!config) {
       console.log(
-        import_picocolors16.default.red("Cannot read local .nvii folder currently. Try again.")
+        import_picocolors17.default.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
     const projectId = config.projectId;
     if (!userConfig?.userId || !projectId) {
       console.error(
-        import_picocolors16.default.red(
+        import_picocolors17.default.red(
           "Project not linked or user not configured. Please run 'nvii link'."
         )
       );
       process.exit(1);
     }
-    const client = await (0, import_env_helpers16.getConfiguredClient)();
+    const client = await getConfiguredClient();
     if (versionId && versionId.trim() !== "") {
       const response2 = await client.get(
         `/projects/${userConfig.userId}/${projectId}/versions/${versionId}`
       );
       const version = response2.data;
       if (!version) {
-        console.log(import_picocolors16.default.red(`Version with id <${versionId}> not found.`));
+        console.log(import_picocolors17.default.red(`Version with id <${versionId}> not found.`));
         return;
       }
       await skipConfirmationPrompt(
@@ -27998,16 +28310,16 @@ async function rollback(args) {
         version.description,
         version.id
       );
-      console.log(import_picocolors16.default.cyan("Updating local .env file..."));
-      const values2 = await (0, import_env_helpers16.writeEnvFile)(
+      console.log(import_picocolors17.default.cyan("Updating local .env file..."));
+      const values2 = await writeEnvFile(
         version?.content
       );
       if (!values2) {
-        console.error(import_picocolors16.default.red("\nOops an unexpected error occurred."));
+        console.error(import_picocolors17.default.red("\nOops an unexpected error occurred."));
         process.exit(1);
       }
       console.log(
-        import_picocolors16.default.green(
+        import_picocolors17.default.green(
           "\u2705 Local .env file has been updated to match the rollback version."
         )
       );
@@ -28018,7 +28330,7 @@ async function rollback(args) {
     );
     const versions = versionsResponse.data;
     if (versions.length < 2) {
-      console.log(import_picocolors16.default.yellow("Not enough versions to roll back."));
+      console.log(import_picocolors17.default.yellow("Not enough versions to roll back."));
       return;
     }
     const { versionIdToRollback } = await esm_default12.prompt([
@@ -28038,7 +28350,7 @@ async function rollback(args) {
     const versionToRollback = response.data;
     if (!versionToRollback.content) {
       console.error(
-        import_picocolors16.default.red("Selected version has no content. Cannot roll back.")
+        import_picocolors17.default.red("Selected version has no content. Cannot roll back.")
       );
       return;
     }
@@ -28047,30 +28359,30 @@ async function rollback(args) {
       versionToRollback.description,
       versionToRollback.id
     );
-    console.log(import_picocolors16.default.cyan("Updating local .env file..."));
-    const values = await (0, import_env_helpers16.writeEnvFile)(
+    console.log(import_picocolors17.default.cyan("Updating local .env file..."));
+    const values = await writeEnvFile(
       versionToRollback?.content
     );
     if (!values) {
-      console.error(import_picocolors16.default.red("\nOops an unexpected error occurred."));
+      console.error(import_picocolors17.default.red("\nOops an unexpected error occurred."));
       process.exit(1);
     }
     console.log(
-      import_picocolors16.default.green(
+      import_picocolors17.default.green(
         "\u2705 Local .env file has been updated to match the rollback version."
       )
     );
   } catch (error) {
     if (error.response) {
-      console.error(import_picocolors16.default.yellow(`
+      console.error(import_picocolors17.default.yellow(`
 ${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(import_picocolors16.default.yellow("\nRollback cancelled."));
+      console.log(import_picocolors17.default.yellow("\nRollback cancelled."));
       return;
     }
-    console.error(import_picocolors16.default.red("\nError during rollback:"), error.message);
+    console.error(import_picocolors17.default.red("\nError during rollback:"), error.message);
     process.exit(1);
   }
 }
