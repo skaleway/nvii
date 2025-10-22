@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@better-auth/cli": "^1.2.8",
-    "@better-fetch/fetch": "^1.1.18",
     "@blocknote/core": "^0.26.0",
     "@blocknote/mantine": "^0.26.0",
     "@blocknote/react": "^0.26.0",
