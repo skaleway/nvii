@@ -36,6 +36,12 @@ npm-debug.log*
 .DS_Store
 *.pem
 .env*.local
+*.env
+
+# all dist folders and nested ones
+**/dist
+**/build
+**/out
 
 packages/database/generated
 
