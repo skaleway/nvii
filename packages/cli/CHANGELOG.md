@@ -1,5 +1,11 @@
 # nvii
 
+## 1.0.0
+
+### Major Changes
+
+- change the project url
+
 ## 0.0.3
 
 ### Patch Changes

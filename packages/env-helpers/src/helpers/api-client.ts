@@ -1,8 +1,9 @@
 import axios, { AxiosInstance } from "axios";
 import { readConfigFile } from "./index";
+import { API_URLS } from "./constants";
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: API_URLS.BASE_URL,
   headers: {},
 });
 
@@ -14,7 +15,7 @@ export async function getConfiguredClient(): Promise<AxiosInstance> {
   }
 
   return axios.create({
-    baseURL: "http://localhost:3000/api",
+    baseURL: API_URLS.BASE_URL,
     headers: {
       "X-Auth-Code": config.code,
       "X-User-Id": config.userId,
