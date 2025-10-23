@@ -4,9 +4,9 @@ export const siteConfig = {
   ogImage: "https://nvii.dev/og.png",
   url: "https://nvii.dev",
   links: {
-    twitter: "https://twitter.com/Nvii",
-    github: "https://github.com/nvii/nvii",
-    author: "Nvii",
+    twitter: "https://bossadizenith.me/x",
+    github: "https://github.com/skaleway/nvii",
+    author: "skaleway.com",
     authorSite: "https://nvii.dev",
     documentation: "https://docs.nvii.dev",
   },

@@ -1,13 +1,56 @@
 import { ThemeProvider } from "@/components/theme-provider";
+import { cn } from "@nvii/ui/lib/utils";
 import { siteConfig } from "@/lib/site";
 import "@nvii/ui/globals.css";
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import type React from "react";
+import local from "next/font/local";
 
-const geistMono = Geist({
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+const sans = Geist({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
+
+const cooper = local({
+  src: [
+    {
+      path: "../fonts/CooperBlkBT-Italic.ttf",
+      weight: "900",
+      style: "italic",
+    },
+    {
+      path: "../fonts/CooperBlkBT-Regular.ttf",
+      weight: "900",
+      style: "normal",
+    },
+
+    {
+      path: "../fonts/CooperLtBT-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../fonts/CooperBlkBT-Regular.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../fonts/CooperLtBT-Italic.ttf",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "../fonts/CooperBlkBT-Regular.ttf",
+      weight: "500",
+      style: "normal",
+    },
+  ],
+  variable: "--font-cooper",
 });
 
 export const metadata: Metadata = {
@@ -42,7 +85,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={geistMono.className}>
+      <body className={cn(sans.className, geistMono.variable, cooper.variable)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

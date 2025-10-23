@@ -15,9 +15,10 @@ var config = {
         padding: "1rem",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)"],
+        sans: ["var(--font-sans)"],
         mono: ["var(--font-geist-mono)"],
         lora: ["var(--font-lora)"],
+        cooper: ["var(--font-cooper)"],
       },
       colors: {
         border: "hsl(var(--border))",
