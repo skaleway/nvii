@@ -1,6 +1,7 @@
 import { Intersection } from "@/components/intersection";
 import { MDXContent } from "@/components/mdx/content";
 import { Timeline } from "@/components/navigation";
+import { siteConfig } from "@/lib/site";
 import { Heading } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 import { allDocs, Doc } from "content-collections";
@@ -8,6 +9,40 @@ import { notFound } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}) {
+  const { slug } = await params;
+  const doc = getDoc(slug);
+
+  if (!doc) {
+    return {};
+  }
+
+  return {
+    title: {
+      default: doc.title,
+      template: `%s | ${doc.title}`,
+    },
+    description: doc.summary,
+    openGraph: {
+      title: doc.title,
+      type: "article",
+      description: doc.summary,
+      images: [siteConfig.ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: doc.title,
+      description: doc.summary,
+      images: [siteConfig.ogImage],
+      creator: "@nvii",
+    },
+  };
 }
 
 export function generateStaticParams() {
