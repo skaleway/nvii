@@ -167,7 +167,7 @@ export default function Home() {
               </div>
               <div className="bg-muted/50 border border-border rounded-lg p-8 font-mono text-sm">
                 <div className="text-muted-foreground mb-4">
-                  $ nvii push --message "Update API keys"
+                  $ nvii push --message &quot;Update API keys&quot;
                 </div>
                 <div className="space-y-2 text-xs">
                   <div className="text-green-600">
