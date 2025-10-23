@@ -117,7 +117,9 @@
   * {
     @apply border-border outline-ring/50;
     scroll-behavior: smooth;
+    /* Use both scroll-margin-top and scroll-padding-top for cross-browser compatibility */
     scroll-margin-top: 100px;
+    scroll-padding-top: 100px;
   }
   body {
     @apply bg-sidebar/50 dark:bg-background/65;

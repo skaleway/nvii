@@ -44,7 +44,7 @@ export const Timeline = () => {
   );
 
   return (
-    <div className="antialiased fixed right-0 top-0 bottom-0 items-center justify-center  bg-background  no-scrollbar py-20 w-20 border-l hidden md:flex">
+    <div className="antialiased fixed right-0 top-0 bottom-0 items-center justify-center  bg-background  no-scrollbar py-20 w-20 border-l hidden h-screen md:flex">
       <div className="flex min-h-[500px]">
         <div className="flex flex-col justify-end">
           {allHeadings.map((heading, i) => {

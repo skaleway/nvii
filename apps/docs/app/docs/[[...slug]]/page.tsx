@@ -1,10 +1,12 @@
 import { Intersection } from "@/components/intersection";
 import { MDXContent } from "@/components/mdx/content";
 import { Timeline } from "@/components/navigation";
+import { footerRoutes } from "@/lib/constants";
 import { siteConfig } from "@/lib/site";
 import { Heading } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 import { allDocs, Doc } from "content-collections";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -76,11 +78,82 @@ const Page = async ({ params }: PageProps) => {
     };
   });
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <Intersection headings={headings}>
-      <div className="max-w-3xl px-4 mx-auto bg-background md:border-x w-full min-h-screen space-y-6 py-20">
+      <div className="max-w-3xl px-4 mx-auto bg-background md:border-x w-full min-h-screen space-y-6 pt-20 pb-10">
         <MDXContent doc={doc} sections={sections} />
         <Timeline />
+
+        <footer className="mt-20 border-t border-dashed  pt-20 space-y-4">
+          <h2 className="text-2xl font-bold">Feedback</h2>
+          <p className="text-muted-foreground">
+            Have feedback or suggestions? Let us know by sending an email to{" "}
+            <a
+              href="mailto:hello@bossadizenith.me"
+              className="text-primary font-medium"
+            >
+              hello@bossadizenith.me
+            </a>
+            . You can also reach out to me on{" "}
+            <a
+              href="https://bossadizenith.me/x"
+              className="text-primary font-medium"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              X (Bossadi Zenith){" "}
+            </a>
+            if you got any questions or suggestions.
+          </p>
+          <p className="text-muted-foreground">
+            You can also contribute to the documentation by submitting a pull
+            request to the{" "}
+            <a
+              href="https://github.com/skaleway/nvii"
+              className="text-primary font-medium"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub repository
+            </a>{" "}
+            by opening an issue or submitting a pull request.
+          </p>
+          <div className="flex items-center md:flex-row flex-col gap-4 justify-between">
+            <p className="text-sm text-muted-foreground">
+              &copy;{currentYear} Skaleway. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              {footerRoutes.map(
+                (route: {
+                  name: string;
+                  link: string;
+                  icon: React.ComponentType<{ className?: string }>;
+                }) => (
+                  <Link
+                    key={route.name}
+                    href={route.link}
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    <route.icon className="w-4 h-4" />
+                  </Link>
+                )
+              )}
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground text-center mt-20">
+            Made out of frustration by the guys at{" "}
+            <a
+              href={siteConfig.links.team}
+              className="text-primary font-medium"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Skaleway.
+            </a>
+          </p>
+        </footer>
       </div>
     </Intersection>
   );
