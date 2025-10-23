@@ -28,7 +28,7 @@ import { Badge } from "@nvii/ui/components/badge";
 function UserAvatar({
   user,
 }: {
-  user: { name: string | null; email: string | null };
+  user: { name: string | null; email: string | null; image: string | null };
 }) {
   const initials = React.useMemo(() => {
     if (user.name) {
@@ -48,6 +48,7 @@ function UserAvatar({
         <TooltipTrigger asChild>
           <UserProfile
             name={user.name ?? "user"}
+            url={user.image ?? ""}
             className="rounded-full cursor-pointer"
           />
         </TooltipTrigger>
@@ -72,7 +73,12 @@ export function ProjectAccessManager({
   const [email, setEmail] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [users, setUsers] = React.useState<
-    Array<{ id: string; email: string | null; name: string | null }>
+    Array<{
+      id: string;
+      email: string | null;
+      name: string | null;
+      image: string | null;
+    }>
   >([]);
   const { getProjectAccess, addProjectAccess, removeProjectAccess } =
     useProjects();

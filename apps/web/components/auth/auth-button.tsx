@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 export const AuthButton = () => {
   const [pendingGithub, setPendingGithub] = useState(false);
-  const router = useRouter();
 
   const handleSignInWithGithub = async () => {
     await authClient.signIn.social(
@@ -20,8 +19,8 @@ export const AuthButton = () => {
       {
         onRequest: () => setPendingGithub(true),
         onSuccess: async () => {
-          router.push("/");
-          router.refresh();
+          toast.success("Signed in successfully");
+          window.location.reload();
         },
         onError: (ctx: any) => {
           toast.error(ctx.error.message ?? "Unknown error.", {

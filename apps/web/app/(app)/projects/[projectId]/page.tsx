@@ -88,18 +88,15 @@ export default function ProjectPage() {
           </div>
         </div>
 
-        {/* Table skeleton */}
         <div className="rounded-md border bg-card">
           <div className="p-4">
             <div className="space-y-3">
-              {/* Table header */}
               <div className="grid grid-cols-4 gap-4 pb-2 border-b">
                 <Skeleton className="h-4 w-16 bg-primary/10" />
                 <Skeleton className="h-4 w-20 bg-primary/10" />
                 <Skeleton className="h-4 w-16 bg-primary/10" />
                 <Skeleton className="h-4 w-20 bg-primary/10" />
               </div>
-              {/* Table rows */}
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={`item-${i}`} className="grid grid-cols-4 gap-4 py-3">
                   <Skeleton className="h-4 w-24 bg-primary/10" />

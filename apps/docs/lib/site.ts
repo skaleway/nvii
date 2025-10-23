@@ -8,6 +8,6 @@ export const siteConfig = {
     linkedin: "https://bossadizenith.me/linkedin",
     twitter: "https://bossadizenith.me/x",
     peerlist: "https://bossadizenith.me/peerlist",
-    team: "https://github.com/skaleway/team",
+    team: "https://github.com/orgs/skaleway/teams/core",
   },
 };

@@ -108,8 +108,8 @@ const Page = async ({ params }: PageProps) => {
             if you got any questions or suggestions.
           </p>
           <p className="text-muted-foreground">
-            You can also contribute to the documentation by submitting a pull
-            request to the{" "}
+            You can also contribute to the project by submitting a pull request
+            to the{" "}
             <a
               href="https://github.com/skaleway/nvii"
               className="text-primary font-medium"

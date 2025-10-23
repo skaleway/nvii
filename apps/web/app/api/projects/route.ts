@@ -34,6 +34,7 @@ export async function GET(): Promise<NextResponse> {
               id: true,
               name: true,
               email: true,
+              image: true,
             },
           },
         },
@@ -54,7 +55,7 @@ export async function GET(): Promise<NextResponse> {
     if (project.content && typeof project.content === "object") {
       decryptedContent = decryptEnvValues(
         project.content as Record<string, string>,
-        project.user.id,
+        project.user.id
       );
     }
 

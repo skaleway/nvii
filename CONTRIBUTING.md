@@ -26,20 +26,13 @@ Thank you for your interest in contributing to Nvii! Please follow the steps bel
    ```
 
 3. **Set Up Environment Variables**
-
    - Create a `.env` file in `/apps/web` and fill in your credentials:
 
      ```env
      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
      CLERK_SECRET_KEY=
      DATABASE_URL="postgresql://postgres:nothing@localhost:5431/nvii"
-     CLERK_WH_SECRET=
-     CLERK_DEV_WH_SECRET=
-     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/t/"
-     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/new"
-     NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
-     NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
-     UPLOADTHING_TOKEN=""
+
      ```
 
    - In `/packages/database`, create a `.env` file with:
