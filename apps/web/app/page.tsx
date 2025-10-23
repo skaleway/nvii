@@ -50,13 +50,10 @@ export default function Home() {
               team collaboration, and seamless deployment integration.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90"
-              >
+              <Button className="bg-foreground text-background hover:bg-foreground/90">
                 Get Started
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button variant="outline" asChild>
                 <Link href={siteConfig.links.documentation} target="_blank">
                   Visit documentation
                 </Link>
@@ -245,14 +242,10 @@ export default function Home() {
               Join developers who trust Nvii for secure environment management
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90"
-              >
+              <Button className="bg-foreground text-background hover:bg-foreground/90">
                 <Link href="/auth">Get Started for free</Link>
               </Button>
               <Button
-                size="lg"
                 variant="outline"
                 className="border-foreground text-foreground hover:bg-muted bg-transparent"
                 asChild
