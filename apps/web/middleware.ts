@@ -1,34 +1,25 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
-const authRoutes = ["/auth"];
-const publicRoutes = ["/"];
+const publicRoutes = ["/", "/auth"];
 
 export default async function authMiddleware(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
-  const isAuthRoute = authRoutes.includes(pathName);
-  const isPublicRoute = publicRoutes.includes(pathName);
-
   const session = getSessionCookie(request.headers, {});
 
-  console.log({ session });
-
   if (!session) {
-    if (isAuthRoute) {
+    if (publicRoutes.includes(pathName)) {
       return NextResponse.next();
     }
     return NextResponse.redirect(new URL("/auth", request.url));
   }
 
-  if (isAuthRoute) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  if (isPublicRoute && session) {
+  if (publicRoutes.includes(pathName)) {
     return NextResponse.redirect(new URL("/app", request.url));
   }
 
   return NextResponse.next();
+  l;
 }
 
 export const config = {

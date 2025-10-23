@@ -1,10 +1,9 @@
-import { auth } from "@/lib/auth";
+import { Header } from "@/components/header";
 import { ProjectsProvider } from "@/components/projects-provider";
+import { auth } from "@/lib/auth";
 import { SessionProvider } from "@/provider/session";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import React from "react";
-import { Header } from "@/components/header";
 
 const AfterAuthLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await auth.api.getSession({
@@ -12,7 +11,7 @@ const AfterAuthLayout = async ({ children }: { children: React.ReactNode }) => {
   });
 
   if (!session) {
-    redirect("/auth/sign-in");
+    return <div>Loading...</div>;
   }
 
   return (
