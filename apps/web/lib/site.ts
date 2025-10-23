@@ -1,13 +1,13 @@
 export const siteConfig = {
-  name: "Envi",
-  description: "Write the content not the code",
-  ogImage: "https://Envi.com/og.png",
-  url: "https://Envi.com",
+  name: "Nvii",
+  description: "Secure environment variable management platform",
+  ogImage: "https://nvii.dev/og.png",
+  url: "https://nvii.dev",
   links: {
-    twitter: "https://twitter.com/Envi",
-    github: "https://github.com/skaleway/Envi",
-    author: "Skaleway",
-    authorSite: "https://skaleway.com",
-    tailark: "https://tailark.com",
+    twitter: "https://twitter.com/Nvii",
+    github: "https://github.com/nvii/nvii",
+    author: "Nvii",
+    authorSite: "https://nvii.dev",
+    documentation: "https://docs.nvii.dev",
   },
 };

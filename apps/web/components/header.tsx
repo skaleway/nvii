@@ -20,6 +20,7 @@ import { cn } from "@nvii/ui/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { AddProjectDialog } from "./add-project-dialog";
 import { authClient } from "@/lib/auth-client";
+import { siteConfig } from "@/lib/site";
 
 export function Header() {
   const { setTheme } = useTheme();
@@ -124,6 +125,15 @@ export function Header() {
                 <DropdownMenuItem asChild>
                   <Link href="/settings" className="w-full">
                     Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href={siteConfig.links.documentation}
+                    target="_blank"
+                    className="w-full"
+                  >
+                    Documentation
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>

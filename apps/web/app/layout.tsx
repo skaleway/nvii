@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/components/theme-provider";
+import { siteConfig } from "@/lib/site";
 import "@nvii/ui/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -7,8 +8,28 @@ import type React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nvii - Environment Variable Manager",
-  description: "Modern environment variable manager for your projects",
+  title: {
+    template: `%s | ${siteConfig.name}`,
+    default: siteConfig.name,
+  },
+  description: siteConfig.description,
+  metadataBase: new URL(siteConfig.url),
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  alternates: {
+    canonical: siteConfig.url,
+  },
 };
 
 export default function RootLayout({
