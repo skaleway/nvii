@@ -116,7 +116,7 @@ export default function ProjectPage() {
   }
 
   if (!data || !data.project) {
-    return;
+    return notFound();
   }
 
   return (

@@ -18,19 +18,18 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@nvii/ui/components/form";
 import { Input } from "@nvii/ui/components/input";
-import { Loader2, Plus, X } from "lucide-react";
+import { Textarea } from "@nvii/ui/components/textarea";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Textarea } from "@nvii/ui/components/textarea";
 
 const projectSchema = z.object({
   name: z.string().min(2, {
@@ -46,7 +45,6 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
   const { addProject } = useProjects();
 
   const form = useForm<ProjectFormValues>({
