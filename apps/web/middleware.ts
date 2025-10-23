@@ -19,7 +19,6 @@ export default async function authMiddleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-  l;
 }
 
 export const config = {
