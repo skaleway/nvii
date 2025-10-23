@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 // @ts-ignore
 import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
+import { siteConfig } from "@/lib/site";
 
 const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
@@ -16,6 +17,15 @@ const nextConfig: NextConfig = {
         protocol: "https",
       },
     ],
+  },
+  redirects: async () => {
+    return [
+      {
+        source: "/github",
+        destination: siteConfig.links.github,
+        permanent: false,
+      },
+    ];
   },
 };
 
