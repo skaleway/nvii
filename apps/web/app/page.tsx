@@ -1,9 +1,10 @@
 import { Button } from "@nvii/ui/components/button";
-import { Lock, GitBranch, Users, Zap, Shield, Code } from "lucide-react";
+import { Lock, GitBranch, Users, Zap, Shield, Code, Copy } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import Link from "next/link";
 import { Icons } from "@nvii/ui/components/icons";
 import ModeToggle from "@/components/mode-toggle";
+import SmallBanner from "@/components/sm-banner";
 
 export default function Home() {
   return (
@@ -41,9 +42,7 @@ export default function Home() {
 
         <section className="pt-32 pb-20 px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-block mb-6 px-4 py-2 bg-muted/50 font-mono border select-none rounded-full text-sm font-medium">
-              npm i -g nvii
-            </div>
+            <SmallBanner />
             <h1 className="text-5xl md:text-7xl  mb-6 leading-tight font-cooper text-balance">
               Manage secrets with confidence
             </h1>
@@ -52,8 +51,11 @@ export default function Home() {
               team collaboration, and seamless deployment integration.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-foreground text-background hover:bg-foreground/90">
-                Get Started
+              <Button
+                className="bg-foreground text-background hover:bg-foreground/90"
+                asChild
+              >
+                <Link href="/auth">Get Started</Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link href={siteConfig.links.documentation} target="_blank">
