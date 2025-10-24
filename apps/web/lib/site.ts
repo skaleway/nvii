@@ -9,5 +9,6 @@ export const siteConfig = {
     author: "skaleway.com",
     authorSite: "https://nvii.dev",
     documentation: "https://docs.nvii.dev",
+    authorName: "Skaleway",
   },
 };

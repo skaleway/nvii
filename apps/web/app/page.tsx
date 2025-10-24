@@ -3,6 +3,7 @@ import { Lock, GitBranch, Users, Zap, Shield, Code } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import Link from "next/link";
 import { Icons } from "@nvii/ui/components/icons";
+import ModeToggle from "@/components/mode-toggle";
 
 export default function Home() {
   return (
@@ -31,6 +32,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
+
             <Button asChild>
               <Link href="/auth">Get Started</Link>
             </Button>
@@ -187,7 +189,7 @@ export default function Home() {
         </section>
         <Line />
 
-        <section className="pt-20 border-t">
+        <section className="pt-20">
           <div className="text-center mb-16">
             <h2 className="text-4xl  mb-4">Powerful workflow for teams</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -225,7 +227,7 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground mb-4">
                   {item.desc}
                 </p>
-                <div className="bg-muted/50 border border-border p-3 font-mono text-xs text-muted-foreground">
+                <div className="bg-muted/50 border border-border p-3 font-mono text-xs text-muted-foreground whitespace-pre">
                   $ {item.cmd}
                 </div>
               </div>
@@ -317,41 +319,31 @@ export default function Home() {
                 <h4 className=" mb-4">Company</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li>
-                    <a href="#" className="hover:text-foreground transition">
-                      About
+                    <a
+                      href={siteConfig.links.github}
+                      target="_blank"
+                      className="hover:text-foreground transition"
+                    >
+                      GitHub
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="hover:text-foreground transition">
-                      Contact
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-foreground transition">
-                      Privacy
+                    <a
+                      href={siteConfig.links.twitter}
+                      target="_blank"
+                      className="hover:text-foreground transition"
+                    >
+                      X (Twitter)
                     </a>
                   </li>
                 </ul>
               </div>
             </div>
             <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-              <p>&copy; 2025 Skeleway. All rights reserved.</p>
-              <div className="flex gap-6 mt-4 md:mt-0">
-                <a
-                  href={siteConfig.links.twitter}
-                  target="_blank"
-                  className="hover:text-foreground transition"
-                >
-                  Twitter
-                </a>
-                <a
-                  href={siteConfig.links.github}
-                  target="_blank"
-                  className="hover:text-foreground transition"
-                >
-                  GitHub
-                </a>
-              </div>
+              <p>
+                &copy; 2025 {siteConfig.links.authorName}. All rights reserved.
+              </p>
+              <ModeToggle />
             </div>
           </div>
         </footer>
