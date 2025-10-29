@@ -99,7 +99,7 @@ envi/
 
    ```bash
    # Create database environment file
-   echo 'DATABASE_URL="postgresql://envi:envi_password@localhost:5432/envi"' > packages/database/.env
+   echo 'DATABASE_URL="postgresql://envi:envi_password@localhost:5433/envi"' > packages/database/.env
 
    # Create web app environment file (you'll need to add your auth providers)
    touch apps/web/.env

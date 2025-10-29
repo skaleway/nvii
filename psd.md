@@ -1,6 +1,6 @@
 # **Project Specification Document**
 
-### **Project Title:**
+## **Project Title:**
 
 **Nvii – Secure Environment Variable Manager**
 
@@ -86,7 +86,7 @@
 - Session management
 - Device management for CLI authentication
 
-#### **Project Management**
+#### **Project-Management**
 
 - Create and manage projects
 - Invite team members
@@ -131,7 +131,7 @@
 
 ## **5. Project Architecture**
 
-```
+```txt
 envi/
 ├── apps/
 │   └── web/                    # Next.js web application
@@ -314,7 +314,7 @@ model EnvVersion {
 
 ```bash
 # Clone and install dependencies
-git clone <repository>
+git clone https://github.com/skaleway/nvii.git
 pnpm install
 
 # Start database

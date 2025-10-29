@@ -1,11 +1,4 @@
-[] Fix error on rendering settings page
-[] Update readme support section for:
-1. Documentation: [Add documentation link]
-2. Issues: [Add GitHub issues link]
-3. Discussions: [Add GitHub discussions link]
 
-[] Create a license file and link it in the readme file:
-1. [Add your license information here]
 
 [] Update the Contributing.md file to include use of better auth for authentication not clerk
 
