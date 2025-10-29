@@ -26,8 +26,6 @@ coverage
 out/
 build
 dist
-content
-
 
 # Debug
 npm-debug.log*
@@ -50,4 +48,5 @@ packages/database/generated
 # Generated
 
 # local todo list
-task.todo
+/*.todo
+.nvii/

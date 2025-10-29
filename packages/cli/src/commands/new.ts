@@ -1,17 +1,16 @@
+import { Project, VersionBranch } from "@nvii/db";
 import {
   encryptEnvValues,
   getConfiguredClient,
   isLogedIn,
   readConfigFile,
   readEnvFile,
-  readProjectConfig,
   writeProjectConfig,
 } from "@nvii/env-helpers";
 import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
 import { unlinkProject } from "./unlink";
-import { Project, VersionBranch } from "@nvii/db";
 
 /**
  * Prompts the user with a question using inquirer.

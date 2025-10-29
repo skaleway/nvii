@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { getCurrentUserFromSession } from "@/lib/current-user";
 
-// Get all users with access to a project
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ projectId: string }> }
@@ -24,7 +23,6 @@ export async function GET(
       return ErrorResponse("Project ID is required", 400);
     }
 
-    // Check if user owns the project or has access to it
     const project = await db.project.findFirst({
       where: {
         id: projectId,
@@ -39,11 +37,9 @@ export async function GET(
       return ErrorResponse("Project not found or access denied", 404);
     }
 
-    // Get all users with access except the current user
     const projectAccess = await db.projectAccess.findMany({
       where: {
         projectId,
-        // userId: { not: session.user.id }, // Exclude current user
       },
       include: {
         user: {
@@ -51,6 +47,7 @@ export async function GET(
             id: true,
             name: true,
             email: true,
+            image: true,
           },
         },
       },
@@ -63,7 +60,6 @@ export async function GET(
   }
 }
 
-// Add user access to a project
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ userId: string; projectId: string }> }
@@ -78,7 +74,6 @@ export async function POST(
     const { projectId, userId } = await params;
     const { email } = body;
 
-    // Check the user to be added exists in the database.
     const userExists = await db.user.findUnique({
       where: {
         email,
@@ -91,13 +86,10 @@ export async function POST(
 
     console.log({ userExists });
 
-    // TODO: Use the user email to send them an invitation email later.
-
-    // Verify the user is the owner of the project
     const project = await db.project.findUnique({
       where: {
         id: projectId,
-        userId, // Only project owner can grant access
+        userId,
       },
     });
 
@@ -105,7 +97,6 @@ export async function POST(
       return ErrorResponse("Project not found or unauthorized", 404);
     }
 
-    // Create project access
     await db.projectAccess.create({
       data: {
         projectId,
@@ -120,7 +111,6 @@ export async function POST(
   }
 }
 
-// Remove user access from a project
 export async function DELETE(request: Request): Promise<NextResponse> {
   try {
     const user = await getCurrentUserFromSession();
@@ -131,11 +121,10 @@ export async function DELETE(request: Request): Promise<NextResponse> {
     const body = await request.json();
     const { projectId, userId } = body;
 
-    // Verify the user is the owner of the project
     const project = await db.project.findUnique({
       where: {
         id: projectId,
-        userId: user.id, // Only project owner can revoke access
+        userId: user.id,
       },
     });
 
@@ -143,7 +132,6 @@ export async function DELETE(request: Request): Promise<NextResponse> {
       return ErrorResponse("Project not found or unauthorized", 404);
     }
 
-    // Remove project access
     await db.projectAccess.delete({
       where: {
         projectId_userId: {

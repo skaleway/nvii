@@ -1,4 +1,4 @@
-import { FILENAME, checkLoginStats } from "@nvii/env-helpers";
+import { FILENAME, checkLoginStats, API_URLS } from "@nvii/env-helpers";
 import { listen } from "async-listen";
 import { spawn } from "child_process";
 import "dotenv/config";
@@ -96,7 +96,7 @@ export async function login() {
   const redirect = `http://127.0.0.1:${port}`;
   const code = nanoid();
   // TODO: Change this later when the web app is hosted.
-  const confirmationUrl = new URL(`http://localhost:3000/auth/devices`);
+  const confirmationUrl = new URL(API_URLS.AUTH_DEVICES_URL);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
 

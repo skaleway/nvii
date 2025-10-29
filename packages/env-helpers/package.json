@@ -2,6 +2,7 @@
   "name": "@nvii/env-helpers",
   "version": "0.0.1",
   "description": "Nvii helper functions",
+  "private": true,
   "main": "./dist/index.js",
   "bin": {
     "envi": "./dist/index.js"
@@ -28,6 +29,7 @@
   "license": "ISC",
   "devDependencies": {
     "@nvii/typescript-config": "workspace:*",
+    "@nvii/db": "workspace:*",
     "@swc/core": "^1.3.99",
     "@types/node": "^20.17.10",
     "commander": "^11.1.0",
@@ -38,7 +40,6 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@nvii/db": "workspace:*",
     "async-listen": "^3.0.1",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",

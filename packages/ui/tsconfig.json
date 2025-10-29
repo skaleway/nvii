@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "@nvii/ui/*": ["./src/*"]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": ["."],
   "exclude": ["node_modules", "dist"]

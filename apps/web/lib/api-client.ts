@@ -24,7 +24,6 @@ export const projectsApi = {
     }
     const data = await response.json();
 
-    // Transform the data to set status based on totalEmpty
     return data.map((project: Project) => ({
       ...project,
       status: project.content.totalEmpty > 0 ? "missing" : "valid",
@@ -130,6 +129,7 @@ export const projectApi = {
 export type ProjectAccessUser = {
   id: string;
   name: string | null;
+  image: string | null;
   email: string | null;
 };
 

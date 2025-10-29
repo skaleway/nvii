@@ -10,6 +10,7 @@ export * from "./conflict";
 export * from "./version";
 export * from "./encrypt";
 export * from "./diff";
+export * from "./constants";
 export * from "./version-helpers";
 
 export const FILENAME = process.env.FILENAME || ".nvii";
@@ -138,13 +139,10 @@ export async function writeEnvFile(
       envContent.split("\n").map(
         (line) => {
           const [key, value] = line.replace(/^"(.*)"$/, "$1").split("="); // Replace all quotes with an empty space.
-          // tackle empty commented lines
           if (!key && !value && line.startsWith("#")) {
             newEnvContent = { ...newEnvContent, "#": "" };
           }
-          // update these lines with values received
           if (key && value) {
-            // tackle commented lines that were ignored in the push or read process.
             if (line.startsWith("#")) {
               newEnvContent[key.trim()] = value.trim();
             } else {
@@ -157,7 +155,6 @@ export async function writeEnvFile(
         {} as Record<string, string>
       );
 
-      // handle values that are not available locally.
       newEnvContent[item[0]] = item[1];
     });
 

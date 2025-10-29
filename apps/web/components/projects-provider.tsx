@@ -94,7 +94,6 @@ function ProjectsProviderInner({
   const queryClient = useQueryClient();
   const { user } = useSession();
 
-  // Fetch projects
   const {
     data: projects = [],
     isLoading,
@@ -108,7 +107,6 @@ function ProjectsProviderInner({
     gcTime: 500,
   });
 
-  // Add project mutation
   const addProjectMutation = useMutation({
     mutationFn: (project: CreateProjectInput) =>
       projectsApi.create(project, user?.id ?? ""),
@@ -117,7 +115,6 @@ function ProjectsProviderInner({
     },
   });
 
-  // Remove project mutation
   const removeProjectMutation = useMutation({
     mutationFn: (id: string) => projectsApi.delete(id, user.id),
     onSuccess: () => {
@@ -147,7 +144,6 @@ function ProjectsProviderInner({
     [projects]
   );
 
-  // Project access mutations
   const addProjectAccessMutation = useMutation({
     mutationFn: ({
       projectId,
@@ -172,7 +168,9 @@ function ProjectsProviderInner({
       userId: string;
     }) => projectAccessApi.remove(projectId, userId),
     onSuccess: (_, { projectId }) => {
-      queryClient.invalidateQueries({ queryKey: ["projectAccess", projectId] });
+      queryClient.invalidateQueries({
+        queryKey: ["projectAccess", projectId],
+      });
     },
   });
 

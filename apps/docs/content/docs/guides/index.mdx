@@ -1,0 +1,616 @@
+---
+title: Nvii Documentation
+summary: Complete guide to using Nvii CLI for secure environment variable management
+---
+
+# Nvii Documentation
+
+## Introduction
+
+Nvii is a secure environment variable management platform designed for modern development teams. It provides end to end encryption, version control, and seamless collaboration for managing environment variables across your projects. With Nvii, you can track changes, rollback to previous versions, manage branches, and ensure your sensitive configuration data remains secure.
+
+## Features
+
+Nvii offers a comprehensive set of features including:
+
+**Security**: End to end encryption for all environment variables, secure authentication, device based session management
+
+**Version Control**: Complete history tracking, version rollback capabilities, branch management for different environments
+
+**Collaboration**: Team based access control, conflict resolution, synchronized updates across devices
+
+**Developer Experience**: Intuitive CLI commands, dry run capabilities, automated conflict detection
+
+## Installation
+
+Install Nvii globally using npm
+
+```bash
+npm install -g nvii
+```
+
+on linux:
+
+```bash
+sudo npm install -g nvii
+```
+
+## Getting Started
+
+Before using Nvii, you need to authenticate and create or link a project. Here's a quick start workflow:
+
+1. Login to your Nvii account: `nvii login`
+2. Create a new project: `nvii new`
+3. Push your environment variables: `nvii push`
+4. Pull changes on other machines: `nvii pull`
+
+## Authentication Commands
+
+### Login
+
+Authenticate and establish a secure session with Nvii. This command opens a browser window for authentication and stores your credentials locally.
+
+```bash
+nvii login
+```
+
+The login process generates a unique confirmation code and establishes a secure connection. Your credentials are stored in your home directory for subsequent CLI operations.
+
+### Logout
+
+Terminate your current session and clear authentication credentials from your local machine.
+
+```bash
+nvii logout
+```
+
+**Options:**
+
+`-u, --username <username>`: Specify the username of the account to logout from
+
+`-e, --email <email>`: Specify the email of the account to logout from
+
+**Examples:**
+
+```bash
+# Interactive logout with confirmation
+nvii logout
+
+# Logout specific user by username
+nvii logout --username johndoe
+
+# Logout specific user by email
+nvii logout --email john@example.com
+```
+
+### Whoami
+
+Display information about the currently authenticated user, including username and email address.
+
+```bash
+nvii whoami
+```
+
+This command helps verify your authentication status and confirms which account you're currently using.
+
+## Project Management Commands
+
+### New
+
+Initialize a new project and configure environment variable management. This command reads your local .env file, encrypts the contents, and creates a new project in the Nvii platform.
+
+```bash
+nvii new
+```
+
+The command will prompt you for:
+
+**Project name**: A descriptive name for your project
+
+**Project description**: Optional description explaining the project's purpose
+
+After creation, your project is automatically linked to the current directory.
+
+### Link
+
+Connect the current directory to an existing remote project. This is useful when working on multiple machines or onboarding new team members.
+
+```bash
+nvii link
+```
+
+**Options:**
+
+`-t, --token <id>`: Specify a project ID to connect to directly
+
+**Examples:**
+
+```bash
+# Interactive project selection
+nvii link
+
+# Link to specific project by ID
+nvii link --token abc123xyz
+```
+
+The link command creates a `.nvii` directory in your current folder containing the project configuration.
+
+### Unlink
+
+Disconnect the current directory from its linked remote project. This removes the local `.nvii` configuration directory.
+
+```bash
+nvii unlink
+```
+
+You'll be asked to confirm before the unlinking process completes. This operation only affects your local machine and doesn't delete the remote project.
+
+## Environment Variable Operations
+
+### Pull
+
+Fetch and merge environment variables from the remote repository. This command retrieves the latest version from the server and updates your local .env file.
+
+```bash
+nvii pull
+```
+
+**Options:**
+
+`-f, --force`: Force pull without conflict resolution prompts, automatically accepting remote values <br />
+`-b, --branch <branch>`: Pull from a specific branch (default: main) <br />
+`-dry, --dry-run`: Preview changes without applying them to your local file <br />
+
+**Examples:**
+
+```bash
+# Standard pull with conflict resolution
+nvii pull
+
+# Force pull, accepting all remote changes
+nvii pull --force
+
+# Pull from development branch
+nvii pull --branch development
+
+# Preview changes without applying
+nvii pull --dry-run
+```
+
+**Conflict Resolution:**
+
+When conflicts are detected, Nvii will prompt you to choose between keeping your local value or accepting the remote value for each conflicting variable.
+
+### Push
+
+Upload local environment variable changes and create a new version. This command encrypts your local .env file and pushes it to the remote repository.
+
+```bash
+nvii push
+```
+
+**Options:**
+
+`-m, --message <message>`: Provide a version description message <br />
+`-b, --branch <branch>`: Push to a specific branch (default: main) <br />
+`-dry, --dry-run`: Preview changes without uploading <br />
+
+**Examples:**
+
+```bash
+# Push with inline message
+nvii push --message "Added database credentials"
+
+# Interactive push with prompt for message
+nvii push
+
+# Push to staging branch
+nvii push --branch staging --message "Update API keys"
+
+# Preview changes before pushing
+nvii push --dry-run
+```
+
+The push command displays a summary of added, modified, and removed variables before creating the new version.
+
+### Update
+
+Synchronize local environment file with the latest remote version. This command updates your .env file to match the most recent version without interactive conflict resolution.
+
+```bash
+nvii update
+```
+
+This is useful for quickly syncing when you know the remote version should take precedence.
+
+## Version Control Commands
+
+### Log
+
+Display version history and change log for the current project. This command shows all versions with their descriptions, authors, and timestamps.
+
+```bash
+nvii log
+```
+
+**Options:**
+
+`-n, --limit <number>`: Limit the number of versions to display (default: 10) <br />
+`--oneline`: Show condensed one line format for each version <br />
+`--author <email>`: Filter versions by author email or name <br />
+
+**Examples:**
+
+```bash
+# Show last 10 versions
+nvii log
+
+# Show last 5 versions
+nvii log --limit 5
+
+# Compact one-line format
+nvii log --oneline
+
+# Filter by author
+nvii log --author john@example.com
+
+# Combine options
+nvii log --limit 20 --oneline --author jane
+```
+
+**Output Formats:**
+
+Default format shows detailed information including version ID, author, timestamp, and description message.
+
+Oneline format provides a compact view: `<version-id> <date> <author> <message>`
+
+### Rollback
+
+Restore environment variables to a previous version state. This command updates your local .env file to match the content from a selected historical version.
+
+```bash
+nvii rollback
+```
+
+**Options:**
+
+`-v, --version <id>`: Specify a version ID to rollback to directly <br />
+`-f, --force`: Skip confirmation prompts <br />
+
+**Examples:**
+
+```bash
+# Interactive version selection
+nvii rollback
+
+# Rollback to specific version
+nvii rollback --version abc123def456
+
+# Rollback without confirmation
+nvii rollback --version abc123def456 --force
+```
+
+The rollback command displays available versions and asks for confirmation before updating your local file. This operation doesn't delete any versions, it simply updates your working copy.
+
+### Merge
+
+Consolidate multiple environment variable versions into the main branch. This command helps merge changes from feature branches back into your main branch.
+
+```bash
+nvii merge
+```
+
+**Options:**
+
+`-s, --source <branch>`: Source branch to merge from <br />
+`-t, --target <branch>`: Target branch to merge into (default: main) <br />
+
+**Examples:**
+
+```bash
+# Merge with prompts
+nvii merge
+
+# Merge development into main
+nvii merge --source development --target main
+```
+
+## Branch Management Commands
+
+### Branch
+
+Create a new branch from the current or specified version. Branches allow you to maintain separate environment configurations for different environments like development, staging, and production.
+
+```bash
+nvii branch
+```
+
+**Options:**
+
+`-n, --name <name>`: Specify the branch name <br />
+`-v, --version <id>`: Base version ID to branch from (default: latest version) <br />
+
+**Examples:**
+
+```bash
+# Create branch interactively
+nvii branch
+
+# Create named branch from latest version
+nvii branch --name development
+
+# Create branch from specific version
+nvii branch --name hotfix --version abc123def
+```
+
+Branch names can contain letters, numbers, dots, underscores, hyphens, and slashes.
+
+### Branches
+
+List all branches for the current project. This command displays all available branches with their base versions and creation dates.
+
+```bash
+nvii branches
+```
+
+The output shows:
+
+Active branches marked with an asterisk <br />
+Current branch you're working on <br />
+Base version ID for each branch <br />
+Creation timestamp <br />
+
+### Checkout
+
+Switch to a different branch. This command updates your local configuration to work with a specified branch.
+
+```bash
+nvii checkout
+```
+
+**Options:**
+
+`-n, --name <name>`: Branch name to switch to
+
+**Examples:**
+
+```bash
+# Interactive branch selection
+nvii checkout
+
+# Switch to specific branch
+nvii checkout --name development
+```
+
+After switching branches, your subsequent push and pull operations will target the selected branch.
+
+## Version Tagging Commands
+
+### Tag
+
+Create a new tag for the current or specified version. Tags provide named references to specific versions, useful for marking releases or significant milestones.
+
+```bash
+nvii tag
+```
+
+**Options:**
+
+`-n, --name <name>`: Tag name to use <br />
+`-v, --version <id>`: Version ID to tag (default: latest version) <br />
+
+**Examples:**
+
+```bash
+# Create tag interactively
+nvii tag
+
+# Create named tag for latest version
+nvii tag --name v1.0.0
+
+# Create tag for specific version
+nvii tag --name production-release --version abc123def
+```
+
+Tag names can contain letters, numbers, dots, underscores, and hyphens. They're commonly used for semantic versioning (e.g., v1.0.0, v2.1.3).
+
+### Tags
+
+List all tags for the current project. This command displays all tags with their associated version IDs, descriptions, and creation dates.
+
+```bash
+nvii tags
+```
+
+The output includes tag names, linked version IDs, optional descriptions, and timestamps.
+
+## Utility Commands
+
+### Generate
+
+Create a template .env file from your current environment variables. This command generates an example file with variable names but empty values, perfect for sharing with team members or documenting required variables.
+
+```bash
+nvii generate
+```
+
+**Options:**
+
+`-o, --output <file>`: Specify output file path (default: .env.example) <br />
+`--format <type>`: Choose output format: env, json, or yaml (default: env)
+
+**Examples:**
+
+```bash
+# Generate .env.example file
+nvii generate
+
+# Generate with custom output path
+nvii generate --output .env.template
+
+# Generate JSON format
+nvii generate --format json
+
+# Generate YAML format
+nvii generate --format yaml --output config.yaml
+```
+
+**Output Formats:**
+
+`env`: Standard .env file format with empty values
+
+`json`: JSON object with variable keys and empty string values
+
+`yaml`: YAML format with variable keys and empty values
+
+### Test
+
+Verify encryption and decryption functionality. This command tests the encryption system by encrypting your environment variables and then decrypting them, displaying both versions.
+
+```bash
+nvii test
+```
+
+This is primarily used for debugging and verifying that the encryption system is working correctly with your credentials.
+
+## Best Practices
+
+**Version Messages**: Always provide descriptive messages when pushing changes, similar to git commit messages
+
+**Branch Strategy**: Use branches for different environments (development, staging, production)
+
+**Regular Syncing**: Pull changes before starting work and push when done to keep your team synchronized
+
+**Dry Run First**: Use the dry run flag to preview changes before applying them, especially with pull operations
+
+**Tag Releases**: Create tags for production releases to easily rollback if needed
+
+**Conflict Resolution**: When conflicts occur, carefully review each variable to choose the correct value
+
+## Common Workflows
+
+### Setting Up a New Project
+
+```bash
+# Login to Nvii
+nvii login
+
+# Create a new project
+nvii new
+
+# Push your initial environment variables
+nvii push --message "Initial environment setup"
+```
+
+### Joining an Existing Project
+
+```bash
+# Login to Nvii
+nvii login
+
+# Link to the project
+nvii link
+
+# Pull the environment variables
+nvii pull
+```
+
+### Daily Development Workflow
+
+```bash
+# Start of day: pull latest changes
+nvii pull
+
+# Make changes to your .env file
+# ...
+
+# End of day: push your changes
+nvii push --message "Updated database connection strings"
+```
+
+### Managing Multiple Environments
+
+```bash
+# Create branches for different environments
+nvii branch --name development
+nvii branch --name staging
+nvii branch --name production
+
+# Switch to development
+nvii checkout --name development
+
+# Push changes to development
+nvii push --message "Dev environment config"
+
+# Switch to production
+nvii checkout --name production
+
+# Pull production config
+nvii pull
+```
+
+### Rolling Back After a Mistake
+
+```bash
+# View recent changes
+nvii log --limit 10
+
+# Rollback to a previous version
+nvii rollback --version abc123def
+
+# Or use interactive selection
+nvii rollback
+```
+
+## Troubleshooting
+
+### Authentication Issues
+
+If you're having trouble logging in, try logging out first and then logging in again:
+
+```bash
+nvii logout
+nvii login
+```
+
+### Project Not Linked
+
+If you see "Project not linked" errors, ensure you've linked your project:
+
+```bash
+nvii link
+```
+
+### Conflicts During Pull
+
+If you encounter conflicts, you can either resolve them interactively or force pull with the remote values:
+
+```bash
+# Interactive resolution
+nvii pull
+
+# Force accept remote values
+nvii pull --force
+```
+
+### Missing Environment File
+
+Ensure you have a .env or .env.local file in your current directory before running commands like push or generate.
+
+## Security Considerations
+
+**Encryption**: All environment variables are encrypted using end to end encryption before transmission <br/>
+**Device Authentication**: Each device requires separate authentication for security <br/>
+**Local Storage**: Credentials are stored securely in your home directory <br/>
+**Access Control**: Project access is managed through team permissions <br/>
+**Version History**: All changes are tracked and can be audited
+
+## Version
+
+Current CLI version: 1.0.3
+
+Check your installed version:
+
+```bash
+nvii --version
+```

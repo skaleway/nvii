@@ -1,16 +1,14 @@
 "use client";
 
-import { Button } from "@nvii/ui/components/button";
 import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { ErrorContext } from "@better-fetch/fetch";
+import LoadingButton from "@nvii/ui/components/loading-button";
 import { Icons } from "@nvii/ui/components/icons";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const AuthButton = () => {
   const [pendingGithub, setPendingGithub] = useState(false);
-  const router = useRouter();
 
   const handleSignInWithGithub = async () => {
     await authClient.signIn.social(
@@ -21,10 +19,10 @@ export const AuthButton = () => {
       {
         onRequest: () => setPendingGithub(true),
         onSuccess: async () => {
-          router.push("/");
-          router.refresh();
+          toast.success("Signed in successfully");
+          window.location.reload();
         },
-        onError: (ctx: ErrorContext) => {
+        onError: (ctx: any) => {
           toast.error(ctx.error.message ?? "Unknown error.", {
             description: "GitHub sign-in failed",
           });
@@ -35,9 +33,14 @@ export const AuthButton = () => {
   };
 
   return (
-    <Button onClick={handleSignInWithGithub} disabled={pendingGithub}>
+    <LoadingButton
+      onClick={handleSignInWithGithub}
+      disabled={pendingGithub}
+      className="!px-10"
+      loading={pendingGithub}
+    >
       <Icons.github />{" "}
       {pendingGithub ? "Signing in with GitHub..." : "Sign in with GitHub"}
-    </Button>
+    </LoadingButton>
   );
 };

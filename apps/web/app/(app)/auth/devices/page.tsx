@@ -51,7 +51,7 @@ function Success() {
   );
 }
 
-export default function Page() {
+export default function Devices() {
   const [loading, setLoading] = useState(false);
   const [cancelled, setCancelled] = useState(false);
   const [success, setSuccess] = useState(false);
