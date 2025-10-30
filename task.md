@@ -198,13 +198,13 @@ This document outlines all tasks required to implement a complete version contro
 #### **Web Application Layer (apps/web) – Pending Tasks**
 
 - [ ] **Create `api/projects/[userId]/[projectId]/versions/[versionId]/route.ts`**
-  - [ ] `GET` - Fetch specific version details
-  - [ ] `DELETE` - Delete specific version (with permissions)
-  - [ ] `PATCH` - Update version metadata (description, tags)
+  - [x] `GET` - Fetch specific version details
+  - [x] `DELETE` - Delete specific version (with permissions)
+  - [x] `PATCH` - Update version metadata (description, tags)
 
 - [ ] **Create `api/projects/[userId]/[projectId]/versions/compare/route.ts`**
-  - [ ] `POST` - Compare two versions and return diff
-  - [ ] `GET` - Get comparison options (version list)
+  - [x] `POST` - Compare two versions and return diff
+  - [x] `GET` - Get comparison options (version list)
 
 - [ ] **Create `api/projects/[userId]/[projectId]/versions/tags/route.ts`**
   - [ ] `GET` - List all tags for project
