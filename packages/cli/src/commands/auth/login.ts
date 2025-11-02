@@ -39,7 +39,6 @@ async function writeToConfigFile(data: Record<string, string>) {
 const nanoid = customAlphabet("123456789QAZWSXEDCRFVTGBYHNUJMIKOLP", 8);
 
 export async function login() {
-  // check if user is already logged in and prevent useless login
   const res = await checkLoginStats();
   if (res?.success) {
     return;
@@ -95,7 +94,6 @@ export async function login() {
 
   const redirect = `http://127.0.0.1:${port}`;
   const code = nanoid();
-  // TODO: Change this later when the web app is hosted.
   const confirmationUrl = new URL(API_URLS.AUTH_DEVICES_URL);
   confirmationUrl.searchParams.append("code", code);
   confirmationUrl.searchParams.append("redirect", redirect);
