@@ -1,4 +1,4 @@
 export const API_URLS = {
-  BASE_URL: "https://nvii.bossadizenith.me/api",
-  AUTH_DEVICES_URL: "https://nvii.bossadizenith.me/auth/devices",
+  BASE_URL: "https://nvii.dev/api",
+  AUTH_DEVICES_URL: "https://nvii.dev/auth/devices",
 };
