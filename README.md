@@ -42,7 +42,7 @@ Nvii is a comprehensive environment variable management platform that provides b
 
 ## Project Structure
 
-```
+```txt
 envi/
 ├── apps/
 │   └── web/                    # Next.js web application
@@ -99,13 +99,14 @@ envi/
 
    ```bash
    # Create database environment file
-   echo 'DATABASE_URL="postgresql://envi:envi_password@localhost:5432/envi"' > packages/database/.env
+   echo 'DATABASE_URL="postgresql://envi:envi_password@localhost:5433/envi"' > packages/database/.env
 
    # Create web app environment file (you'll need to add your auth providers)
    touch apps/web/.env
    ```
 
 4. **First-time setup (if you haven't run the project before)**
+
    ```bash
    ./run-dev.sh
    ```
@@ -115,7 +116,7 @@ This will:
 - Start PostgreSQL database with Docker
 - Run database migrations
 - Start the Next.js development server
-- Make the web app available at `http://localhost:3000`
+- Make the web app available at `http://localhost:3000` or what ever port is displayed on your terminal for the web app.
 
 **For subsequent runs (after initial setup):**
 
@@ -157,11 +158,12 @@ pnpm --filter @nvii/cli dev
    ```
 
 5. **Generate example environment file**
+
    ```bash
    nvii generate
    ```
 
-### **Web Dashboard**
+### **Web App Dashboard**
 
 1. **Register/Login** at the web dashboard
 2. **Create projects** and invite team members
@@ -210,6 +212,7 @@ pnpm build
 # Build specific package
 pnpm --filter @nvii/cli build
 pnpm --filter @nvii/web build
+pnpm --filter
 ```
 
 ## 🔐 Security
@@ -231,13 +234,13 @@ We welcome contributions! Please see our [CONTRIBUTING.md](/CONTRIBUTING.md) for
 
 ## 📝 License
 
-[Add your license information here]
+[MIT license](/LICENSE.md)
 
 ## 🆘 Support
 
-- **Documentation**: [Add documentation link]
-- **Issues**: [Add GitHub issues link]
-- **Discussions**: [Add GitHub discussions link]
+- **Documentation**: [Nvii docs](https://docs.nvii.dev/docs/guides)
+- **Issues**: [GitHub issues](https://github.com/skaleway/nvii/?tab=issues)
+- **Discussions**: [GitHub discussions](https://github.com/skaleway/nvii/?tab=discussions)
 
 ---
 

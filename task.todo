@@ -1,3 +1,6 @@
-[] Remove quotes from the env credentials
-[] The copy function on the web should copy both the key and the value ("key=value")
-[] Check if there is a .env file when pulling and then fill it.
+
+
+[] Update the Contributing.md file to include use of better auth for authentication not clerk
+
+[] Add step by step indicators to every step or activity performed by the cli just like on the docs page.
+   (For all commands)

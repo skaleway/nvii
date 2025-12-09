@@ -48,5 +48,5 @@ packages/database/generated
 # Generated
 
 # local todo list
-task.todo
+/*.todo
 .nvii/
