@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { existsSync, promises as fs, readFileSync, writeFileSync } from "fs";
 import os from "os";
-import path from "path";
+import path, { join } from "path";
 import pc from "picocolors";
 import { ConfigData } from "../types";
 
@@ -419,4 +419,18 @@ export async function unlinkProjectConfig(projectId: string): Promise<boolean> {
     console.error(pc.red("Error writing project configuration:"), error);
     return success;
   }
+}
+
+/**
+ * Get the project name from the package.json file
+ * @param projectPath - The path to the project
+ * @returns The project name
+ */
+export function getProjectInfoFromPackageJson(projectPath: string): {
+  name: string;
+  description: string | undefined;
+} {
+  const packageJsonPath = join(projectPath, "package.json");
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+  return { name: packageJson.name, description: packageJson.description };
 }

@@ -1,5 +1,11 @@
 # nvii
 
+## 2.0.1
+
+### Patch Changes
+
+- added the project name and suggestions for users to use by default"
+
 ## 2.0.0
 
 ### Major Changes
