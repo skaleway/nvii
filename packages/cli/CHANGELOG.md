@@ -1,5 +1,11 @@
 # nvii
 
+## 2.0.0
+
+### Major Changes
+
+- some small changes to the cli and auth url
+
 ## 1.0.4
 
 ### Patch Changes
