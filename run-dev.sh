@@ -1,5 +1,4 @@
 echo "Installing global packages"
-sudo npm install -g pnpm
 pnpm install
 
 echo "Starting PostgreSQL database with Docker Compose..."
