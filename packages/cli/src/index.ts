@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
+import updateNotifier from 'update-notifier';
 import {
   testEncryption,
   generateExample,
@@ -19,8 +20,12 @@ import {
 import { createTag, listTags } from "./commands/tag";
 import { createBranch, listBranches, switchBranch } from "./commands/branch";
 import { rollback } from "./commands/rollback";
+import packageJson from "../package.json";
+import { checkForUpdates } from "./lib/utils";
 
 const program = new Command();
+const cliVersion = packageJson.version || "1.0.0";
+checkForUpdates({ pkg: packageJson }); 
 
 // Set program information
 program
@@ -28,7 +33,7 @@ program
   .description(
     "Secure environment variable management for modern development teams"
   )
-  .version("1.0.0")
+  .version(cliVersion)
   // .option("-v, --verbose", "Enable verbose output")
   // .option("-q, --quiet", "Suppress non-essential output")
   // .option("--config <path>", "Path to configuration file")
