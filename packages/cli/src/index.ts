@@ -1,31 +1,30 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import updateNotifier from 'update-notifier';
+import packageJson from "../package.json";
 import {
-  testEncryption,
+  createProject,
   generateExample,
+  getHistory,
   linkProject,
   login,
-  createProject,
-  updateProject,
   logout,
   pullRemoteChanges,
-  whoami,
-  some,
-  unlinkProject,
   pushLatestChanges,
-  getHistory,
+  some,
+  testEncryption,
+  unlinkProject,
+  updateProject,
+  whoami,
 } from "./commands";
-import { createTag, listTags } from "./commands/tag";
 import { createBranch, listBranches, switchBranch } from "./commands/branch";
 import { rollback } from "./commands/rollback";
-import packageJson from "../package.json";
+import { createTag, listTags } from "./commands/tag";
 import { checkForUpdates } from "./lib/utils";
 
 const program = new Command();
 const cliVersion = packageJson.version || "1.0.0";
-checkForUpdates({ pkg: packageJson }); 
+checkForUpdates({ pkg: packageJson });
 
 // Set program information
 program
