@@ -1,4 +1,5 @@
 echo "Installing global packages"
+sudo npm install -g pnpm
 pnpm install
 
 echo "Starting PostgreSQL database with Docker Compose..."
@@ -17,7 +18,7 @@ echo "Running prisma migrate..."
 cd packages/database && pnpm prisma migrate dev
 
 echo "Removing node_modules in apps/web (not sure why but this is necessary)"
-cd apps/web
+cd ../../apps/web
 
 if [ ! -f ".env" ]; then
     echo ".env file does not exist in apps/web"
