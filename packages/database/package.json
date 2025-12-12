@@ -20,11 +20,16 @@
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "latest"
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "latest",
+    "@prisma/client-runtime-utils": "^7.1.0",
+    "@types/node": "^25.0.0",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@nvii/eslint-config": "workspace:*",
     "@nvii/typescript-config": "workspace:*",
+    "@types/pg": "^8.16.0",
     "eslint": "^8.57.0",
     "prisma": "latest",
     "rimraf": "^5.0.5",
