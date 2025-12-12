@@ -32,7 +32,7 @@ importers:
         version: 2.29.5
       '@commitlint/cli':
         specifier: ^19.8.1
-        version: 19.8.1(@types/node@22.17.0)(typescript@5.5.4)
+        version: 19.8.1(@types/node@25.0.1)(typescript@5.5.4)
       '@commitlint/config-conventional':
         specifier: ^19.8.1
         version: 19.8.1
@@ -403,8 +403,8 @@ importers:
   packages/database:
     dependencies:
       '@prisma/client':
-        specifier: latest
-        version: 7.1.0(prisma@7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.5.4))(typescript@5.5.4)
+        specifier: 6.4.1
+        version: 6.4.1(prisma@6.4.1(typescript@5.5.4))(typescript@5.5.4)
     devDependencies:
       '@nvii/eslint-config':
         specifier: workspace:*
@@ -412,12 +412,15 @@ importers:
       '@nvii/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: ^25.0.1
+        version: 25.0.1
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
       prisma:
-        specifier: latest
-        version: 7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.5.4)
+        specifier: 6.4.1
+        version: 6.4.1(typescript@5.5.4)
       rimraf:
         specifier: ^5.0.5
         version: 5.0.10
@@ -2220,9 +2223,6 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
-  '@prisma/client-runtime-utils@7.1.0':
-    resolution: {integrity: sha512-39xmeBrNTN40FzF34aJMjfX1PowVCqoT3UKUWBBSP3aXV05NRqGBC3x2wCDs96ti6ZgdiVzqnRDHtbzU8X+lPQ==}
-
   '@prisma/client@5.22.0':
     resolution: {integrity: sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==}
     engines: {node: '>=16.13'}
@@ -2244,12 +2244,12 @@ packages:
       typescript:
         optional: true
 
-  '@prisma/client@7.1.0':
-    resolution: {integrity: sha512-qf7GPYHmS/xybNiSOpzv9wBo+UwqfL2PeyX+08v+KVHDI0AlSCQIh5bBySkH3alu06NX9wy98JEnckhMHoMFfA==}
-    engines: {node: ^20.19 || ^22.12 || >=24.0}
+  '@prisma/client@6.4.1':
+    resolution: {integrity: sha512-A7Mwx44+GVZVexT5e2GF/WcKkEkNNKbgr059xpr5mn+oUm2ZW1svhe+0TRNBwCdzhfIZ+q23jEgsNPvKD9u+6g==}
+    engines: {node: '>=18.18'}
     peerDependencies:
       prisma: '*'
-      typescript: '>=5.4.0'
+      typescript: '>=5.1.0'
     peerDependenciesMeta:
       prisma:
         optional: true
@@ -2258,6 +2258,9 @@ packages:
 
   '@prisma/config@7.1.0':
     resolution: {integrity: sha512-Uz+I43Wn1RYNHtuYtOhOnUcNMWp2Pd3GUDDKs37xlHptCGpzEG3MRR9L+8Y2ISMsMI24z/Ni+ww6OB/OO8M0sQ==}
+
+  '@prisma/debug@6.4.1':
+    resolution: {integrity: sha512-Q9xk6yjEGIThjSD8zZegxd5tBRNHYd13GOIG0nLsanbTXATiPXCLyvlYEfvbR2ft6dlRsziQXfQGxAgv7zcMUA==}
 
   '@prisma/debug@6.8.2':
     resolution: {integrity: sha512-4muBSSUwJJ9BYth5N8tqts8JtiLT8QI/RSAzEogwEfpbYGFo9mYsInsVo8dqXdPO2+Rm5OG5q0qWDDE3nyUbVg==}
@@ -2268,14 +2271,26 @@ packages:
   '@prisma/dev@0.15.0':
     resolution: {integrity: sha512-KhWaipnFlS/fWEs6I6Oqjcy2S08vKGmxJ5LexqUl/3Ve0EgLUsZwdKF0MvqPM5F5ttw8GtfZarjM5y7VLwv9Ow==}
 
+  '@prisma/engines-version@6.4.0-29.a9055b89e58b4b5bfb59600785423b1db3d0e75d':
+    resolution: {integrity: sha512-Xq54qw55vaCGrGgIJqyDwOq0TtjZPJEWsbQAHugk99hpDf2jcEeQhUcF+yzEsSqegBaDNLA4IC8Nn34sXmkiTQ==}
+
   '@prisma/engines-version@7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba':
     resolution: {integrity: sha512-qZUevUh+yPhGT28rDQnV8V2kLnFjirzhVD67elRPIJHRsUV/mkII10HSrJrhK/U2GYgAxXR2VEREtq7AsfS8qw==}
+
+  '@prisma/engines@6.4.1':
+    resolution: {integrity: sha512-KldENzMHtKYwsOSLThghOIdXOBEsfDuGSrxAZjMnimBiDKd3AE4JQ+Kv+gBD/x77WoV9xIPf25GXMWffXZ17BA==}
 
   '@prisma/engines@7.1.0':
     resolution: {integrity: sha512-KQlraOybdHAzVv45KWKJzpR9mJLkib7/TyApQpqrsL7FUHfgjIcy8jrVGt3iNfG6/GDDl+LNlJ84JSQwIfdzxA==}
 
+  '@prisma/fetch-engine@6.4.1':
+    resolution: {integrity: sha512-uZ5hVeTmDspx7KcaRCNoXmcReOD+84nwlO2oFvQPRQh9xiFYnnUKDz7l9bLxp8t4+25CsaNlgrgilXKSQwrIGQ==}
+
   '@prisma/fetch-engine@7.1.0':
     resolution: {integrity: sha512-GZYF5Q8kweXWGfn87hTu17kw7x1DgnehgKoE4Zg1BmHYF3y1Uu0QRY/qtSE4veH3g+LW8f9HKqA0tARG66bxxQ==}
+
+  '@prisma/get-platform@6.4.1':
+    resolution: {integrity: sha512-gXqZaDI5scDkBF8oza7fOD3Q3QMD0e0rBynlzDDZdTWbWmzjuW58PRZtj+jkvKje2+ZigCWkH8SsWZAsH6q1Yw==}
 
   '@prisma/get-platform@6.8.2':
     resolution: {integrity: sha512-vXSxyUgX3vm1Q70QwzwkjeYfRryIvKno1SXbIqwSptKwqKzskINnDUcx85oX+ys6ooN2ATGSD0xN2UTfg6Zcow==}
@@ -3547,6 +3562,9 @@ packages:
 
   '@types/node@22.17.0':
     resolution: {integrity: sha512-bbAKTCqX5aNVryi7qXVMi+OkB3w/OyblodicMbvE38blyAz7GxXf6XYhklokijuPwwVg9sDLKRxt0ZHXQwZVfQ==}
+
+  '@types/node@25.0.1':
+    resolution: {integrity: sha512-czWPzKIAXucn9PtsttxmumiQ9N0ok9FrBwgRWrwmVLlp86BrMExzvXRLFYRJ+Ex3g6yqj+KuaxfX1JTgV2lpfg==}
 
   '@types/nodemailer@6.4.21':
     resolution: {integrity: sha512-Eix+sb/Nj28MNnWvO2X1OLrk5vuD4C9SMnb2Vf4itWnxphYeSceqkFX7IdmxTzn+dvmnNz7paMbg4Uc60wSfJg==}
@@ -4836,6 +4854,11 @@ packages:
 
   esast-util-from-js@2.0.1:
     resolution: {integrity: sha512-8Ja+rNJ0Lt56Pcf3TAmpBZjmx8ZcK5Ts4cAzIOjsjevg9oSXJnl6SUQ2EevU8tv3h6ZLWmoKL5H4fgWvdvfETw==}
+
+  esbuild-register@3.6.0:
+    resolution: {integrity: sha512-H2/S7Pm8a9CL1uhp9OvjwrBh5Pvx0H8qVOxNu8Wed9Y7qv56MPtq+GGM8RJpq6glYJn9Wspr8uw7l55uyinNeg==}
+    peerDependencies:
+      esbuild: '>=0.12 <1'
 
   esbuild@0.19.12:
     resolution: {integrity: sha512-aARqgq8roFBj054KvQr5f1sFu0D65G+miZRCuJyJ0G13Zwx7vRar5Zhn2tkQNzIXcBrNVsv/8stehpj+GAjgbg==}
@@ -7257,6 +7280,16 @@ packages:
   pretty-format@3.8.0:
     resolution: {integrity: sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==}
 
+  prisma@6.4.1:
+    resolution: {integrity: sha512-q2uJkgXnua/jj66mk6P9bX/zgYJFI/jn4Yp0aS6SPRrjH/n6VyOV7RDe1vHD0DX8Aanx4MvgmUPPoYnR6MJnPg==}
+    engines: {node: '>=18.18'}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=5.1.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   prisma@7.1.0:
     resolution: {integrity: sha512-dy/3urE4JjhdiW5b09pGjVhGI7kPESK2VlCDrCqeYK5m5SslAtG5FCGnZWP7E8Sdg+Ow1wV2mhJH5RTFL5gEsw==}
     engines: {node: ^20.19 || ^22.12 || >=24.0}
@@ -8458,6 +8491,9 @@ packages:
 
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
   unicorn-magic@0.1.0:
     resolution: {integrity: sha512-lRfVq8fE8gz6QMBuDM6a+LO3IAzTi05H6gCVaUpir2E1Rwpo4ZUog45KpNXKC/Mn3Yb9UDuHumeFTo9iV/D9FQ==}
@@ -9843,11 +9879,11 @@ snapshots:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
-  '@commitlint/cli@19.8.1(@types/node@22.17.0)(typescript@5.5.4)':
+  '@commitlint/cli@19.8.1(@types/node@25.0.1)(typescript@5.5.4)':
     dependencies:
       '@commitlint/format': 19.8.1
       '@commitlint/lint': 19.8.1
-      '@commitlint/load': 19.8.1(@types/node@22.17.0)(typescript@5.5.4)
+      '@commitlint/load': 19.8.1(@types/node@25.0.1)(typescript@5.5.4)
       '@commitlint/read': 19.8.1
       '@commitlint/types': 19.8.1
       tinyexec: 1.0.1
@@ -9894,7 +9930,7 @@ snapshots:
       '@commitlint/rules': 19.8.1
       '@commitlint/types': 19.8.1
 
-  '@commitlint/load@19.8.1(@types/node@22.17.0)(typescript@5.5.4)':
+  '@commitlint/load@19.8.1(@types/node@25.0.1)(typescript@5.5.4)':
     dependencies:
       '@commitlint/config-validator': 19.8.1
       '@commitlint/execute-rule': 19.8.1
@@ -9902,7 +9938,7 @@ snapshots:
       '@commitlint/types': 19.8.1
       chalk: 5.5.0
       cosmiconfig: 9.0.0(typescript@5.5.4)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.17.0)(cosmiconfig@9.0.0(typescript@5.5.4))(typescript@5.5.4)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@25.0.1)(cosmiconfig@9.0.0(typescript@5.5.4))(typescript@5.5.4)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -10005,12 +10041,15 @@ snapshots:
   '@electric-sql/pglite-socket@0.0.6(@electric-sql/pglite@0.3.2)':
     dependencies:
       '@electric-sql/pglite': 0.3.2
+    optional: true
 
   '@electric-sql/pglite-tools@0.2.7(@electric-sql/pglite@0.3.2)':
     dependencies:
       '@electric-sql/pglite': 0.3.2
+    optional: true
 
-  '@electric-sql/pglite@0.3.2': {}
+  '@electric-sql/pglite@0.3.2':
+    optional: true
 
   '@emnapi/core@1.7.1':
     dependencies:
@@ -10369,6 +10408,7 @@ snapshots:
   '@hono/node-server@1.19.6(hono@4.10.6)':
     dependencies:
       hono: 4.10.6
+    optional: true
 
   '@hookform/resolvers@4.1.3(react-hook-form@7.62.0(react@19.2.0))':
     dependencies:
@@ -10721,6 +10761,7 @@ snapshots:
     dependencies:
       chevrotain: 10.5.0
       lilconfig: 2.1.0
+    optional: true
 
   '@mrleebo/prisma-ast@0.13.1':
     dependencies:
@@ -10836,8 +10877,6 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
-  '@prisma/client-runtime-utils@7.1.0': {}
-
   '@prisma/client@5.22.0(prisma@7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.9.2))':
     optionalDependencies:
       prisma: 7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.9.2)
@@ -10847,11 +10886,9 @@ snapshots:
       prisma: 7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.5.4)
       typescript: 5.5.4
 
-  '@prisma/client@7.1.0(prisma@7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.5.4))(typescript@5.5.4)':
-    dependencies:
-      '@prisma/client-runtime-utils': 7.1.0
+  '@prisma/client@6.4.1(prisma@6.4.1(typescript@5.5.4))(typescript@5.5.4)':
     optionalDependencies:
-      prisma: 7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.5.4)
+      prisma: 6.4.1(typescript@5.5.4)
       typescript: 5.5.4
 
   '@prisma/config@7.1.0':
@@ -10862,10 +10899,15 @@ snapshots:
       empathic: 2.0.0
     transitivePeerDependencies:
       - magicast
+    optional: true
 
-  '@prisma/debug@6.8.2': {}
+  '@prisma/debug@6.4.1': {}
 
-  '@prisma/debug@7.1.0': {}
+  '@prisma/debug@6.8.2':
+    optional: true
+
+  '@prisma/debug@7.1.0':
+    optional: true
 
   '@prisma/dev@0.15.0(typescript@5.5.4)':
     dependencies:
@@ -10888,6 +10930,7 @@ snapshots:
       zeptomatch: 2.0.2
     transitivePeerDependencies:
       - typescript
+    optional: true
 
   '@prisma/dev@0.15.0(typescript@5.9.2)':
     dependencies:
@@ -10912,7 +10955,17 @@ snapshots:
       - typescript
     optional: true
 
-  '@prisma/engines-version@7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba': {}
+  '@prisma/engines-version@6.4.0-29.a9055b89e58b4b5bfb59600785423b1db3d0e75d': {}
+
+  '@prisma/engines-version@7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba':
+    optional: true
+
+  '@prisma/engines@6.4.1':
+    dependencies:
+      '@prisma/debug': 6.4.1
+      '@prisma/engines-version': 6.4.0-29.a9055b89e58b4b5bfb59600785423b1db3d0e75d
+      '@prisma/fetch-engine': 6.4.1
+      '@prisma/get-platform': 6.4.1
 
   '@prisma/engines@7.1.0':
     dependencies:
@@ -10920,30 +10973,46 @@ snapshots:
       '@prisma/engines-version': 7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
       '@prisma/fetch-engine': 7.1.0
       '@prisma/get-platform': 7.1.0
+    optional: true
+
+  '@prisma/fetch-engine@6.4.1':
+    dependencies:
+      '@prisma/debug': 6.4.1
+      '@prisma/engines-version': 6.4.0-29.a9055b89e58b4b5bfb59600785423b1db3d0e75d
+      '@prisma/get-platform': 6.4.1
 
   '@prisma/fetch-engine@7.1.0':
     dependencies:
       '@prisma/debug': 7.1.0
       '@prisma/engines-version': 7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
       '@prisma/get-platform': 7.1.0
+    optional: true
+
+  '@prisma/get-platform@6.4.1':
+    dependencies:
+      '@prisma/debug': 6.4.1
 
   '@prisma/get-platform@6.8.2':
     dependencies:
       '@prisma/debug': 6.8.2
+    optional: true
 
   '@prisma/get-platform@7.1.0':
     dependencies:
       '@prisma/debug': 7.1.0
+    optional: true
 
   '@prisma/nextjs-monorepo-workaround-plugin@6.19.0': {}
 
-  '@prisma/query-plan-executor@6.18.0': {}
+  '@prisma/query-plan-executor@6.18.0':
+    optional: true
 
   '@prisma/studio-core@0.8.2(@types/react@19.2.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)':
     dependencies:
       '@types/react': 19.2.0
       react: 19.2.2
       react-dom: 19.2.2(react@19.2.2)
+    optional: true
 
   '@radix-ui/number@1.1.1': {}
 
@@ -12513,6 +12582,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@25.0.1':
+    dependencies:
+      undici-types: 7.16.0
+
   '@types/nodemailer@6.4.21':
     dependencies:
       '@aws-sdk/client-ses': 3.948.0
@@ -12983,7 +13056,8 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  aws-ssl-profiles@1.1.2: {}
+  aws-ssl-profiles@1.1.2:
+    optional: true
 
   axe-core@4.11.0: {}
 
@@ -13164,6 +13238,7 @@ snapshots:
       perfect-debounce: 1.0.0
       pkg-types: 2.3.0
       rc9: 2.1.2
+    optional: true
 
   c12@3.3.2:
     dependencies:
@@ -13449,9 +13524,9 @@ snapshots:
 
   core-js-pure@3.44.0: {}
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.17.0)(cosmiconfig@9.0.0(typescript@5.5.4))(typescript@5.5.4):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@25.0.1)(cosmiconfig@9.0.0(typescript@5.5.4))(typescript@5.5.4):
     dependencies:
-      '@types/node': 22.17.0
+      '@types/node': 25.0.1
       cosmiconfig: 9.0.0(typescript@5.5.4)
       jiti: 2.6.1
       typescript: 5.5.4
@@ -13571,7 +13646,8 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge-ts@7.1.5: {}
+  deepmerge-ts@7.1.5:
+    optional: true
 
   deepmerge@4.3.1: {}
 
@@ -13621,7 +13697,8 @@ snapshots:
 
   delayed-stream@1.0.0: {}
 
-  denque@2.1.0: {}
+  denque@2.1.0:
+    optional: true
 
   dequal@2.0.3: {}
 
@@ -13710,6 +13787,7 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
+    optional: true
 
   electron-to-chromium@1.5.194: {}
 
@@ -13723,7 +13801,8 @@ snapshots:
 
   emoji-regex@9.2.2: {}
 
-  empathic@2.0.0: {}
+  empathic@2.0.0:
+    optional: true
 
   end-of-stream@1.4.5:
     dependencies:
@@ -13867,6 +13946,13 @@ snapshots:
       acorn: 8.15.0
       esast-util-from-estree: 2.0.0
       vfile-message: 4.0.3
+
+  esbuild-register@3.6.0(esbuild@0.25.8):
+    dependencies:
+      debug: 4.4.1(supports-color@5.5.0)
+      esbuild: 0.25.8
+    transitivePeerDependencies:
+      - supports-color
 
   esbuild@0.19.12:
     optionalDependencies:
@@ -14613,6 +14699,7 @@ snapshots:
   generate-function@2.3.1:
     dependencies:
       is-property: 1.0.2
+    optional: true
 
   gensync@1.0.0-beta.2: {}
 
@@ -14635,7 +14722,8 @@ snapshots:
 
   get-nonce@1.0.1: {}
 
-  get-port-please@3.1.2: {}
+  get-port-please@3.1.2:
+    optional: true
 
   get-proto@1.0.1:
     dependencies:
@@ -14755,7 +14843,8 @@ snapshots:
       chalk: 4.1.2
       tinygradient: 1.1.5
 
-  grammex@3.1.12: {}
+  grammex@3.1.12:
+    optional: true
 
   graphemer@1.4.0: {}
 
@@ -15082,7 +15171,8 @@ snapshots:
 
   highlightjs-vue@1.0.0: {}
 
-  hono@4.10.6: {}
+  hono@4.10.6:
+    optional: true
 
   html-void-elements@2.0.1: {}
 
@@ -15097,7 +15187,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  http-status-codes@2.3.0: {}
+  http-status-codes@2.3.0:
+    optional: true
 
   https-proxy-agent@7.0.6:
     dependencies:
@@ -15119,6 +15210,7 @@ snapshots:
   iconv-lite@0.7.1:
     dependencies:
       safer-buffer: 2.1.2
+    optional: true
 
   ieee754@1.2.1: {}
 
@@ -15365,7 +15457,8 @@ snapshots:
 
   is-plain-obj@4.1.0: {}
 
-  is-property@1.0.2: {}
+  is-property@1.0.2:
+    optional: true
 
   is-regex@1.2.1:
     dependencies:
@@ -15699,7 +15792,8 @@ snapshots:
       strip-ansi: 7.1.0
       wrap-ansi: 9.0.0
 
-  long@5.3.2: {}
+  long@5.3.2:
+    optional: true
 
   longest-streak@3.1.0: {}
 
@@ -15730,7 +15824,8 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lru.min@1.1.3: {}
+  lru.min@1.1.3:
+    optional: true
 
   lucide-react@0.456.0(react@19.2.0):
     dependencies:
@@ -16512,6 +16607,7 @@ snapshots:
       named-placeholders: 1.1.4
       seq-queue: 0.0.5
       sqlstring: 2.3.3
+    optional: true
 
   mz@2.7.0:
     dependencies:
@@ -16522,6 +16618,7 @@ snapshots:
   named-placeholders@1.1.4:
     dependencies:
       lru.min: 1.1.3
+    optional: true
 
   nano-spawn@1.0.2: {}
 
@@ -16944,7 +17041,8 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  perfect-debounce@1.0.0: {}
+  perfect-debounce@1.0.0:
+    optional: true
 
   perfect-debounce@2.0.0: {}
 
@@ -17092,7 +17190,8 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  postgres@3.4.7: {}
+  postgres@3.4.7:
+    optional: true
 
   preact-render-to-string@5.2.6(preact@10.27.0):
     dependencies:
@@ -17130,6 +17229,17 @@ snapshots:
 
   pretty-format@3.8.0: {}
 
+  prisma@6.4.1(typescript@5.5.4):
+    dependencies:
+      '@prisma/engines': 6.4.1
+      esbuild: 0.25.8
+      esbuild-register: 3.6.0(esbuild@0.25.8)
+    optionalDependencies:
+      fsevents: 2.3.3
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - supports-color
+
   prisma@7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.5.4):
     dependencies:
       '@prisma/config': 7.1.0
@@ -17146,6 +17256,7 @@ snapshots:
       - magicast
       - react
       - react-dom
+    optional: true
 
   prisma@7.1.0(@types/react@19.2.0)(better-sqlite3@12.5.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.9.2):
     dependencies:
@@ -17185,6 +17296,7 @@ snapshots:
       graceful-fs: 4.2.11
       retry: 0.12.0
       signal-exit: 3.0.7
+    optional: true
 
   property-information@5.6.0:
     dependencies:
@@ -17772,6 +17884,7 @@ snapshots:
   remeda@2.21.3:
     dependencies:
       type-fest: 4.41.0
+    optional: true
 
   require-directory@2.1.1: {}
 
@@ -17812,7 +17925,8 @@ snapshots:
       onetime: 7.0.0
       signal-exit: 4.1.0
 
-  retry@0.12.0: {}
+  retry@0.12.0:
+    optional: true
 
   reusify@1.1.0: {}
 
@@ -17923,7 +18037,8 @@ snapshots:
       no-case: 2.3.2
       upper-case-first: 1.1.2
 
-  seq-queue@0.0.5: {}
+  seq-queue@0.0.5:
+    optional: true
 
   serialize-javascript@6.0.2:
     dependencies:
@@ -18128,11 +18243,13 @@ snapshots:
 
   sqids@0.3.0: {}
 
-  sqlstring@2.3.3: {}
+  sqlstring@2.3.3:
+    optional: true
 
   stable-hash@0.0.5: {}
 
-  std-env@3.9.0: {}
+  std-env@3.9.0:
+    optional: true
 
   stdin-discarder@0.1.0:
     dependencies:
@@ -18720,6 +18837,8 @@ snapshots:
 
   undici-types@6.21.0: {}
 
+  undici-types@7.16.0: {}
+
   unicorn-magic@0.1.0: {}
 
   unified@10.1.2:
@@ -18956,6 +19075,7 @@ snapshots:
   valibot@1.2.0(typescript@5.5.4):
     optionalDependencies:
       typescript: 5.5.4
+    optional: true
 
   valibot@1.2.0(typescript@5.9.2):
     optionalDependencies:
@@ -19177,6 +19297,7 @@ snapshots:
   zeptomatch@2.0.2:
     dependencies:
       grammex: 3.1.12
+    optional: true
 
   zod-validation-error@4.0.2(zod@3.25.76):
     dependencies:
