@@ -11,7 +11,9 @@ export default async function authMiddleware(request: NextRequest) {
     if (publicRoutes.includes(pathName)) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/auth", request.url));
+    const redirectUrl = new URL("/auth", request.url);
+    redirectUrl.searchParams.set("redirect", encodeURIComponent(pathName + request.nextUrl.search));
+    return NextResponse.redirect(redirectUrl);
   }
 
   if (publicRoutes.includes(pathName)) {
