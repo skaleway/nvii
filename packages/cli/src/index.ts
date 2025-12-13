@@ -44,7 +44,7 @@ program
   .addHelpText(
     "before",
     `
-🔐 Nvii - Secure Environment Variable Manager\n`
+Nvii - Secure Environment Variable Manager\n`
   );
 //   .addHelpText('after', `
 // 📖 Examples:
