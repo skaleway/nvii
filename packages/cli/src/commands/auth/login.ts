@@ -1,6 +1,5 @@
 import { FILENAME, checkLoginStats, API_URLS } from "@nvii/env-helpers";
 import { listen } from "async-listen";
-import { spawn } from "child_process";
 import "dotenv/config";
 import { writeFileSync, readFileSync } from "fs";
 import http from "http";
@@ -9,7 +8,7 @@ import os from "os";
 import path from "path";
 import pc from "picocolors";
 import url from "url";
-
+import open from "open";
 class UserCancellationError extends Error {
   constructor(message: string) {
     super(message);
@@ -103,8 +102,7 @@ export async function login() {
     `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`
   );
 
-  spawn("open", [confirmationUrl.toString()]);
-
+  await open(confirmationUrl.toString());
   const spinner = ora("Waiting for authentication...\n").start();
 
   try {
