@@ -3,29 +3,20 @@
 import { authClient } from "@/lib/auth-client";
 import LoadingButton from "@nvii/ui/components/loading-button";
 import { Icons } from "@nvii/ui/components/icons";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { useQueryStates } from "nuqs";
+import { searchParamsSchema } from "@/nuqs_config";
 
 export const AuthButton = () => {
   const [pendingGithub, setPendingGithub] = useState(false);
-  const [redirectUrl, setRedirectUrl] = useState<string | undefined>(undefined);
-  const router = useRouter();
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const redirectUrl = urlParams.get("redirect");
-    if (redirectUrl) {
-      setRedirectUrl(decodeURIComponent(redirectUrl));
-      router.replace("/auth");
-    }
-  }, [router]);
+  const [params] = useQueryStates(searchParamsSchema);
 
   const handleSignInWithGithub = async () => {
     await authClient.signIn.social(
       {
         provider: "github",
-        callbackURL: redirectUrl || window.location.origin + "/app",
+        callbackURL: `${process.env.NEXT_PUBLIC_URL}/${decodeURIComponent(params.redirect as string) || "app"}`,
       },
       {
         onRequest: () => setPendingGithub(true),

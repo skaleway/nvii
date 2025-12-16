@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import type React from "react";
 import local from "next/font/local";
-import Link from "next/link";
+import { NuqsAdapter } from "nuqs/adapters/next";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -93,9 +93,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="flex-1 w-full h-screen min-h-[calc(100vh-64px)]">
-            {children}
-          </main>{" "}
+          <NuqsAdapter>
+            <main className="flex-1 w-full h-screen min-h-[calc(100vh-64px)]">
+              {children}
+            </main>{" "}
+          </NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>

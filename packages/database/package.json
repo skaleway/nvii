@@ -23,16 +23,14 @@
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "latest",
     "@prisma/client-runtime-utils": "^7.1.0",
-    "@types/node": "^25.0.0",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "prisma": "^7.1.0"
   },
   "devDependencies": {
     "@nvii/eslint-config": "workspace:*",
     "@nvii/typescript-config": "workspace:*",
     "@types/pg": "^8.16.0",
-    "@types/node": "^25.0.1",
     "eslint": "^8.57.0",
-    "prisma": "6.4.1",
     "rimraf": "^5.0.5",
     "tsup": "^8.0.2",
     "tsx": "4.19.1",

@@ -93,6 +93,7 @@ export async function readEnvFile(): Promise<Record<string, string>> {
 
     // Report the user if a .env file is not found
     if (!existsSync(envPath)) {
+      console.log("\n");
       console.log(pc.yellow(".env file not found."));
       return {};
     }
@@ -129,6 +130,7 @@ export async function writeEnvFile(
     const envPath = path.join(process.cwd(), ".env");
     // Create a .env file if it does not exist and then update the file content
     if (!existsSync(envPath)) {
+      console.log("\n");
       console.log(pc.yellow(".env file not found. A new one will be created."));
       writeFileSync(envPath, "");
     }
@@ -430,7 +432,23 @@ export function getProjectInfoFromPackageJson(projectPath: string): {
   name: string;
   description: string | undefined;
 } {
-  const packageJsonPath = join(projectPath, "package.json");
-  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-  return { name: packageJson.name, description: packageJson.description };
+  // process.cwd().split("/").pop();
+  if (!projectPath) {
+    throw new Error("Invalid project path");
+  }
+  // NOTE: The user might not be working in a project with package.json (e.g a python, php, etc project)
+
+  // Check if there is a package.json file
+  let projectName = "";
+  let projectDescription = "";
+  if (existsSync(join(projectPath, "package.json"))) {
+    const packageJsonPath = join(projectPath, "package.json");
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+    projectName = packageJson.name;
+    projectDescription = packageJson.description;
+  } else {
+    // Get the current directory name
+    projectName = projectPath.split("/").pop() as string;
+  }
+  return { name: projectName, description: projectDescription };
 }

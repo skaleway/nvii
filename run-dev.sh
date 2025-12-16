@@ -2,7 +2,7 @@ echo "Installing global packages"
 pnpm install
 
 echo "Starting PostgreSQL database with Docker Compose..."
-docker-compose up -d
+sudo docker compose up -d
 
 echo "Waiting for database to be ready..."
 sleep 5

@@ -101,7 +101,8 @@ export async function createProject() {
       error.message.includes("User force closed the prompt with SIGINT")
     ) {
       spinner.stop();
-      spinner.fail(pc.yellow("\nProject create cancelled."));
+      console.log("\n");
+      spinner.fail(pc.yellow("Project create cancelled."));
       return;
     }
     spinner.fail(pc.red("Error creating project:"));

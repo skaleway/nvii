@@ -1,6 +1,6 @@
 // packages/database/src/client.ts
 
-import { PrismaClient } from "../prisma/generated/client";
+import { PrismaClient } from "../generated/client";
 import { PrismaPg } from "@prisma/adapter-pg"; // Import the adapter
 import pg from "pg"; // Import the driver
 

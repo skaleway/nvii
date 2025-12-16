@@ -12,7 +12,10 @@ export default async function authMiddleware(request: NextRequest) {
       return NextResponse.next();
     }
     const redirectUrl = new URL("/auth", request.url);
-    redirectUrl.searchParams.set("redirect", encodeURIComponent(pathName + request.nextUrl.search));
+    redirectUrl.searchParams.set(
+      "redirect",
+      encodeURIComponent(pathName + request.nextUrl.search)
+    );
     return NextResponse.redirect(redirectUrl);
   }
 
