@@ -2,10 +2,9 @@
   "name": "@nvii/eslint-config",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "exports": {
     "./base": "./base.js",
-    "./nextjs": "./next.js",
+    "./nextjs": "./nextjs.js",
     "./react-internal": "./react-internal.js"
   },
   "devDependencies": {
