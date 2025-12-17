@@ -203,7 +203,7 @@ export async function pullRemoteChanges(args?: {
       localEnvs: existingEnv,
       prevVersion: finalContent,
     });
-    console.log(pc.green(".env file updated successfully!"));
+    console.log(pc.yellowBright(".env file updated successfully!"));
   } catch (error: Error | any) {
     if (error.response) {
       console.error(pc.yellowBright(`\n${error.response.data.error}`));

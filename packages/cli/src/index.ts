@@ -31,14 +31,11 @@ displayBanner();
 // Set program information
 program
   .name("nvii")
-  .description(
-    "Secure environment variable management for modern development teams"
-  )
   .version(cliVersion)
-  // .option("-v, --verbose", "Enable verbose output")
-  // .option("-q, --quiet", "Suppress non-essential output")
-  // .option("--config <path>", "Path to configuration file")
-  // .option("--no-color", "Disable colored output")
+  .option("-v, --verbose", "Enable verbose output")
+  .option("-q, --quiet", "Suppress non-essential output")
+  .option("--config <path>", "Path to configuration file")
+  .option("--no-color", "Disable colored output")
   .configureHelp({
     sortSubcommands: true,
     showGlobalOptions: true,

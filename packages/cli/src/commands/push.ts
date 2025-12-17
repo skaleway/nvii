@@ -11,6 +11,8 @@ import { login } from "./auth/login";
 import { EnvVersion } from "@nvii/db";
 import inquirer from "inquirer";
 import { linkProject } from "./link";
+import ora from "ora";
+import chalk from "chalk";
 
 const handleSummary = ({
   projectId,
@@ -90,6 +92,7 @@ export async function pushLatestChanges(args?: {
   }
 
   try {
+    const spinner = ora();
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to push changes."));
       await login();
@@ -107,11 +110,7 @@ export async function pushLatestChanges(args?: {
     }
     config = await readProjectConfig();
     if (!config) {
-      console.log(
-        pc.red(
-          "An error occurred reading local .nvii folder currently. Try again."
-        )
-      );
+      console.log(pc.red("Invalid project configuration"));
       process.exit(1);
     }
     const projectId = config.projectId;
@@ -149,16 +148,20 @@ export async function pushLatestChanges(args?: {
 
     // If there is dry run show the user the changes between this version and previous one
     if (dryRun) {
+      spinner.text = "Pulling remote versions...";
+      spinner.start();
       const response = await client.get<EnvVersion[]>(
         `/projects/${userConfig.userId}/${projectId}/versions`
       );
 
       if (!response) {
         console.log(
-          pc.red(`bad: unable to access '${process.env.CLIENT_URL}'`)
+          pc.red(`Bad: Unable to access '${process.env.CLIENT_URL}'`)
         );
+        spinner.stop();
       }
 
+      spinner.succeed("Pulling remote versions...");
       let versions = response.data;
       versions = versions.sort(
         (a, b) =>
@@ -174,6 +177,8 @@ export async function pushLatestChanges(args?: {
       return;
     }
 
+    spinner.text = "Updating remote variables...";
+    spinner.start();
     await client.patch<{
       version: EnvVersion;
       versions: EnvVersion[];
@@ -182,9 +187,11 @@ export async function pushLatestChanges(args?: {
       message: message,
     });
 
-    console.log(
-      pc.green("\n✅ Successfully pushed changes and created a new version.")
-    );
+    spinner.succeed("Updating remote variables...");
+
+    // TODO: Update these lines to display real data.
+    console.log("\n" + chalk.white("Version created: v1.0.0"));
+    console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
   } catch (error: Error | any) {
     if (error.response) {
       console.error(pc.yellowBright(`\n${error.response.data.error}`));

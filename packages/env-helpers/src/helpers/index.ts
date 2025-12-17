@@ -319,11 +319,11 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
 
     // Check if both directory and file exist
     if (!existsSync(enviDirPath) || !existsSync(enviFilePath)) {
-      console.warn(
-        pc.yellowBright(
-          "No project configuration found. A new one will be created."
-        )
-      );
+      // console.warn(
+      //   pc.gray(
+      //     "No project configuration found. A new one will be created."
+      //   )
+      // );
       return null;
     }
 
@@ -431,12 +431,6 @@ export async function writeProjectConfig(
       JSON.stringify(updatedConfig, null, 2),
       "utf-8"
     );
-
-    console.log(
-      pc.yellowBright(
-        `✅ Project configuration ${projectId ? "updated" : "saved"} at ${enviFilePath}`
-      )
-    );
   } catch (error) {
     console.error(pc.red("Error writing project configuration:"), error);
     throw error;
@@ -476,11 +470,6 @@ export async function unlinkProjectConfig(projectId: string): Promise<boolean> {
       return success;
     }
 
-    console.log(
-      pc.yellowBright(
-        `✅ Project configuration for ${projectId} unlinked successfully.`
-      )
-    );
     return success;
   } catch (error) {
     console.error(pc.red("Error writing project configuration:"), error);

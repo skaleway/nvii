@@ -12,6 +12,8 @@ import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
 import { unlinkProject } from "./unlink";
+import ora from "ora";
+import chalk from "chalk";
 
 /**
  * Prompts the user with a question using inquirer.
@@ -26,7 +28,7 @@ async function promptUser(
     {
       type: "input",
       name: "answer",
-      message: pc.cyan(message),
+      message: message,
       default: defaultValue || "",
     },
   ]);
@@ -37,8 +39,7 @@ async function promptUser(
  * Creates a new project after verifying user authentication.
  */
 export async function createProject() {
-  const ora = (await import("ora")).default;
-  const spinner = ora({ text: pc.cyan("Creating project..."), color: "cyan" });
+  const spinner = ora();
 
   try {
     if (!isLogedIn()) {
@@ -50,8 +51,7 @@ export async function createProject() {
     const projectName = await promptUser("Enter your project name:", name);
 
     if (!projectName) {
-      spinner.fail(pc.red("Project name cannot be empty."));
-      spinner.stop();
+      console.log(pc.red("Project name cannot be empty."));
       return;
     }
 
@@ -62,17 +62,21 @@ export async function createProject() {
 
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
-      spinner.fail(pc.red("Invalid user credentials. Please log in again."));
-      spinner.stop();
+      console.log(pc.red("Invalid auth credentials."));
       await login();
       return;
     }
-
     const envs = await readEnvFile();
+
+    spinner.text = "Encrypting variables...";
+    spinner.start();
     const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
+    spinner.succeed("Encrypting variables...");
 
     await unlinkProject(false);
 
+    spinner.text = "Creating project...";
+    spinner.color = "cyan";
     spinner.start();
 
     const client = await getConfiguredClient();
@@ -88,25 +92,27 @@ export async function createProject() {
     const projectId = response.data.data.id;
     const branchName = "main";
     await writeProjectConfig(projectId, branchName);
+    spinner.succeed("Creating project...");
 
-    spinner.succeed(pc.green("Project created and configuration saved!"));
+    // TODO: Update these lines to display real data.
+    console.log("\n" + chalk.white("Version created: v1.0.0"));
+    console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
   } catch (error: Error | any) {
     if (error.response) {
-      spinner.fail(pc.yellowBright(`\n${error.response.data.error}`));
       spinner.stop();
-      return;
+      spinner.fail(pc.redBright(`${error.response.data.error}`));
+      process.exit(1);
     }
     if (
       error.message &&
       error.message.includes("User force closed the prompt with SIGINT")
     ) {
       spinner.stop();
-      console.log("\n");
-      spinner.fail(pc.yellowBright("Project create cancelled."));
+      spinner.fail(pc.gray("Project creation cancelled."));
       return;
     }
-    spinner.fail(pc.red("Error creating project:"));
     spinner.stop();
+    spinner.fail(pc.red("Error creating project:"));
     process.exit(1);
   }
 }

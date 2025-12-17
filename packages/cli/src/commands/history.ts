@@ -8,6 +8,7 @@ import {
 import pc from "picocolors";
 import { login } from "./auth/login";
 import { Project } from "@nvii/db";
+import ora from "ora";
 
 export async function getHistory(args?: {
   limit: string;
@@ -27,12 +28,12 @@ export async function getHistory(args?: {
     if (args.limit) {
       // validate limit (number only)
       if (!Number(args.limit)) {
-        console.warn(pc.yellowBright("Invalid limit (must be of type number)"));
+        console.warn(pc.gray("Invalid limit (must be of type number)"));
         process.exit(1);
       }
       const limitNumber = Number(args.limit);
       if (limitNumber <= 0) {
-        console.warn(pc.yellowBright("Invalid limit (must be at least 1)"));
+        console.warn(pc.gray("Invalid limit (must be at least 1)"));
         process.exit(1);
       }
 
@@ -44,23 +45,22 @@ export async function getHistory(args?: {
     }
   }
   try {
+    const spinner = ora();
     if (!isLogedIn()) {
-      console.log(pc.red("You must be logged in to view project history."));
+      console.log(pc.red("You must be logged in to view project history"));
       await login();
       return;
     }
 
     const userConfig = await readConfigFile();
     if (!userConfig?.userId) {
-      console.log(pc.red("No user ID found. Please log in again."));
+      console.log(pc.red("No user ID found. Please log in again"));
       return;
     }
 
     const config = await readProjectConfig();
     if (!config) {
-      console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again.")
-      );
+      console.log(pc.red("Invalid project configuration"));
       process.exit(1);
     }
 
@@ -69,13 +69,15 @@ export async function getHistory(args?: {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first."
+          "❌ Project not linked. Please run 'nvii link' to link your project first"
         )
       );
       process.exit(1);
     }
 
     // fetch project info from the API
+    spinner.text = "Pulling remote variables...";
+    spinner.start();
     const client = await getConfiguredClient();
     const response = await client.get(
       `/projects/${userConfig.userId}/${projectId}`
@@ -84,24 +86,29 @@ export async function getHistory(args?: {
 
     if (!project) {
       console.log(
-        pc.yellowBright("No project found for this user or repository.")
+        pc.yellowBright("No project found for this user or repository")
       );
+      spinner.stop();
       process.exit(1);
     }
 
     if (!project.content) {
-      console.log(pc.yellowBright("No content found for this project envs."));
+      console.log(pc.yellowBright("No content found for this project envs"));
+      spinner.stop();
       process.exit(1);
     }
+    spinner.succeed("Pulling remote variables...");
 
+    spinner.text = "Pulling remote changes...";
+    spinner.start();
     const versions = await fetchVersions(userConfig.userId, projectId, limit);
 
     if (!versions || versions.length === 0) {
-      console.log(
-        pc.yellowBright("No version history found for this project.")
-      );
+      console.log(pc.yellowBright("No version history found for this project"));
+      spinner.stop();
       return;
     }
+    spinner.succeed("Pulling remote changes...");
 
     // Filter by author if specified
     let filteredVersions = versions;
@@ -163,7 +170,7 @@ export async function getHistory(args?: {
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellowBright("\nHistory log cancelled."));
+      console.log(pc.yellowBright("\nHistory log cancelled"));
       return;
     }
     console.error(pc.red("\nError fetching history:"), error.message);

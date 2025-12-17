@@ -96,8 +96,8 @@ export const POST = async (
 
     if (existingProject) {
       return NextResponse.json(
-        { message: "Project with this name already exists" },
-        { status: 400 }
+        { error: "Project name already exist. Choose another name." },
+        { status: 409 }
       );
     }
 
@@ -160,7 +160,7 @@ export const POST = async (
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
