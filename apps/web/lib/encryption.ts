@@ -4,7 +4,7 @@ import { JsonValue } from "@prisma/client/runtime/library";
 function isStringRecord(value: unknown): value is Record<string, string> {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   return Object.entries(value).every(
-    ([k, v]) => typeof k === "string" && typeof v === "string",
+    ([k, v]) => typeof k === "string" && typeof v === "string"
   );
 }
 
@@ -22,7 +22,7 @@ export function safeParseJsonValue(value: JsonValue): Record<string, string> {
 
 export function decryptEnvValues(
   content: JsonValue | null | undefined,
-  userId: string,
+  userId: string
 ): Record<string, string> {
   if (!content) return {};
 

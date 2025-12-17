@@ -32,7 +32,7 @@ export async function unlinkProject(checkProjects = true) {
 
     if (checkProjects && !projects.length) {
       console.log(
-        pc.yellow("No projects found for current user. Run 'nvii new'.")
+        pc.yellowBright("No projects found for current user. Run 'nvii new'.")
       );
       return;
     }
@@ -68,7 +68,7 @@ export async function unlinkProject(checkProjects = true) {
     const result = await unlinkProjectConfig(project.id);
     if (!result) {
       console.log(
-        pc.yellow(
+        pc.yellowBright(
           "Oops. An error occurred deleting the local .nvii directory. You can delete it manually."
         )
       );
@@ -77,11 +77,11 @@ export async function unlinkProject(checkProjects = true) {
     console.log(pc.green(`Project unlinked successfully!`));
   } catch (error: Error | any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nUnlink cancelled."));
+      console.log(pc.yellowBright("\nUnlink cancelled."));
       return;
     }
     console.error(pc.red("\nError linking project:"), error.message);

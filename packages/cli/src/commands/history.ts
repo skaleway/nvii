@@ -27,12 +27,12 @@ export async function getHistory(args?: {
     if (args.limit) {
       // validate limit (number only)
       if (!Number(args.limit)) {
-        console.warn(pc.yellow("Invalid limit (must be of type number)"));
+        console.warn(pc.yellowBright("Invalid limit (must be of type number)"));
         process.exit(1);
       }
       const limitNumber = Number(args.limit);
       if (limitNumber <= 0) {
-        console.warn(pc.yellow("Invalid limit (must be at least 1)"));
+        console.warn(pc.yellowBright("Invalid limit (must be at least 1)"));
         process.exit(1);
       }
 
@@ -59,7 +59,7 @@ export async function getHistory(args?: {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -69,8 +69,8 @@ export async function getHistory(args?: {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
@@ -78,24 +78,28 @@ export async function getHistory(args?: {
     // fetch project info from the API
     const client = await getConfiguredClient();
     const response = await client.get(
-      `/projects/${userConfig.userId}/${projectId}`,
+      `/projects/${userConfig.userId}/${projectId}`
     );
     const project = response.data.project as Project;
 
     if (!project) {
-      console.log(pc.yellow("No project found for this user or repository."));
+      console.log(
+        pc.yellowBright("No project found for this user or repository.")
+      );
       process.exit(1);
     }
 
     if (!project.content) {
-      console.log(pc.yellow("No content found for this project envs."));
+      console.log(pc.yellowBright("No content found for this project envs."));
       process.exit(1);
     }
 
     const versions = await fetchVersions(userConfig.userId, projectId, limit);
 
     if (!versions || versions.length === 0) {
-      console.log(pc.yellow("No version history found for this project."));
+      console.log(
+        pc.yellowBright("No version history found for this project.")
+      );
       return;
     }
 
@@ -106,19 +110,19 @@ export async function getHistory(args?: {
         (version) =>
           version.user.email?.toLowerCase().includes(author.toLowerCase()) ||
           (version.user.name &&
-            version.user.name.toLowerCase().includes(author.toLowerCase())),
+            version.user.name.toLowerCase().includes(author.toLowerCase()))
       );
 
       if (filteredVersions.length === 0) {
-        console.log(pc.yellow(`No versions found for author: ${author}`));
+        console.log(pc.yellowBright(`No versions found for author: ${author}`));
         return;
       }
     }
 
     console.log(
       pc.bold(
-        `\n📜 Version history for project ${pc.cyan(`${project.name} - ${project.id}`)}`,
-      ),
+        `\n📜 Version history for project ${pc.cyan(`${project.name} - ${project.id}`)}`
+      )
     );
 
     if (author) {
@@ -137,29 +141,29 @@ export async function getHistory(args?: {
         const date = new Date(version.createdAt).toLocaleDateString();
         const message = version.description || "No description";
         console.log(
-          `${pc.yellow(shortId)} ${pc.dim(date)} ${pc.cyan(author)} ${message}`,
+          `${pc.yellowBright(shortId)} ${pc.dim(date)} ${pc.cyan(author)} ${message}`
         );
       } else {
         // Detailed multi-line format
         console.log(
-          `${pc.yellow(`version ${version.id}`)} ${pc.dim(`(by ${version.user.name || version.user.email})`)}`,
+          `${pc.yellowBright(`version ${version.id}`)} ${pc.dim(`(by ${version.user.name || version.user.email})`)}`
         );
         console.log(`Date:    ${new Date(version.createdAt).toLocaleString()}`);
         console.log(
-          `Message: ${version.description || pc.dim("No description")}`,
+          `Message: ${version.description || pc.dim("No description")}`
         );
         console.log(
-          pc.dim("--------------------------------------------------"),
+          pc.dim("--------------------------------------------------")
         );
       }
     });
   } catch (error: Error | any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nHistory log cancelled."));
+      console.log(pc.yellowBright("\nHistory log cancelled."));
       return;
     }
     console.error(pc.red("\nError fetching history:"), error.message);

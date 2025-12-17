@@ -1,9 +1,9 @@
 import crypto from "crypto";
 import { existsSync, promises as fs, readFileSync, writeFileSync } from "fs";
+import { readFile } from "fs/promises";
 import os from "os";
 import path, { join } from "path";
 import pc from "picocolors";
-import { ConfigData } from "../types";
 
 export * from "./api-client";
 export * from "./conflict";
@@ -14,6 +14,8 @@ export * from "./constants";
 export * from "./version-helpers";
 
 export const FILENAME = process.env.FILENAME || ".nvii";
+const HMAC_SECRET =
+  "de839e0bf7913c014c89ae1616c5ef717b6fba5d63c54aba5f2119ea0befeca8916ef9e23a1fc031";
 
 const ENCRYPTION_KEY = Buffer.from(
   process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD",
@@ -21,19 +23,68 @@ const ENCRYPTION_KEY = Buffer.from(
 ).slice(0, 32);
 
 const IV_LENGTH = 16;
+export async function writeToConfigFile(data: Record<string, string>) {
+  if (typeof window !== "undefined") return;
 
-export async function readConfigFile(): Promise<ConfigData | null> {
-  try {
-    const homeDir = os.homedir();
-    const filePath = path.join(homeDir, FILENAME);
-    const fileContent = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(fileContent);
-  } catch (error: any) {
-    console.error(
-      pc.red("Oups! you're not yet logged-in. run npm install -g @nvii/cli")
+  const keytar = await import("keytar").then((m) => m.default || m);
+  const homeDir = os.homedir();
+  const filePath = path.join(homeDir, FILENAME);
+
+  // Separate sensitive from non-sensitive
+  const { token, key, ...rest } = data;
+
+  // Store sensitive info in keytar
+  if (token) await keytar.setPassword("nvii-cli", "auth-token", token);
+  if (key) await keytar.setPassword("nvii-cli", "auth-key", key);
+
+  // Compute HMAC for integrity
+  const jsonData = JSON.stringify(rest, null, 2);
+  const hmac = crypto
+    .createHmac("sha256", HMAC_SECRET)
+    .update(jsonData)
+    .digest("hex");
+
+  // Save both data and integrity
+  writeFileSync(
+    filePath,
+    JSON.stringify({ data: rest, integrity: hmac }, null, 2)
+  );
+
+  const userData = readFileSync(filePath, "utf-8");
+  return { filePath, userData };
+}
+
+export async function readConfigFile() {
+  if (typeof window !== "undefined") return null;
+
+  const keytar = await import("keytar").then((m) => m.default || m);
+  const homeDir = os.homedir();
+  const filePath = path.join(homeDir, FILENAME);
+
+  const fileContent = await readFile(filePath, "utf-8");
+  const { data, integrity } = JSON.parse(fileContent);
+
+  // Verify integrity
+  const computedHmac = crypto
+    .createHmac("sha256", HMAC_SECRET)
+    .update(JSON.stringify(data, null, 2))
+    .digest("hex");
+
+  if (computedHmac !== integrity) {
+    throw new Error(
+      "Config integrity check failed! File may have been tampered with."
     );
-    return null;
   }
+
+  // Retrieve sensitive info
+  const token = await keytar.getPassword("nvii-cli", "auth-token");
+  const key = await keytar.getPassword("nvii-cli", "auth-key");
+
+  return {
+    ...data,
+    ...(token ? { token } : {}),
+    ...(key ? { key } : {}),
+  };
 }
 
 // check login stats
@@ -49,7 +100,11 @@ export async function checkLoginStats(): Promise<{ success: boolean }> {
 
     const file = JSON.parse(fileContent);
 
-    console.log(pc.green(`Logged in as ${file.username} (${file.email})`));
+    console.log(
+      pc.yellowBright(
+        `\nLogged in as ${file?.data?.username} (${file?.data?.email})\n`
+      )
+    );
     return { success: true };
   } catch (error) {
     return { success: false };
@@ -94,7 +149,7 @@ export async function readEnvFile(): Promise<Record<string, string>> {
     // Report the user if a .env file is not found
     if (!existsSync(envPath)) {
       console.log("\n");
-      console.log(pc.yellow(".env file not found."));
+      console.log(pc.yellowBright(".env file not found."));
       return {};
     }
     const envContent = await fs.readFile(envPath, "utf-8");
@@ -113,7 +168,9 @@ export async function readEnvFile(): Promise<Record<string, string>> {
         {} as Record<string, string>
       );
   } catch (error) {
-    console.error(pc.yellow("⚠️ No .env file found or unable to read it."));
+    console.error(
+      pc.yellowBright("⚠️ No .env file found or unable to read it.")
+    );
     return {};
   }
 }
@@ -131,7 +188,9 @@ export async function writeEnvFile(
     // Create a .env file if it does not exist and then update the file content
     if (!existsSync(envPath)) {
       console.log("\n");
-      console.log(pc.yellow(".env file not found. A new one will be created."));
+      console.log(
+        pc.yellowBright(".env file not found. A new one will be created.")
+      );
       writeFileSync(envPath, "");
     }
     const envContent = await fs.readFile(envPath, "utf-8");
@@ -169,7 +228,9 @@ export async function writeEnvFile(
     return envs;
   } catch (error: Error | any) {
     console.log(pc.red(error));
-    console.error(pc.yellow("⚠️ No .env file found or unable to write in it."));
+    console.error(
+      pc.yellowBright("⚠️ No .env file found or unable to write in it.")
+    );
     return {};
   }
 }
@@ -259,7 +320,9 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
     // Check if both directory and file exist
     if (!existsSync(enviDirPath) || !existsSync(enviFilePath)) {
       console.warn(
-        pc.yellow("No project configuration found. A new one will be created.")
+        pc.yellowBright(
+          "No project configuration found. A new one will be created."
+        )
       );
       return null;
     }
@@ -271,7 +334,7 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
     // Validate the configuration
     if (!config.projectId) {
       console.warn(
-        pc.yellow(
+        pc.yellowBright(
           "⚠️ Invalid project configuration: missing projectId for some projects."
         )
       );
@@ -313,7 +376,9 @@ async function updateGitignore(): Promise<void> {
     // Append .nvii/ to .gitignore
     content += `${enviEntry}\n`;
     await fs.writeFile(gitignorePath, content, "utf-8");
-    console.log(pc.green("✅ Updated .gitignore to exclude .nvii folder"));
+    console.log(
+      pc.yellowBright("✅ Updated .gitignore to exclude .nvii folder")
+    );
   } catch (error) {
     console.error(pc.red("Error updating .gitignore:"), error);
     // Don't throw error as this is not critical
@@ -368,7 +433,7 @@ export async function writeProjectConfig(
     );
 
     console.log(
-      pc.green(
+      pc.yellowBright(
         `✅ Project configuration ${projectId ? "updated" : "saved"} at ${enviFilePath}`
       )
     );
@@ -402,17 +467,17 @@ export async function unlinkProjectConfig(projectId: string): Promise<boolean> {
           }
           success = true;
         } catch (error) {
-          console.warn(pc.yellow("Warning: Could not delete nvii.json."));
+          console.warn(pc.yellowBright("Warning: Could not delete nvii.json."));
           return success;
         }
       }
     } else {
-      console.warn(pc.yellow("Warning: .nvii directory not found."));
+      console.warn(pc.yellowBright("Warning: .nvii directory not found."));
       return success;
     }
 
     console.log(
-      pc.green(
+      pc.yellowBright(
         `✅ Project configuration for ${projectId} unlinked successfully.`
       )
     );

@@ -8,6 +8,5 @@ export default defineConfig({
   clean: true,
   bundle: true,
   dts: true,
-  external: [],
   noExternal: ["commander", "inquirer", "picocolors", "@nvii/env-helpers"],
 });

@@ -80,7 +80,7 @@ export async function createBranch(args?: { name: string; version: string }) {
       );
       const versions = versionsResponse.data;
       if (versions.length === 0) {
-        console.log(pc.yellow("No versions available to branch from."));
+        console.log(pc.yellowBright("No versions available to branch from."));
         return;
       }
       baseVersionId = versions[0].id;
@@ -97,7 +97,9 @@ export async function createBranch(args?: { name: string; version: string }) {
     );
 
     if (!response || !response.data) {
-      console.log(pc.yellow("Oops an error occurred creating new branch."));
+      console.log(
+        pc.yellowBright("Oops an error occurred creating new branch.")
+      );
       process.exit(1);
     }
 
@@ -162,7 +164,7 @@ export async function listBranches() {
     const branches = response.data;
 
     if (!branches || branches.length === 0) {
-      console.log(pc.yellow("No branches found for this project."));
+      console.log(pc.yellowBright("No branches found for this project."));
       return;
     }
 
@@ -182,11 +184,11 @@ export async function listBranches() {
     });
   } catch (error: any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nBranch create cancelled."));
+      console.log(pc.yellowBright("\nBranch create cancelled."));
       return;
     }
     console.error(pc.red("Error listing branches:"), error.message);
@@ -242,7 +244,7 @@ export async function switchBranch(args?: { name: string }) {
       const branches = branchesResponse.data;
 
       if (!branches || branches.length === 0) {
-        console.log(pc.yellow("No branches found for this project."));
+        console.log(pc.yellowBright("No branches found for this project."));
         return;
       }
 
@@ -269,11 +271,11 @@ export async function switchBranch(args?: { name: string }) {
     console.log(pc.green(`✅ Switched to branch '${branchName}'`));
   } catch (error: any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nBranch switch cancelled."));
+      console.log(pc.yellowBright("\nBranch switch cancelled."));
       return;
     }
     if (error.response?.status === 404) {

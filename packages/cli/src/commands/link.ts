@@ -53,7 +53,7 @@ export async function linkProject(args?: { token: string }) {
 
     if (!projects.length) {
       console.log(
-        pc.yellow("No projects found for this directory. Run 'nvii new'.")
+        pc.yellowBright("No projects found for this directory. Run 'nvii new'.")
       );
       return;
     }
@@ -88,11 +88,11 @@ export async function linkProject(args?: { token: string }) {
     console.log(pc.green("Project linked successfully!"));
   } catch (error: Error | any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nLink process cancelled."));
+      console.log(pc.yellowBright("\nLink process cancelled."));
       return;
     }
     console.error(pc.red("\nError linking project:"), error.message);

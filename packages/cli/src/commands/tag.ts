@@ -64,7 +64,7 @@ export async function createTag(args?: { version: string; name: string }) {
       );
       const versions = versionsResponse.data;
       if (versions.length === 0) {
-        console.log(pc.yellow("No versions available to tag."));
+        console.log(pc.yellowBright("No versions available to tag."));
         return;
       }
       versionId = versions[0].id;
@@ -154,7 +154,7 @@ export async function listTags() {
     const tags = response.data;
 
     if (!tags || tags.length === 0) {
-      console.log(pc.yellow("No tags found for this project."));
+      console.log(pc.yellowBright("No tags found for this project."));
       return;
     }
 
@@ -163,7 +163,7 @@ export async function listTags() {
 
     tags.forEach((tag: VersionTag) => {
       console.log(
-        `${pc.yellow(tag.name)} -> ${pc.dim(`version ${tag.versionId.slice(0, 8)}`)}`
+        `${pc.yellowBright(tag.name)} -> ${pc.dim(`version ${tag.versionId.slice(0, 8)}`)}`
       );
       console.log(`   ${tag.description || "No description"}`);
       console.log(`   ${new Date(tag.createdAt).toLocaleDateString()}`);
@@ -171,11 +171,11 @@ export async function listTags() {
     });
   } catch (error: any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nTag cancelled."));
+      console.log(pc.yellowBright("\nTag cancelled."));
       return;
     }
     console.error(pc.red("Error listing tags:"), error.message);

@@ -32,7 +32,7 @@ displayBanner();
 program
   .name("nvii")
   .description(
-    "Secure environment variable management for modern development teams",
+    "Secure environment variable management for modern development teams"
   )
   .version(cliVersion)
   // .option("-v, --verbose", "Enable verbose output")
@@ -46,23 +46,8 @@ program
   .addHelpText(
     "before",
     `
-Nvii - Secure Environment Variable Manager\n`,
+Nvii - Secure Environment Variable Manager\n`
   );
-//   .addHelpText('after', `
-// 📖 Examples:
-//   $ nvii login                    # Authenticate with Nvii
-//   $ nvii new                      # Create a new project
-//   $ nvii link                     # Link to existing project
-//   $ nvii pull --dry-run           # Preview changes
-//   $ nvii push -m "Update API keys" # Upload with message
-//   $ nvii log --oneline            # Compact history view
-//   $ nvii generate --format json   # Generate JSON template
-
-// 🌐 Resources:
-//   Documentation: https://nvii.dev/docs
-//   Support:       https://nvii.dev/support
-//   GitHub:        https://github.com/nvii/nvii
-// `);
 
 // Handle no command provided
 if (process.argv.length <= 2) {
@@ -80,14 +65,14 @@ program
   .command("logout")
   .option(
     "-u, --username <username>",
-    "The username of the account to logout from.",
+    "The username of the account to logout from."
   )
   .option(
     "-e, --email <email>",
-    "The email of the user account to logout from.",
+    "The email of the user account to logout from."
   )
   .description(
-    "Terminate your current session and clear authentication credentials",
+    "Terminate your current session and clear authentication credentials"
   )
   .action(logout);
 
@@ -102,7 +87,7 @@ program
   .command("new")
   // .alias("init")
   .description(
-    "Initialize a new project and configure environment variable management",
+    "Initialize a new project and configure environment variable management"
   )
   .action(createProject);
 
@@ -117,7 +102,7 @@ program
   .command("unlink")
   // .alias("disconnect")
   .description(
-    "Disconnect the current directory from its linked remote project",
+    "Disconnect the current directory from its linked remote project"
   )
   .action(unlinkProject);
 
@@ -125,7 +110,7 @@ program
 program
   .command("pull")
   .description(
-    "Fetch and merge environment variables from the remote repository",
+    "Fetch and merge environment variables from the remote repository"
   )
   .option("-f, --force", "Force pull without conflict resolution prompts")
   .option("-b, --branch <branch>", "Pull from specific branch (default: main)")
@@ -135,7 +120,7 @@ program
 program
   .command("push")
   .description(
-    "Upload local environment variable changes and create a new version",
+    "Upload local environment variable changes and create a new version"
   )
   .option("-m, --message <message>", "Version description message")
   .option("-b, --branch <branch>", "Push to specific branch (default: main)")
@@ -146,7 +131,7 @@ program
   .command("update")
   // .alias("sync")
   .description(
-    "Synchronize local environment file with the latest remote version",
+    "Synchronize local environment file with the latest remote version"
   )
   .action(updateProject);
 
@@ -171,12 +156,12 @@ program
 program
   .command("merge")
   .description(
-    "Consolidate multiple environment variable versions into the main branch",
+    "Consolidate multiple environment variable versions into the main branch"
   )
   .option("-s, --source <branch>", "Source branch to merge from")
   .option(
     "-t, --target <branch>",
-    "Target branch to merge into (default: main)",
+    "Target branch to merge into (default: main)"
   )
   .action(some);
 
@@ -185,7 +170,7 @@ program
   .command("generate")
   .alias("gen")
   .description(
-    "Create a template .env.x file from your current environment variables",
+    "Create a template .env.x file from your current environment variables"
   )
   .option("-o, --output <file>", "Output file path (default: .env.example)")
   .option("--format <type>", "Output format: env, json, yaml", "env")

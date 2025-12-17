@@ -12,9 +12,9 @@ export async function logout(args?: { username: string; email: string }) {
     // validate user Input
     if (args.username && args.email) {
       console.log(
-        pc.yellow(
-          "Unexpected input. Ether provide your email or username to logout. NOT BOTH",
-        ),
+        pc.yellowBright(
+          "Unexpected input. Ether provide your email or username to logout. NOT BOTH"
+        )
       );
       process.exit(0);
     }
@@ -29,45 +29,37 @@ export async function logout(args?: { username: string; email: string }) {
     // Read current config
     const config = await readConfigFile();
     if (!config) {
-      console.log(pc.yellow("You are not logged in."));
+      console.log(
+        pc.gray(
+          `You are not logged in. ${pc.yellow("Run 'nvii login' first")} \n`
+        )
+      );
       return;
     }
 
     // Ask for user ID confirmation
     if (!username && !email) {
+      let isUsername = true;
       const { userId } = await inquirer.prompt([
         {
           type: "input",
           name: "userId",
-          message: `Please enter your username to confirm logout: `,
+          message: `Enter your username or email to confirm logout: `,
           validate: (input) => {
             if (input === config.username) {
               return true;
             }
-            return "Username does not match. Please try again.";
-          },
-        },
-      ]);
-
-      username = userId;
-    }
-
-    if (!email && !username) {
-      const { userId } = await inquirer.prompt([
-        {
-          type: "input",
-          name: "userId",
-          message: `Please enter your username to confirm logout: `,
-          validate: (input) => {
             if (input === config.email) {
+              isUsername = false;
               return true;
             }
-            return "Username does not match. Please try again.";
+            return "Invalid username or email.";
           },
         },
       ]);
 
-      email = userId;
+      if (isUsername) username = userId;
+      else email = userId;
     }
 
     // Remove the config file
@@ -78,7 +70,7 @@ export async function logout(args?: { username: string; email: string }) {
     if (email) {
       if (config.email !== email) {
         console.log(
-          pc.redBright("Oops, Invalid email. Check your email and try again."),
+          pc.redBright("\nInvalid email. Check your email and try again.")
         );
         process.exit(1);
       }
@@ -87,9 +79,7 @@ export async function logout(args?: { username: string; email: string }) {
     if (username) {
       if (config.username !== username) {
         console.log(
-          pc.redBright(
-            "Oops, Invalid username. Check your username and try again.",
-          ),
+          pc.redBright("Invalid username. Check your username and try again.")
         );
         process.exit(1);
       }
@@ -107,23 +97,23 @@ export async function logout(args?: { username: string; email: string }) {
     ]);
 
     if (!confirm) {
-      console.log(pc.yellow("Logout cancelled."));
+      console.log(pc.yellowBright("\nLogout cancelled."));
       return;
     }
 
     fs.unlinkSync(filePath);
 
-    console.log(pc.green("Successfully logged out!"));
+    console.log(pc.yellowBright("\nSuccessfully logged out!\n"));
   } catch (error: Error | any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.gray(`\n${error.response.data.error}\n`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nLogout cancelled."));
+      console.log(pc.gray("\nLogout cancelled.\n"));
       return;
     }
-    console.error(pc.red("Error during logout:"), error.message);
+    console.error(pc.red("\nError during logout:"), error.message, "\n");
     process.exit(1);
   }
 }

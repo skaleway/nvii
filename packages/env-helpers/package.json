@@ -28,9 +28,10 @@
   ],
   "license": "ISC",
   "devDependencies": {
-    "@nvii/typescript-config": "workspace:*",
     "@nvii/db": "workspace:*",
+    "@nvii/typescript-config": "workspace:*",
     "@swc/core": "^1.3.99",
+    "@types/keytar": "^4.4.2",
     "@types/node": "^20.17.10",
     "commander": "^11.1.0",
     "concurrently": "^9.2.0",
@@ -44,6 +45,7 @@
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "inquirer": "^12.4.3",
+    "keytar": "^7.9.0",
     "nanoid": "^3.3.7",
     "ora": "^7.0.1",
     "picocolors": "^1.0.0"

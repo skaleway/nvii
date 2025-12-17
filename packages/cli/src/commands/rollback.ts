@@ -15,7 +15,7 @@ type VersionWithUser = EnvVersion & { user: Pick<User, "name" | "email"> };
 const skipConfirmationPrompt = async (
   skipConfirmation: boolean,
   description: string,
-  id: string,
+  id: string
 ) => {
   if (!skipConfirmation) {
     const { confirmRollback } = await inquirer.prompt([
@@ -56,7 +56,7 @@ export async function rollback(args?: { version: string; force: boolean }) {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -66,8 +66,8 @@ export async function rollback(args?: { version: string; force: boolean }) {
     if (!userConfig?.userId || !projectId) {
       console.error(
         pc.red(
-          "Project not linked or user not configured. Please run 'nvii link'.",
-        ),
+          "Project not linked or user not configured. Please run 'nvii link'."
+        )
       );
       process.exit(1);
     }
@@ -76,7 +76,7 @@ export async function rollback(args?: { version: string; force: boolean }) {
 
     if (versionId && versionId.trim() !== "") {
       const response = await client.get(
-        `/projects/${userConfig.userId}/${projectId}/versions/${versionId}`,
+        `/projects/${userConfig.userId}/${projectId}/versions/${versionId}`
       );
       const version = response.data as EnvVersion;
 
@@ -88,14 +88,14 @@ export async function rollback(args?: { version: string; force: boolean }) {
       await skipConfirmationPrompt(
         skipConfirmation,
         version.description as string,
-        version.id,
+        version.id
       );
 
       // 4. Update local .env file
       console.log(pc.cyan("Updating local .env file..."));
 
       const values = await writeEnvFile(
-        version?.content as Record<string, string>,
+        version?.content as Record<string, string>
       );
       if (!values) {
         console.error(pc.red("\nOops an unexpected error occurred."));
@@ -103,20 +103,20 @@ export async function rollback(args?: { version: string; force: boolean }) {
       }
       console.log(
         pc.green(
-          "✅ Local .env file has been updated to match the rollback version.",
-        ),
+          "✅ Local .env file has been updated to match the rollback version."
+        )
       );
       return;
     }
 
     // 1. Fetch version history
     const versionsResponse = await client.get(
-      `/projects/${userConfig.userId}/${projectId}/versions?limit=20`,
+      `/projects/${userConfig.userId}/${projectId}/versions?limit=20`
     );
     const versions = versionsResponse.data as VersionWithUser[];
 
     if (versions.length < 2) {
-      console.log(pc.yellow("Not enough versions to roll back."));
+      console.log(pc.yellowBright("Not enough versions to roll back."));
       return;
     }
 
@@ -135,13 +135,13 @@ export async function rollback(args?: { version: string; force: boolean }) {
 
     // 3. Fetch the content of the selected version
     const response = await client.get(
-      `/projects/${userConfig.userId}/${projectId}/versions/${versionIdToRollback}`,
+      `/projects/${userConfig.userId}/${projectId}/versions/${versionIdToRollback}`
     );
     const versionToRollback = response.data as EnvVersion;
 
     if (!versionToRollback.content) {
       console.error(
-        pc.red("Selected version has no content. Cannot roll back."),
+        pc.red("Selected version has no content. Cannot roll back.")
       );
       return;
     }
@@ -149,14 +149,14 @@ export async function rollback(args?: { version: string; force: boolean }) {
     await skipConfirmationPrompt(
       skipConfirmation,
       versionToRollback.description as string,
-      versionToRollback.id,
+      versionToRollback.id
     );
 
     // 4. Update local .env file
     console.log(pc.cyan("Updating local .env file..."));
 
     const values = await writeEnvFile(
-      versionToRollback?.content as Record<string, string>,
+      versionToRollback?.content as Record<string, string>
     );
     if (!values) {
       console.error(pc.red("\nOops an unexpected error occurred."));
@@ -164,16 +164,16 @@ export async function rollback(args?: { version: string; force: boolean }) {
     }
     console.log(
       pc.green(
-        "✅ Local .env file has been updated to match the rollback version.",
-      ),
+        "✅ Local .env file has been updated to match the rollback version."
+      )
     );
   } catch (error: any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nRollback cancelled."));
+      console.log(pc.yellowBright("\nRollback cancelled."));
       return;
     }
     console.error(pc.red("\nError during rollback:"), error.message);

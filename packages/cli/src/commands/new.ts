@@ -92,7 +92,7 @@ export async function createProject() {
     spinner.succeed(pc.green("Project created and configuration saved!"));
   } catch (error: Error | any) {
     if (error.response) {
-      spinner.fail(pc.yellow(`\n${error.response.data.error}`));
+      spinner.fail(pc.yellowBright(`\n${error.response.data.error}`));
       spinner.stop();
       return;
     }
@@ -102,7 +102,7 @@ export async function createProject() {
     ) {
       spinner.stop();
       console.log("\n");
-      spinner.fail(pc.yellow("Project create cancelled."));
+      spinner.fail(pc.yellowBright("Project create cancelled."));
       return;
     }
     spinner.fail(pc.red("Error creating project:"));

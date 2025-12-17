@@ -29,7 +29,7 @@ export async function updateProject() {
     const config = await readProjectConfig();
     if (!config) {
       console.log(
-        pc.red("Cannot read local .nvii folder currently. Try again."),
+        pc.red("Cannot read local .nvii folder currently. Try again.")
       );
       process.exit(1);
     }
@@ -38,8 +38,8 @@ export async function updateProject() {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
@@ -50,7 +50,7 @@ export async function updateProject() {
     const client = await getConfiguredClient();
 
     const versions = await client.get<EnvVersion[]>(
-      `/projects/${userData!.userId}/${projectId}/versions/latest`,
+      `/projects/${userData!.userId}/${projectId}/versions/latest`
     );
 
     if (!versions || !versions.data) {
@@ -68,13 +68,13 @@ export async function updateProject() {
     // decrypt envs before comparing
     const decryptedEnv = decryptEnvValues(
       versionToUpdateTo?.content as Record<string, string>,
-      userData?.userId as string,
+      userData?.userId as string
     );
     const data = await writeEnvFile(decryptedEnv);
 
     if (!data) {
       console.error(
-        pc.red("❌ Failed to write environment variables to .env file."),
+        pc.red("❌ Failed to write environment variables to .env file.")
       );
       process.exit(1);
     }
@@ -82,15 +82,15 @@ export async function updateProject() {
     console.log(pc.cyan("Updated environment variables:"));
 
     console.log(
-      pc.green("✅ Project updated successfully with new .env variables."),
+      pc.green("✅ Project updated successfully with new .env variables.")
     );
   } catch (error: Error | any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nUpdate cancelled."));
+      console.log(pc.yellowBright("\nUpdate cancelled."));
       return;
     }
     console.error(pc.red("❌ Error updating project:"), error.message);

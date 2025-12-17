@@ -38,34 +38,34 @@ const handleSummary = ({
     changesSummary.removed.length > 0
   ) {
     console.log(
-      pc.bold(`\n📜 Change summary for project: ${pc.cyan(`${projectId}`)}`),
+      pc.bold(`\n📜 Change summary for project: ${pc.cyan(`${projectId}`)}`)
     );
 
     console.log(pc.dim("--------------------------------------------------"));
     changesSummary.added.forEach((key) => {
       console.log(
-        `${pc.yellow(`${key}:`)} added with value: ${localEnvs[key]}`,
+        `${pc.yellowBright(`${key}:`)} added with value: ${localEnvs[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
       console.log(pc.dim("--------------------------------------------------"));
     });
     changesSummary.modified.forEach((change) => {
       console.log(
-        `${pc.yellow(`${change.key}:`)} changed from ${change.original} (remote) to ${change.value} (local)`,
+        `${pc.yellowBright(`${change.key}:`)} changed from ${change.original} (remote) to ${change.value} (local)`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
       console.log(pc.dim("--------------------------------------------------"));
     });
     changesSummary.removed.forEach((key) => {
       console.log(
-        `${pc.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`,
+        `${pc.yellowBright(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
       console.log(pc.dim("--------------------------------------------------"));
     });
   } else {
     console.log(
-      pc.bold(`\nNo changes detected for project: ${pc.cyan(`${projectId}`)}`),
+      pc.bold(`\nNo changes detected for project: ${pc.cyan(`${projectId}`)}`)
     );
   }
 };
@@ -109,8 +109,8 @@ export async function pushLatestChanges(args?: {
     if (!config) {
       console.log(
         pc.red(
-          "An error occurred reading local .nvii folder currently. Try again.",
-        ),
+          "An error occurred reading local .nvii folder currently. Try again."
+        )
       );
       process.exit(1);
     }
@@ -118,15 +118,17 @@ export async function pushLatestChanges(args?: {
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
 
     const localEnvs = await readEnvFile();
     if (Object.keys(localEnvs).length === 0) {
-      console.log(pc.yellow("Local .env file is empty. Nothing to push."));
+      console.log(
+        pc.yellowBright("Local .env file is empty. Nothing to push.")
+      );
       return;
     }
 
@@ -148,19 +150,19 @@ export async function pushLatestChanges(args?: {
     // If there is dry run show the user the changes between this version and previous one
     if (dryRun) {
       const response = await client.get<EnvVersion[]>(
-        `/projects/${userConfig.userId}/${projectId}/versions`,
+        `/projects/${userConfig.userId}/${projectId}/versions`
       );
 
       if (!response) {
         console.log(
-          pc.red(`bad: unable to access '${process.env.CLIENT_URL}'`),
+          pc.red(`bad: unable to access '${process.env.CLIENT_URL}'`)
         );
       }
 
       let versions = response.data;
       versions = versions.sort(
         (a, b) =>
-          new Date(a.updatedAt).getHours() - new Date(b.updatedAt).getHours(),
+          new Date(a.updatedAt).getHours() - new Date(b.updatedAt).getHours()
       );
 
       const prevVersion = versions[versions.length - 1];
@@ -181,16 +183,16 @@ export async function pushLatestChanges(args?: {
     });
 
     console.log(
-      pc.green("\n✅ Successfully pushed changes and created a new version."),
+      pc.green("\n✅ Successfully pushed changes and created a new version.")
     );
   } catch (error: Error | any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
 
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nPush cancelled."));
+      console.log(pc.yellowBright("\nPush cancelled."));
       return;
     }
     console.error(pc.red("\nError pushing local changes:"), error.message);
