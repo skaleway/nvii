@@ -29,7 +29,7 @@ export const AuthButton = () => {
             description: "GitHub sign-in failed",
           });
         },
-      }
+      },
     );
     setPendingGithub(false);
   };
