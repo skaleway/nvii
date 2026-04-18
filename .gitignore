@@ -50,3 +50,4 @@ packages/database/generated
 # local todo list
 /*.todo
 .nvii/
+todos/
