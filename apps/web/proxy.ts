@@ -1,0 +1,31 @@
+import { getSessionCookie } from "better-auth/cookies";
+import { NextResponse, type NextRequest } from "next/server";
+
+const publicRoutes = ["/", "/auth"];
+
+export default async function proxy(request: NextRequest) {
+  const pathName = request.nextUrl.pathname;
+  const session = getSessionCookie(request.headers, {});
+
+  if (!session) {
+    if (publicRoutes.includes(pathName)) {
+      return NextResponse.next();
+    }
+    const redirectUrl = new URL("/auth", request.url);
+    redirectUrl.searchParams.set(
+      "redirect",
+      encodeURIComponent(pathName + request.nextUrl.search),
+    );
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (publicRoutes.includes(pathName)) {
+    return NextResponse.redirect(new URL("/app", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+};
