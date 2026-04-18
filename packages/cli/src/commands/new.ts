@@ -12,6 +12,8 @@ import inquirer from "inquirer";
 import pc from "picocolors";
 import { login } from "./auth/login";
 import { unlinkProject } from "./unlink";
+import ora from "ora";
+import chalk from "chalk";
 
 /**
  * Prompts the user with a question using inquirer.
@@ -37,8 +39,7 @@ async function promptUser(
  * Creates a new project after verifying user authentication.
  */
 export async function createProject() {
-  const ora = (await import("ora")).default;
-  const spinner = ora({ text: pc.cyan("Creating project..."), color: "cyan" });
+  const spinner = ora();
 
   try {
     if (!isLogedIn()) {
@@ -69,11 +70,14 @@ export async function createProject() {
     }
 
     const envs = await readEnvFile();
+
+    spinner.text = "Encrypting variables...";
+    spinner.start();
     const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
 
     await unlinkProject(false);
 
-    spinner.start();
+    spinner.text = "Creating project...";
 
     const client = await getConfiguredClient();
     const response = await client.post<{
@@ -90,6 +94,9 @@ export async function createProject() {
     await writeProjectConfig(projectId, branchName);
 
     spinner.succeed(pc.green("Project created and configuration saved!"));
+
+    console.log("\n" + chalk.white("Version created: v1.0.0"));
+    console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
   } catch (error: Error | any) {
     if (error.response) {
       spinner.fail(pc.yellow(`\n${error.response.data.error}`));
