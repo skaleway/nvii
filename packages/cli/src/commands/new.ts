@@ -22,7 +22,7 @@ import chalk from "chalk";
  */
 async function promptUser(
   message: string,
-  defaultValue?: string
+  defaultValue?: string,
 ): Promise<string> {
   const response = await inquirer.prompt([
     {
@@ -57,7 +57,7 @@ export async function createProject() {
 
     const projectDescription = await promptUser(
       "Enter project description (optional):",
-      description
+      description,
     );
 
     const userConfig = await readConfigFile();
@@ -76,8 +76,6 @@ export async function createProject() {
     await unlinkProject(false);
 
     spinner.text = "Creating project...";
-    spinner.color = "cyan";
-    spinner.start();
 
     const client = await getConfiguredClient();
     const response = await client.post<{
@@ -94,7 +92,8 @@ export async function createProject() {
     await writeProjectConfig(projectId, branchName);
     spinner.succeed("Creating project...");
 
-    // TODO: Update these lines to display real data.
+    spinner.succeed(pc.green("Project created and configuration saved!"));
+
     console.log("\n" + chalk.white("Version created: v1.0.0"));
     console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
   } catch (error: Error | any) {

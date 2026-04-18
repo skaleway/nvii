@@ -18,9 +18,8 @@ class UserCancellationError extends Error {
 }
 
 const nanoid = customAlphabet("123456789QAZWSXEDCRFVTGBYHNUJMIKOLP", 8);
-const AUTH_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
+const AUTH_TIMEOUT_MS = 2 * 60 * 1000;
 
-// auth timeout helper
 function withTimeout<T>(promise: Promise<T>, ms: number) {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -39,7 +38,6 @@ function withTimeout<T>(promise: Promise<T>, ms: number) {
   });
 }
 
-// auth session states (for preventing possible auth vulnerabilities)
 type AuthSession = {
   code: string;
   expiresAt: number;
@@ -49,10 +47,9 @@ type AuthSession = {
 
 let authSession: AuthSession | null = null;
 
-// mask code helper function
 function maskCode(code: string, visibleCount = 2): string {
   if (!code) return "";
-  if (code.length <= visibleCount) return code; // too short, show all
+  if (code.length <= visibleCount) return code;
   const visible = code.slice(0, visibleCount);
   return `${visible}...`;
 }
@@ -80,7 +77,7 @@ export async function login() {
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
       res.setHeader(
         "Access-Control-Allow-Headers",
-        "Content-Type, Authorization"
+        "Content-Type, Authorization",
       );
 
       if (req.method === "OPTIONS") {
@@ -88,7 +85,6 @@ export async function login() {
         res.end();
       } else if (req.method === "GET") {
         const clientIp = req.socket.remoteAddress || "";
-        // ip addresses to accept requests from (the clients ip address)
         const isLoopback =
           clientIp === "127.0.0.1" ||
           clientIp === "::1" ||
@@ -100,7 +96,6 @@ export async function login() {
           return;
         }
 
-        // prevent auth code replay
         if (authSession.used) {
           res.writeHead(410);
           res.end("Authentication code already used");
@@ -116,13 +111,11 @@ export async function login() {
           return;
         }
 
-        // fail if code has timedout
         if (Date.now() > authSession.expiresAt) {
           res.writeHead(408);
           res.end("Authentication expired");
           return;
         }
-        // validate the code first
         const isValidCode = parsedUrl.query.authCode === authSession.code;
         if (!isValidCode) {
           res.writeHead(400);
@@ -131,7 +124,6 @@ export async function login() {
           return;
         }
 
-        // now bind the IP (only after valid code)
         if (!authSession.boundIp) {
           authSession.boundIp = clientIp;
         } else if (authSession.boundIp !== clientIp) {
@@ -140,7 +132,6 @@ export async function login() {
           return;
         }
 
-        // success path
         authSession.used = true;
         res.writeHead(200);
         res.end();
@@ -155,7 +146,6 @@ export async function login() {
 
   const redirect = `http://127.0.0.1:${port}`;
   const code = nanoid();
-  // initialize the auth session
   authSession = {
     code,
     expiresAt: Date.now() + AUTH_TIMEOUT_MS,
@@ -169,7 +159,7 @@ export async function login() {
 
   console.log(`Confirmation code: ${pc.bold(maskCode(code))}\n`);
   console.log(
-    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`
+    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`,
   );
 
   await open(confirmationUrl.toString());
@@ -185,10 +175,6 @@ export async function login() {
   } catch (error: Error | any) {
     spinner.stop();
     server.close();
-    if (error instanceof UserCancellationError) {
-      console.log(pc.gray("Authentication cancelled.\n"));
-      process.exit(0);
-    }
     if (error.response) {
       console.error(pc.gray(`${error.response.data.error}\n`));
       process.exit(1);

@@ -19,10 +19,11 @@ const HMAC_SECRET =
 
 const ENCRYPTION_KEY = Buffer.from(
   process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD",
-  "utf8"
+  "utf8",
 ).slice(0, 32);
 
 const IV_LENGTH = 16;
+
 export async function writeToConfigFile(data: Record<string, string>) {
   if (typeof window !== "undefined") return;
 
@@ -30,24 +31,20 @@ export async function writeToConfigFile(data: Record<string, string>) {
   const homeDir = os.homedir();
   const filePath = path.join(homeDir, FILENAME);
 
-  // Separate sensitive from non-sensitive
   const { token, key, ...rest } = data;
 
-  // Store sensitive info in keytar
   if (token) await keytar.setPassword("nvii-cli", "auth-token", token);
   if (key) await keytar.setPassword("nvii-cli", "auth-key", key);
 
-  // Compute HMAC for integrity
   const jsonData = JSON.stringify(rest, null, 2);
   const hmac = crypto
     .createHmac("sha256", HMAC_SECRET)
     .update(jsonData)
     .digest("hex");
 
-  // Save both data and integrity
   writeFileSync(
     filePath,
-    JSON.stringify({ data: rest, integrity: hmac }, null, 2)
+    JSON.stringify({ data: rest, integrity: hmac }, null, 2),
   );
 
   const userData = readFileSync(filePath, "utf-8");
@@ -64,7 +61,6 @@ export async function readConfigFile() {
   const fileContent = await readFile(filePath, "utf-8");
   const { data, integrity } = JSON.parse(fileContent);
 
-  // Verify integrity
   const computedHmac = crypto
     .createHmac("sha256", HMAC_SECRET)
     .update(JSON.stringify(data, null, 2))
@@ -72,11 +68,10 @@ export async function readConfigFile() {
 
   if (computedHmac !== integrity) {
     throw new Error(
-      "Config integrity check failed! File may have been tampered with."
+      "Config integrity check failed! File may have been tampered with.",
     );
   }
 
-  // Retrieve sensitive info
   const token = await keytar.getPassword("nvii-cli", "auth-token");
   const key = await keytar.getPassword("nvii-cli", "auth-key");
 
@@ -85,6 +80,20 @@ export async function readConfigFile() {
     ...(token ? { token } : {}),
     ...(key ? { key } : {}),
   };
+}
+
+export async function readConfigFileOriginal(): Promise<ConfigData | null> {
+  try {
+    const homeDir = os.homedir();
+    const filePath = path.join(homeDir, FILENAME);
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(fileContent);
+  } catch (error: any) {
+    console.error(
+      pc.red("Oups! you're not yet logged-in. run npm install -g @nvii/cli"),
+    );
+    return null;
+  }
 }
 
 // check login stats
@@ -102,8 +111,8 @@ export async function checkLoginStats(): Promise<{ success: boolean }> {
 
     console.log(
       pc.yellowBright(
-        `\nLogged in as ${file?.data?.username} (${file?.data?.email})\n`
-      )
+        `\nLogged in as ${file?.data?.username} (${file?.data?.email})\n`,
+      ),
     );
     return { success: true };
   } catch (error) {
@@ -114,7 +123,7 @@ export async function checkLoginStats(): Promise<{ success: boolean }> {
 export function getVersion() {
   const packageJson = readFileSync(
     path.join(__dirname, "../..", "package.json"),
-    "utf-8"
+    "utf-8",
   );
   const { version } = JSON.parse(packageJson);
   return version;
@@ -131,7 +140,7 @@ export function isLogedIn() {
  * @returns A string representation in `.env` format.
  */
 export function convertEnvJsonToString(
-  envObject: Record<string, string>
+  envObject: Record<string, string>,
 ): string {
   return Object.entries(envObject)
     .map(([key, value]) => `${key}=${value}`)
@@ -165,11 +174,11 @@ export async function readEnvFile(): Promise<Record<string, string>> {
           }
           return acc;
         },
-        {} as Record<string, string>
+        {} as Record<string, string>,
       );
   } catch (error) {
     console.error(
-      pc.yellowBright("⚠️ No .env file found or unable to read it.")
+      pc.yellowBright("⚠️ No .env file found or unable to read it."),
     );
     return {};
   }
@@ -181,7 +190,7 @@ export async function readEnvFile(): Promise<Record<string, string>> {
  * @returns A parsed object containing key-value pairs from the `.env` file.
  */
 export async function writeEnvFile(
-  envs: Record<string, string>
+  envs: Record<string, string>,
 ): Promise<Record<string, string>> {
   try {
     const envPath = path.join(process.cwd(), ".env");
@@ -189,7 +198,7 @@ export async function writeEnvFile(
     if (!existsSync(envPath)) {
       console.log("\n");
       console.log(
-        pc.yellowBright(".env file not found. A new one will be created.")
+        pc.yellowBright(".env file not found. A new one will be created."),
       );
       writeFileSync(envPath, "");
     }
@@ -213,7 +222,7 @@ export async function writeEnvFile(
             }
           }
         },
-        {} as Record<string, string>
+        {} as Record<string, string>,
       );
 
       newEnvContent[item[0]] = item[1];
@@ -229,7 +238,7 @@ export async function writeEnvFile(
   } catch (error: Error | any) {
     console.log(pc.red(error));
     console.error(
-      pc.yellowBright("⚠️ No .env file found or unable to write in it.")
+      pc.yellowBright("⚠️ No .env file found or unable to write in it."),
     );
     return {};
   }
@@ -273,7 +282,7 @@ function decrypt(text: string, userId: string): string {
  */
 export function encryptEnvValues(
   envObject: Record<string, string>,
-  userId: string
+  userId: string,
 ): Record<string, string> {
   const encryptedEnv: Record<string, string> = {};
   for (const key in envObject) {
@@ -289,7 +298,7 @@ export function encryptEnvValues(
  */
 export function decryptEnvValues(
   encryptedEnv: Record<string, string>,
-  userId: string
+  userId: string,
 ): Record<string, string> {
   const decryptedEnv: Record<string, string> = {};
   for (const key in encryptedEnv) {
@@ -335,8 +344,8 @@ export async function readProjectConfig(): Promise<ProjectConfig | null> {
     if (!config.projectId) {
       console.warn(
         pc.yellowBright(
-          "⚠️ Invalid project configuration: missing projectId for some projects."
-        )
+          "⚠️ Invalid project configuration: missing projectId for some projects.",
+        ),
       );
       return null;
     }
@@ -377,7 +386,7 @@ async function updateGitignore(): Promise<void> {
     content += `${enviEntry}\n`;
     await fs.writeFile(gitignorePath, content, "utf-8");
     console.log(
-      pc.yellowBright("✅ Updated .gitignore to exclude .nvii folder")
+      pc.yellowBright("✅ Updated .gitignore to exclude .nvii folder"),
     );
   } catch (error) {
     console.error(pc.red("Error updating .gitignore:"), error);
@@ -391,7 +400,7 @@ async function updateGitignore(): Promise<void> {
  */
 export async function writeProjectConfig(
   projectId: string,
-  branchName?: string
+  branchName?: string,
 ): Promise<void> {
   try {
     const currentDir = process.cwd();
@@ -402,8 +411,8 @@ export async function writeProjectConfig(
     if (!projectId || projectId.trim() === "") {
       console.log(
         pc.red(
-          "Invalid project id. To write project config, a valid project Id must be provided."
-        )
+          "Invalid project id. To write project config, a valid project Id must be provided.",
+        ),
       );
       process.exit(1);
     }
@@ -429,7 +438,7 @@ export async function writeProjectConfig(
     await fs.writeFile(
       enviFilePath,
       JSON.stringify(updatedConfig, null, 2),
-      "utf-8"
+      "utf-8",
     );
   } catch (error) {
     console.error(pc.red("Error writing project configuration:"), error);
@@ -486,13 +495,10 @@ export function getProjectInfoFromPackageJson(projectPath: string): {
   name: string;
   description: string | undefined;
 } {
-  // process.cwd().split("/").pop();
   if (!projectPath) {
     throw new Error("Invalid project path");
   }
-  // NOTE: The user might not be working in a project with package.json (e.g a python, php, etc project)
 
-  // Check if there is a package.json file
   let projectName = "";
   let projectDescription = "";
   if (existsSync(join(projectPath, "package.json"))) {
@@ -501,7 +507,6 @@ export function getProjectInfoFromPackageJson(projectPath: string): {
     projectName = packageJson.name;
     projectDescription = packageJson.description;
   } else {
-    // Get the current directory name
     projectName = projectPath.split("/").pop() as string;
   }
   return { name: projectName, description: projectDescription };
