@@ -1,9 +1,9 @@
 import crypto from "crypto";
 import { existsSync, promises as fs, readFileSync, writeFileSync } from "fs";
+import { readFile } from "fs/promises";
 import os from "os";
 import path, { join } from "path";
 import pc from "picocolors";
-import { ConfigData } from "../types";
 
 export * from "./api-client";
 export * from "./conflict";
@@ -14,6 +14,8 @@ export * from "./constants";
 export * from "./version-helpers";
 
 export const FILENAME = process.env.FILENAME || ".nvii";
+const HMAC_SECRET =
+  "de839e0bf7913c014c89ae1616c5ef717b6fba5d63c54aba5f2119ea0befeca8916ef9e23a1fc031";
 
 const ENCRYPTION_KEY = Buffer.from(
   process.env.ENCRYPTION_KEY || "KRHW2MSHGJ5HC2KXHFKDKNZSPBATQ4DD",
@@ -22,7 +24,65 @@ const ENCRYPTION_KEY = Buffer.from(
 
 const IV_LENGTH = 16;
 
-export async function readConfigFile(): Promise<ConfigData | null> {
+export async function writeToConfigFile(data: Record<string, string>) {
+  if (typeof window !== "undefined") return;
+
+  const keytar = await import("keytar").then((m) => m.default || m);
+  const homeDir = os.homedir();
+  const filePath = path.join(homeDir, FILENAME);
+
+  const { token, key, ...rest } = data;
+
+  if (token) await keytar.setPassword("nvii-cli", "auth-token", token);
+  if (key) await keytar.setPassword("nvii-cli", "auth-key", key);
+
+  const jsonData = JSON.stringify(rest, null, 2);
+  const hmac = crypto
+    .createHmac("sha256", HMAC_SECRET)
+    .update(jsonData)
+    .digest("hex");
+
+  writeFileSync(
+    filePath,
+    JSON.stringify({ data: rest, integrity: hmac }, null, 2)
+  );
+
+  const userData = readFileSync(filePath, "utf-8");
+  return { filePath, userData };
+}
+
+export async function readConfigFile() {
+  if (typeof window !== "undefined") return null;
+
+  const keytar = await import("keytar").then((m) => m.default || m);
+  const homeDir = os.homedir();
+  const filePath = path.join(homeDir, FILENAME);
+
+  const fileContent = await readFile(filePath, "utf-8");
+  const { data, integrity } = JSON.parse(fileContent);
+
+  const computedHmac = crypto
+    .createHmac("sha256", HMAC_SECRET)
+    .update(JSON.stringify(data, null, 2))
+    .digest("hex");
+
+  if (computedHmac !== integrity) {
+    throw new Error(
+      "Config integrity check failed! File may have been tampered with."
+    );
+  }
+
+  const token = await keytar.getPassword("nvii-cli", "auth-token");
+  const key = await keytar.getPassword("nvii-cli", "auth-key");
+
+  return {
+    ...data,
+    ...(token ? { token } : {}),
+    ...(key ? { key } : {}),
+  };
+}
+
+export async function readConfigFileOriginal(): Promise<ConfigData | null> {
   try {
     const homeDir = os.homedir();
     const filePath = path.join(homeDir, FILENAME);
@@ -430,7 +490,19 @@ export function getProjectInfoFromPackageJson(projectPath: string): {
   name: string;
   description: string | undefined;
 } {
-  const packageJsonPath = join(projectPath, "package.json");
-  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-  return { name: packageJson.name, description: packageJson.description };
+  if (!projectPath) {
+    throw new Error("Invalid project path");
+  }
+
+  let projectName = "";
+  let projectDescription = "";
+  if (existsSync(join(projectPath, "package.json"))) {
+    const packageJsonPath = join(projectPath, "package.json");
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+    projectName = packageJson.name;
+    projectDescription = packageJson.description;
+  } else {
+    projectName = projectPath.split("/").pop() as string;
+  }
+  return { name: projectName, description: projectDescription };
 }
