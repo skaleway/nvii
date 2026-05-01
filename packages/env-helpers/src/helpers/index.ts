@@ -4,6 +4,7 @@ import { readFile } from "fs/promises";
 import os from "os";
 import path, { join } from "path";
 import pc from "picocolors";
+import type { ConfigData } from "../types";
 
 export * from "./api-client";
 export * from "./conflict";

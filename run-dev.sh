@@ -1,33 +1,38 @@
-echo "Installing global packages"
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT_DIR"
+
+DB_PORT="${DB_PORT:-5489}"
+if ss -ltn | rg -q ":${DB_PORT}\\b"; then
+  echo "Port ${DB_PORT} is already in use."
+  echo "Run with a different port, for example: DB_PORT=5434 ./run-dev.sh"
+  exit 1
+fi
+
+DATABASE_URL="postgresql://envi:envi_password@localhost:${DB_PORT}/envi"
+
+echo "Installing workspace dependencies..."
 pnpm install
 
-echo "Starting PostgreSQL database with Docker Compose..."
-docker-compose up -d
+echo "Ensuring environment files exist..."
+mkdir -p packages/database apps/web
+if [ ! -f "packages/database/.env" ]; then
+  printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" > packages/database/.env
+fi
+if [ ! -f "apps/web/.env" ]; then
+  printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" > apps/web/.env
+fi
+
+echo "Starting PostgreSQL database with Docker Compose on port ${DB_PORT}..."
+DB_PORT="$DB_PORT" docker compose up -d
 
 echo "Waiting for database to be ready..."
 sleep 5
 
-echo "Checking if .env in packages/database"
-if [ ! -f "packages/database/.env" ]; then
-    echo ".env file does not exist in packages/database"
-    exit 1
-fi
+echo "Running Prisma migrations..."
+pnpm --filter @nvii/db db:migrate
 
-echo "Running prisma migrate..."
-cd packages/database && pnpm prisma migrate dev
-
-echo "Removing node_modules in apps/web (not sure why but this is necessary)"
-cd ../../apps/web
-
-if [ ! -f ".env" ]; then
-    echo ".env file does not exist in apps/web"
-    exit 1
-fi
-
-rm -rf node_modules
-
-echo "Installing packages in web again"
-pnpm install
-
-echo "Starting next.js server..."
-pnpm run dev &
+echo "Starting web dev server..."
+pnpm --filter @nvii/web dev
