@@ -1,38 +1,5 @@
 "use client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@nvii/ui/components/dialog";
-import {
-  MoreVertical,
-  RotateCcw,
-  Tag,
-  GitBranch,
-  Trash2,
-  Download,
-  Copy,
-  Clock,
-  InspectIcon,
-} from "lucide-react";
-import { toast } from "sonner";
-import { Badge } from "@nvii/ui/components/badge";
-import { Button } from "@nvii/ui/components/button";
-import { Label } from "@nvii/ui/components/label";
-import { Input } from "@nvii/ui/components/input";
-import { Textarea } from "@nvii/ui/components/textarea";
-import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@nvii/ui/components/dropdown-menu";
+import { EnvVersion } from "@nvii/db";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,9 +11,41 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@nvii/ui/components/alert-dialog";
+import { Badge } from "@nvii/ui/components/badge";
+import { Button } from "@nvii/ui/components/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@nvii/ui/components/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@nvii/ui/components/dropdown-menu";
+import { Input } from "@nvii/ui/components/input";
+import { Label } from "@nvii/ui/components/label";
+import { Textarea } from "@nvii/ui/components/textarea";
+import {
+  Clock,
+  Copy,
+  Download,
+  GitBranch,
+  InspectIcon,
+  MoreVertical,
+  RotateCcw,
+  Tag,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { EnvVersion } from "@nvii/db";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface VersionActionsProps {
   version: EnvVersion;
