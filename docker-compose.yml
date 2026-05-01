@@ -10,11 +10,11 @@ services:
       POSTGRES_USER: envi
       POSTGRES_PASSWORD: envi_password
     ports:
-      - "5433:5432"
+      - "${DB_PORT:-5489}:5432"
     volumes:
       - envi_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nvii -d envi"]
+      test: ["CMD-SHELL", "pg_isready -U envi -d envi"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -49,5 +49,9 @@ packages/database/generated
 
 # local todo list
 /*.todo
-.nvii/
-todos/
+/*.nvii/
+
+# my local upgrade plan
+upgrade_plan.md
+# my local todo list
+/todos

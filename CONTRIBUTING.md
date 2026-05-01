@@ -31,14 +31,14 @@ Thank you for your interest in contributing to Nvii! Please follow the steps bel
      ```env
      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
      BETTER_AUTH_SECRET=
-     DATABASE_URL="postgresql://envi:envi_password@localhost:5433/envi"
+     DATABASE_URL="postgresql://envi:envi_password@localhost:5489/envi"
 
      ```
 
    - In `/packages/database`, create a `.env` file with:
 
      ```env
-     DATABASE_URL="postgresql://envi:envi_password@localhost:5433/envi"
+     DATABASE_URL="postgresql://envi:envi_password@localhost:5489/envi"
      ```
 
    > **Note:** The `DATABASE_URL` in both `/apps/web` and `/packages/database` should be the same.

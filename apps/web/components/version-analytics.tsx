@@ -1,32 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
-import {
-  TrendingUp,
-  Activity,
-  Users,
-  Clock,
-  Edit,
-  Plus,
-  Minus,
-  RefreshCw,
-  GitCommit,
-  Calendar,
-} from "lucide-react";
+import { Badge } from "@nvii/ui/components/badge";
 import { Button } from "@nvii/ui/components/button";
 import {
   Card,
@@ -34,15 +8,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@nvii/ui/components/card";
+import { ScrollArea } from "@nvii/ui/components/scroll-area";
+import { Skeleton } from "@nvii/ui/components/skeleton";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@nvii/ui/components/tabs";
-import { ScrollArea } from "@nvii/ui/components/scroll-area";
-import { Badge } from "@nvii/ui/components/badge";
-import { Skeleton } from "@nvii/ui/components/skeleton";
+import {
+  Activity,
+  Calendar,
+  GitCommit,
+  RefreshCw,
+  TrendingUp,
+  Users
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 import { toast } from "sonner";
 
 interface AnalyticsData {
@@ -286,7 +279,10 @@ export function VersionAnalytics({ projectId, userId }: VersionAnalyticsProps) {
                       labelFormatter={(date) =>
                         new Date(date).toLocaleDateString()
                       }
-                      formatter={(value: number) => [value, "Changes"]}
+                      formatter={(value) => [
+                        value == null ? 0 : Number(value),
+                        "Changes",
+                      ]}
                     />
                     <Line
                       type="monotone"

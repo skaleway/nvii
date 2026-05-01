@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import LoadingButton from "@nvii/ui/components/loading-button";
 
 const projectSchema = z.object({
   name: z.string().min(2, {
@@ -74,6 +75,7 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
         description: `${data.name} has been created successfully.`,
       });
       form.reset();
+      setOpen(false);
     } catch (error) {
       toast({
         title: "Something went wrong",
@@ -142,10 +144,9 @@ export function AddProjectDialog({ children }: { children: React.ReactNode }) {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <LoadingButton loading={isLoading} type="submit" disabled={isLoading}>
                 Create Project
-              </Button>
+              </LoadingButton>
             </DialogFooter>
           </form>
         </Form>

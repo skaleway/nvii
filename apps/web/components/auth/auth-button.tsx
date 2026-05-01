@@ -41,8 +41,7 @@ export const AuthButton = () => {
       className="!px-10"
       loading={pendingGithub}
     >
-      <Icons.github />{" "}
-      {pendingGithub ? "Signing in with GitHub..." : "Sign in with GitHub"}
+      <Icons.github /> Sign in with GitHub
     </LoadingButton>
   );
 };

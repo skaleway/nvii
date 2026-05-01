@@ -9,7 +9,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migra te dev",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev --skip-generate",
+    "db:migrate": "prisma migrate dev",
     "db:seed": "tsx src/seed.ts",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
-    "@prisma/client": "latest",
+    "@prisma/client": "^7.1.0",
     "@prisma/client-runtime-utils": "^7.1.0",
     "pg": "^8.16.3",
     "prisma": "^7.1.0"
