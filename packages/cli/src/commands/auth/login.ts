@@ -77,7 +77,7 @@ export async function login() {
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
       res.setHeader(
         "Access-Control-Allow-Headers",
-        "Content-Type, Authorization"
+        "Content-Type, Authorization",
       );
 
       if (req.method === "OPTIONS") {
@@ -159,7 +159,7 @@ export async function login() {
 
   console.log(`Confirmation code: ${pc.bold(maskCode(code))}\n`);
   console.log(
-    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`
+    `If something goes wrong, copy and paste this URL into your browser:\n${pc.bold(confirmationUrl.toString())}\n`,
   );
 
   await open(confirmationUrl.toString());
@@ -182,5 +182,8 @@ export async function login() {
 
     console.error(pc.red("Authentication failed:"), error?.message ?? "", "\n");
     process.exit(1);
+  } finally {
+    // process.on("SIGINT", );
+    // process.on("uncaughtException");
   }
 }

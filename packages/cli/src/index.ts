@@ -21,22 +21,21 @@ import { createBranch, listBranches, switchBranch } from "./commands/branch";
 import { rollback } from "./commands/rollback";
 import { createTag, listTags } from "./commands/tag";
 import { checkForUpdates } from "./lib/utils";
+import { displayBanner } from "./lib/banner";
 
 const program = new Command();
 const cliVersion = packageJson.version || "1.0.0";
 checkForUpdates({ pkg: packageJson });
+displayBanner();
 
 // Set program information
 program
   .name("nvii")
-  .description(
-    "Secure environment variable management for modern development teams"
-  )
   .version(cliVersion)
-  // .option("-v, --verbose", "Enable verbose output")
-  // .option("-q, --quiet", "Suppress non-essential output")
-  // .option("--config <path>", "Path to configuration file")
-  // .option("--no-color", "Disable colored output")
+  .option("-v, --verbose", "Enable verbose output")
+  .option("-q, --quiet", "Suppress non-essential output")
+  .option("--config <path>", "Path to configuration file")
+  .option("--no-color", "Disable colored output")
   .configureHelp({
     sortSubcommands: true,
     showGlobalOptions: true,
@@ -44,23 +43,8 @@ program
   .addHelpText(
     "before",
     `
-🔐 Nvii - Secure Environment Variable Manager\n`
+Nvii - Secure Environment Variable Manager\n`
   );
-//   .addHelpText('after', `
-// 📖 Examples:
-//   $ nvii login                    # Authenticate with Nvii
-//   $ nvii new                      # Create a new project
-//   $ nvii link                     # Link to existing project
-//   $ nvii pull --dry-run           # Preview changes
-//   $ nvii push -m "Update API keys" # Upload with message
-//   $ nvii log --oneline            # Compact history view
-//   $ nvii generate --format json   # Generate JSON template
-
-// 🌐 Resources:
-//   Documentation: https://nvii.dev/docs
-//   Support:       https://nvii.dev/support
-//   GitHub:        https://github.com/nvii/nvii
-// `);
 
 // Handle no command provided
 if (process.argv.length <= 2) {

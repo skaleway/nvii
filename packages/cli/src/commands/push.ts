@@ -11,6 +11,8 @@ import { login } from "./auth/login";
 import { EnvVersion } from "@nvii/db";
 import inquirer from "inquirer";
 import { linkProject } from "./link";
+import ora from "ora";
+import chalk from "chalk";
 
 const handleSummary = ({
   projectId,
@@ -38,34 +40,34 @@ const handleSummary = ({
     changesSummary.removed.length > 0
   ) {
     console.log(
-      pc.bold(`\n📜 Change summary for project: ${pc.cyan(`${projectId}`)}`),
+      pc.bold(`\n📜 Change summary for project: ${pc.cyan(`${projectId}`)}`)
     );
 
     console.log(pc.dim("--------------------------------------------------"));
     changesSummary.added.forEach((key) => {
       console.log(
-        `${pc.yellow(`${key}:`)} added with value: ${localEnvs[key]}`,
+        `${pc.yellowBright(`${key}:`)} added with value: ${localEnvs[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
       console.log(pc.dim("--------------------------------------------------"));
     });
     changesSummary.modified.forEach((change) => {
       console.log(
-        `${pc.yellow(`${change.key}:`)} changed from ${change.original} (remote) to ${change.value} (local)`,
+        `${pc.yellowBright(`${change.key}:`)} changed from ${change.original} (remote) to ${change.value} (local)`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
       console.log(pc.dim("--------------------------------------------------"));
     });
     changesSummary.removed.forEach((key) => {
       console.log(
-        `${pc.yellow(`${key}:`)} deleted with prev value: ${prevVersion[key]}`,
+        `${pc.yellowBright(`${key}:`)} deleted with prev value: ${prevVersion[key]}`
       );
       console.log(`Date:    ${new Date(Date.now()).toLocaleString()}`);
       console.log(pc.dim("--------------------------------------------------"));
     });
   } else {
     console.log(
-      pc.bold(`\nNo changes detected for project: ${pc.cyan(`${projectId}`)}`),
+      pc.bold(`\nNo changes detected for project: ${pc.cyan(`${projectId}`)}`)
     );
   }
 };
@@ -90,6 +92,7 @@ export async function pushLatestChanges(args?: {
   }
 
   try {
+    const spinner = ora();
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to push changes."));
       await login();
@@ -107,26 +110,24 @@ export async function pushLatestChanges(args?: {
     }
     config = await readProjectConfig();
     if (!config) {
-      console.log(
-        pc.red(
-          "An error occurred reading local .nvii folder currently. Try again.",
-        ),
-      );
+      console.log(pc.red("Invalid project configuration"));
       process.exit(1);
     }
     const projectId = config.projectId;
     if (!projectId) {
       console.error(
         pc.red(
-          "❌ Project not linked. Please run 'nvii link' to link your project first.",
-        ),
+          "❌ Project not linked. Please run 'nvii link' to link your project first."
+        )
       );
       process.exit(1);
     }
 
     const localEnvs = await readEnvFile();
     if (Object.keys(localEnvs).length === 0) {
-      console.log(pc.yellow("Local .env file is empty. Nothing to push."));
+      console.log(
+        pc.yellowBright("Local .env file is empty. Nothing to push.")
+      );
       return;
     }
 
@@ -147,20 +148,24 @@ export async function pushLatestChanges(args?: {
 
     // If there is dry run show the user the changes between this version and previous one
     if (dryRun) {
+      spinner.text = "Pulling remote versions...";
+      spinner.start();
       const response = await client.get<EnvVersion[]>(
-        `/projects/${userConfig.userId}/${projectId}/versions`,
+        `/projects/${userConfig.userId}/${projectId}/versions`
       );
 
       if (!response) {
         console.log(
-          pc.red(`bad: unable to access '${process.env.CLIENT_URL}'`),
+          pc.red(`Bad: Unable to access '${process.env.CLIENT_URL}'`)
         );
+        spinner.stop();
       }
 
+      spinner.succeed("Pulling remote versions...");
       let versions = response.data;
       versions = versions.sort(
         (a, b) =>
-          new Date(a.updatedAt).getHours() - new Date(b.updatedAt).getHours(),
+          new Date(a.updatedAt).getHours() - new Date(b.updatedAt).getHours()
       );
 
       const prevVersion = versions[versions.length - 1];
@@ -172,6 +177,8 @@ export async function pushLatestChanges(args?: {
       return;
     }
 
+    spinner.text = "Updating remote variables...";
+    spinner.start();
     await client.patch<{
       version: EnvVersion;
       versions: EnvVersion[];
@@ -180,17 +187,19 @@ export async function pushLatestChanges(args?: {
       message: message,
     });
 
-    console.log(
-      pc.green("\n✅ Successfully pushed changes and created a new version."),
-    );
+    spinner.succeed("Updating remote variables...");
+
+    // TODO: Update these lines to display real data.
+    console.log("\n" + chalk.white("Version created: v1.0.0"));
+    console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
   } catch (error: Error | any) {
     if (error.response) {
-      console.error(pc.yellow(`\n${error.response.data.error}`));
+      console.error(pc.yellowBright(`\n${error.response.data.error}`));
       return;
     }
 
     if (error.message.includes("User force closed the prompt with SIGINT")) {
-      console.log(pc.yellow("\nPush cancelled."));
+      console.log(pc.yellowBright("\nPush cancelled."));
       return;
     }
     console.error(pc.red("\nError pushing local changes:"), error.message);

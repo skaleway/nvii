@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export const GET = async (
   request: Request,
-  { params }: { params: Promise<{ userId: string }> },
+  { params }: { params: Promise<{ userId: string }> }
 ): Promise<NextResponse> => {
   try {
     const { userId } = await params;
@@ -61,7 +61,7 @@ export const GET = async (
 
 export const POST = async (
   request: Request,
-  { params }: { params: Promise<{ userId: string }> },
+  { params }: { params: Promise<{ userId: string }> }
 ): Promise<NextResponse> => {
   try {
     const { userId } = await params;
@@ -96,8 +96,8 @@ export const POST = async (
 
     if (existingProject) {
       return NextResponse.json(
-        { message: "Project with this name already exists" },
-        { status: 400 },
+        { error: "Project name already exist. Choose another name." },
+        { status: 409 }
       );
     }
 
@@ -160,8 +160,8 @@ export const POST = async (
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
+      { error: "Internal Server Error" },
+      { status: 500 }
     );
   }
 };

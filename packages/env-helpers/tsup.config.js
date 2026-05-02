@@ -8,4 +8,5 @@ export default defineConfig({
   clean: true,
   bundle: true,
   dts: true,
+  // external: ["keytar"],
 });

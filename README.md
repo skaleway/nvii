@@ -9,7 +9,7 @@ Nvii is a comprehensive environment variable management platform that provides b
 - **Authentication**: `login`, `logout`, `whoami`
 - **Project Management**: `new`, `link`, `update`
 - **Environment Control**: `generate`, `test`
-- **Version Control**: `pull`, `push`, `history`, `rollback` (coming soon)
+- **Version Control**: `pull`, `push`, `history`, `rollback`
 
 ### **Web Dashboard**
 
@@ -45,26 +45,52 @@ Nvii is a comprehensive environment variable management platform that provides b
 ```txt
 envi/
 ├── apps/
+│   ├── docs/                   # Documentation site
 │   └── web/                    # Next.js web application
 │       ├── app/                # App router pages
+│       │   ├── (app)/         # Authenticated app routes
+│       │   │   └── projects/  # Project management
+│       │   │       └── [projectId]/
+│       │   │           └── versions/ # Version control UI
+│       │   └── (auth)/        # Authentication routes
 │       ├── components/         # React components
+│       │   ├── auth/          # Authentication components
+│       │   ├── version-*      # Version control components
+│       │   └── ...            # Other components
 │       ├── lib/               # Utility functions
+│       │   ├── actions/       # Server actions
+│       │   ├── diff-helpers.ts # Diff utilities
+│       │   └── ...            # Other utilities
 │       └── middleware.ts      # Auth middleware
 ├── packages/
 │   ├── cli/                   # Command-line interface
 │   │   └── src/
 │   │       ├── commands/      # CLI commands
 │   │       │   ├── auth/      # Authentication commands
+│   │       │   ├── branch.ts  # Branch management
+│   │       │   ├── crypt.ts   # Encryption utilities
+│   │       │   ├── generate.ts # Generate example
+│   │       │   ├── history.ts # Version history
 │   │       │   ├── link.ts    # Link project
 │   │       │   ├── new.ts     # Create project
+│   │       │   ├── pull.ts    # Pull versions
+│   │       │   ├── push.ts    # Push versions
+│   │       │   ├── rollback.ts # Rollback versions
+│   │       │   ├── tag.ts     # Tag management
+│   │       │   ├── unlink.ts  # Unlink project
 │   │       │   ├── update.ts  # Update env
-│   │       │   ├── generate.ts # Generate example
-│   │       │   └── crypt.ts   # Encryption utilities
+│   │       │   └── some.ts    # Additional commands
+│   │       ├── lib/           # CLI utilities
+│   │       │   ├── conflict.ts # Conflict resolution
+│   │       │   └── version.ts  # Version utilities
 │   │       └── index.ts       # CLI entry point
 │   ├── database/              # Database package
 │   │   ├── prisma/           # Database schema
 │   │   └── src/              # Database utilities
 │   ├── env-helpers/          # Shared environment utilities
+│   │   └── src/
+│   │       ├── helpers/      # Helper functions
+│   │       └── types/        # Type definitions
 │   ├── ui/                   # Shared UI components
 │   ├── eslint-config/        # Shared ESLint config
 │   └── typescript-config/    # Shared TypeScript config

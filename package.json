@@ -45,5 +45,8 @@
     "@prisma/client": "^6.9.0",
     "changeset": "^0.2.6",
     "next-auth": "^4.24.11"
+  },
+  "volta": {
+    "node": "20.19.6"
   }
 }

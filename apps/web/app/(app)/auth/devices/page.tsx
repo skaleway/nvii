@@ -95,7 +95,6 @@ export default function Devices() {
 
       const res = await req.json();
 
-      console.log(res);
       try {
         const redirectUrl = new URL(res.redirect);
         redirectUrl.searchParams.append("authCode", opts.code as string);
@@ -114,6 +113,7 @@ export default function Devices() {
           toast.error(
             "Invalid opts code. Copy and paste the url displayed in your terminal."
           );
+          setLoading(false);
           return;
         }
 

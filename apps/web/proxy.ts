@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const publicRoutes = ["/", "/auth"];
 
-export default async function authMiddleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   const session = getSessionCookie(request.headers, {});
 
@@ -12,7 +12,10 @@ export default async function authMiddleware(request: NextRequest) {
       return NextResponse.next();
     }
     const redirectUrl = new URL("/auth", request.url);
-    redirectUrl.searchParams.set("redirect", encodeURIComponent(pathName + request.nextUrl.search));
+    redirectUrl.searchParams.set(
+      "redirect",
+      encodeURIComponent(pathName + request.nextUrl.search),
+    );
     return NextResponse.redirect(redirectUrl);
   }
 

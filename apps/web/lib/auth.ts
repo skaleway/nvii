@@ -1,6 +1,7 @@
 import { db } from "@nvii/db";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { username } from "better-auth/plugins";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -20,6 +21,17 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
-}) as any;
+
+  user: {
+    additionalFields: {
+      username: {
+        type: "string",
+        required: false,
+      },
+    },
+  },
+
+  plugins: [username()],
+});
 
 export type Session = typeof auth.$Infer.Session;

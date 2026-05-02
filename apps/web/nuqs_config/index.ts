@@ -21,6 +21,7 @@ type ParamsTypes = Values<{
   search: SingleParserBuilder<string>;
 }>;
 
+// Helper function to build URLs with current params
 export const buildUrl = (
   href: string,
   overrides: Partial<typeof searchParamsSchema> = {},
@@ -38,4 +39,5 @@ export const buildUrl = (
   return `${href}?${newParams.toString()}`;
 };
 
+// To be used on the server
 export const loadSearchParams = createLoader(searchParamsSchema);

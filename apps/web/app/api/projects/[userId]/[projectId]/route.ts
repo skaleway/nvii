@@ -13,7 +13,7 @@ import { validateCliAuth } from "@/lib/cli-auth";
 
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ userId: string; projectId: string }> },
+  { params }: { params: Promise<{ userId: string; projectId: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await params;
@@ -79,7 +79,7 @@ export async function GET(
       versions.map(async (item) => {
         const decryptedContent = await decryptEnv(
           item.content as Record<string, string>,
-          project.userId,
+          project.userId
         );
 
         decryptedVersions.push({
@@ -93,7 +93,7 @@ export async function GET(
 
     const decryptedContent = await decryptEnv(
       project.content as Record<string, string>,
-      project.userId,
+      project.userId
     );
 
     return NextResponse.json({
@@ -108,7 +108,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ userId: string; projectId: string }> },
+  { params }: { params: Promise<{ userId: string; projectId: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId } = await params;
@@ -155,7 +155,7 @@ export async function PATCH(
     // Calculate changes between old and new content
     const decryptedExistingEnv = await decryptEnv(
       existingProject.content as Record<string, string>,
-      existingProject.userId,
+      existingProject.userId
     );
     const changes = calculateChanges(decryptedExistingEnv, content);
 
@@ -209,7 +209,7 @@ export async function PATCH(
       versions.map(async (item) => {
         const decryptedContent = await decryptEnv(
           item.content as Record<string, string>,
-          existingProject.userId,
+          existingProject.userId
         );
 
         decryptedVersions.push({
@@ -224,12 +224,12 @@ export async function PATCH(
     // Decrypt the content before sending the response
     const decryptedContent = await decryptEnv(
       version.content as Record<string, string>,
-      existingProject.userId,
+      existingProject.userId
     );
 
     const decryptedProjectContent = await decryptEnv(
       project.content as Record<string, string>,
-      existingProject.userId,
+      existingProject.userId
     );
 
     return NextResponse.json({
@@ -248,7 +248,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ userId: string; projectId: string }> },
+  { params }: { params: Promise<{ userId: string; projectId: string }> }
 ): Promise<NextResponse> {
   try {
     const { userId, projectId } = await params;

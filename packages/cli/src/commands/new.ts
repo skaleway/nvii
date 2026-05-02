@@ -22,13 +22,13 @@ import chalk from "chalk";
  */
 async function promptUser(
   message: string,
-  defaultValue?: string
+  defaultValue?: string,
 ): Promise<string> {
   const response = await inquirer.prompt([
     {
       type: "input",
       name: "answer",
-      message: pc.cyan(message),
+      message: message,
       default: defaultValue || "",
     },
   ]);
@@ -51,29 +51,27 @@ export async function createProject() {
     const projectName = await promptUser("Enter your project name:", name);
 
     if (!projectName) {
-      spinner.fail(pc.red("Project name cannot be empty."));
-      spinner.stop();
+      console.log(pc.red("Project name cannot be empty."));
       return;
     }
 
     const projectDescription = await promptUser(
       "Enter project description (optional):",
-      description
+      description,
     );
 
     const userConfig = await readConfigFile();
     if (!userConfig?.userId || !userConfig?.deviceId) {
-      spinner.fail(pc.red("Invalid user credentials. Please log in again."));
-      spinner.stop();
+      console.log(pc.red("Invalid auth credentials."));
       await login();
       return;
     }
-
     const envs = await readEnvFile();
 
     spinner.text = "Encrypting variables...";
     spinner.start();
     const encryptedEnvs = encryptEnvValues(envs, userConfig.userId);
+    spinner.succeed("Encrypting variables...");
 
     await unlinkProject(false);
 
@@ -92,6 +90,7 @@ export async function createProject() {
     const projectId = response.data.data.id;
     const branchName = "main";
     await writeProjectConfig(projectId, branchName);
+    spinner.succeed("Creating project...");
 
     spinner.succeed(pc.green("Project created and configuration saved!"));
 
@@ -99,20 +98,20 @@ export async function createProject() {
     console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
   } catch (error: Error | any) {
     if (error.response) {
-      spinner.fail(pc.yellow(`\n${error.response.data.error}`));
       spinner.stop();
-      return;
+      spinner.fail(pc.redBright(`${error.response.data.error}`));
+      process.exit(1);
     }
     if (
       error.message &&
       error.message.includes("User force closed the prompt with SIGINT")
     ) {
       spinner.stop();
-      spinner.fail(pc.yellow("\nProject create cancelled."));
+      spinner.fail(pc.gray("Project creation cancelled."));
       return;
     }
-    spinner.fail(pc.red("Error creating project:"));
     spinner.stop();
+    spinner.fail(pc.red("Error creating project:"));
     process.exit(1);
   }
 }

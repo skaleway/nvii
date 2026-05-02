@@ -60,10 +60,16 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-[hsl(var(--border))];
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .border-border {
+    @apply border-[hsl(var(--border))];
   }
 }
 
