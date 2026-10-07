@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { Command } from "commander";
-import packageJson from "../package.json";
+import type { Package } from "update-notifier";
 import {
   createProject,
   generateExample,
@@ -23,6 +25,12 @@ import { createTag, listTags } from "./commands/tag";
 import { checkForUpdates } from "./lib/utils";
 import { displayBanner } from "./lib/banner";
 
+function loadPackageJson(): Package {
+  const packageJsonPath = join(__dirname, "..", "package.json");
+  return JSON.parse(readFileSync(packageJsonPath, "utf8")) as Package;
+}
+
+const packageJson = loadPackageJson();
 const program = new Command();
 const cliVersion = packageJson.version || "1.0.0";
 checkForUpdates({ pkg: packageJson });
