@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+verifyDepsBeforeRun: false
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
