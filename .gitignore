@@ -55,3 +55,4 @@ packages/database/generated
 upgrade_plan.md
 # my local todo list
 /todos
+.nvii/
