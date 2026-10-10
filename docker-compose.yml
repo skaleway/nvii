@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: envi
       POSTGRES_PASSWORD: envi_password
     ports:
-      - "${DB_PORT:-5489}:5432"
+      - "${DB_PORT:-5489}:5433"
     volumes:
       - envi_data:/var/lib/postgresql/data
     healthcheck:

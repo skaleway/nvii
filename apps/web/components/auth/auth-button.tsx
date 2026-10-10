@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
+import { buildCallbackURL } from "@/lib/redirect";
 import LoadingButton from "@nvii/ui/components/loading-button";
 import { Icons } from "@nvii/ui/components/icons";
 import { useState } from "react";
@@ -16,7 +17,7 @@ export const AuthButton = () => {
     await authClient.signIn.social(
       {
         provider: "github",
-        callbackURL: `${process.env.NEXT_PUBLIC_URL}/${decodeURIComponent(params.redirect as string) || "app"}`,
+        callbackURL: buildCallbackURL(params.redirect, window.location.origin),
       },
       {
         onRequest: () => setPendingGithub(true),

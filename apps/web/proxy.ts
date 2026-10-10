@@ -14,7 +14,7 @@ export default async function proxy(request: NextRequest) {
     const redirectUrl = new URL("/auth", request.url);
     redirectUrl.searchParams.set(
       "redirect",
-      encodeURIComponent(pathName + request.nextUrl.search),
+      pathName + request.nextUrl.search,
     );
     return NextResponse.redirect(redirectUrl);
   }
