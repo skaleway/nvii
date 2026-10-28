@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "State Sync"
+  short_description: "Reconcile docs and context after a change"
+  default_prompt: "Run the state-sync skill: read its SKILL.md, then reconcile AGENTS.md, scope and specs to the diff."

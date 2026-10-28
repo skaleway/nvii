@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Codebase Audit"
+  short_description: "Bootstrap AI context with a codebase scan"
+  default_prompt: "Run the codebase-audit skill: read its SKILL.md, then scan the codebase and bootstrap AGENTS.md context."

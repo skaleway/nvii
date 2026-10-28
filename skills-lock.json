@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "skills": {
+    "codebase-audit": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/codebase-audit/SKILL.md",
+      "computedHash": "2fbac1e4eec967a5038dd0394f0fb8dad6b712b44e37775c91d0790b37db1bfe"
+    },
+    "codebase-index": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/codebase-index/SKILL.md",
+      "computedHash": "d63dff6b61eafdbe58437ef94f9675bd7c727380f2e13bfb70d127f136a2cb8d"
+    },
+    "context-forge": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/context-forge/SKILL.md",
+      "computedHash": "e83b35be38e6141bf3d852661403993cf1efd5d2e1e25c9ecadad8d62c8decf6"
+    },
+    "fault-fix": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/fault-fix/SKILL.md",
+      "computedHash": "632d15873a1e721e3bb2011639f48d83f595faf6378027c0f617fa06abc45825"
+    },
+    "feature-build": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/feature-build/SKILL.md",
+      "computedHash": "408e57312b83bff2c724896a3abcaadc4c703c1a5b21d5afdcfcde7688683337"
+    },
+    "peer-review": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/peer-review/SKILL.md",
+      "computedHash": "90a637f2d01d4a8407cf73ba09f145af457179931f644282548404b2d1bff605"
+    },
+    "rules-generator": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/rules-generator/SKILL.md",
+      "computedHash": "346885b17c32ddcea7b9203a863df8eaf7103a5c2dff1928766f0fd719e358b8"
+    },
+    "scope-plan": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/scope-plan/SKILL.md",
+      "computedHash": "3e5c78655cb292d7a87190012019b6c801b7d071b6941abf477bf67d58c19894"
+    },
+    "solution-architect": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/solution-architect/SKILL.md",
+      "computedHash": "1e27ad0fd65831fee2f848fc7a79d469da6b5d45f92a38bd725008c7317ea6c1"
+    },
+    "state-sync": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/state-sync/SKILL.md",
+      "computedHash": "d973746426714ffde2dc6c3e9df17c5d6d90ddfe6bb1dcbdc25fb5cc1187819f"
+    },
+    "tech-writer": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/tech-writer/SKILL.md",
+      "computedHash": "fb1549bade1a66da317f878f0ed93821fcfe5ab148ffd3fa1e534e2ef2af9585"
+    },
+    "test-engineer": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/test-engineer/SKILL.md",
+      "computedHash": "d55b62e9f046e4a3c0747f2cf170cd54f77b65fabce793586bd03cdc0fc75e1f"
+    },
+    "verify-release": {
+      "source": "afuhflynn/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/verify-release/SKILL.md",
+      "computedHash": "9792759e51cfaa619a8380a00c96467b84fcf7660a1244d664ee2fe44375f984"
+    }
+  }
+}
