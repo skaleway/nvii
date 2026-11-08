@@ -18,12 +18,14 @@ code in `apps/web/lib/redirect.ts`, `apps/web/components/auth/auth-button.tsx`, 
 ### 2. Version actions claim success without acting
 On a version page, rollback, tag, branch, delete, and export show a green success message and change nothing. On the versions list, the same buttons log to the console while the component still tells the user it worked.
 **Done when:** every button on a version page either performs a real action against the server and the list refreshes to match, or is not offered.
-- [ ] Build it: `/feature-build version actions claim success without acting`
+- [x] Build it: `/feature-build version actions claim success without acting`
+code in `apps/web/app/api/projects/[userId]/[projectId]/versions/[versionId]/route.ts` (DELETE), `.../[versionId]/rollback/route.ts`, `.../[versionId]/tags/route.ts`, `.../[versionId]/export/route.ts`, `apps/web/app/(app)/projects/[projectId]/versions/page.tsx`, `apps/web/app/(app)/projects/[projectId]/versions/[versionId]/page.tsx`
 
-### 3. Environment variable edits are lost
+### 3. Environment variable edits are lost · in-progress
 Editing a variable value in the web table changes it on screen only. The delete entry in the row menu has no handler at all, and the public toggle is a local flag that is never stored anywhere.
 **Done when:** editing a value and deleting a variable both persist, survive a page reload, and land in a new version like a push from the command line does.
-- [ ] Build it: `/feature-build environment variable edits are lost`
+code in `apps/web/components/env-variable-table.tsx`, `apps/web/lib/api-client.ts`, `apps/web/app/(app)/projects/[projectId]/page.tsx`
+- [x] Build it: `/feature-build environment variable edits are lost`
 
 ### 4. CLI invents version names and change counts
 Every `nvii push` and `nvii new` prints the literal text `Version created: v1.0.0` and `Added: 0 | Modified: 0 | Removed: 0`. The server already computes the real changes and sends them back, and the command throws them away.

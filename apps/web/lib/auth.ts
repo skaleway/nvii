@@ -8,6 +8,22 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
 
+  // Local dev port drifts (Next bumps to the next free port when 3000 is taken,
+  // which used to make every sign in 403 with "Invalid callbackURL"). Trust
+  // the local origins so the port never matters.
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://localhost:3003",
+    "http://localhost:3004",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:3002",
+    "http://127.0.0.1:3003",
+    "http://127.0.0.1:3004",
+  ],
+
   session: {
     expiresIn: 60 * 60 * 24 + 14,
     cookieCache: {
