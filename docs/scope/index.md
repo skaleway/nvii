@@ -13,7 +13,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 |---|---------|-------|--------|
 | 1 | Login redirect lands on null · GA | Truth | done |
 | 2 | Version actions claim success without acting | Truth | in-progress |
-| 3 | Environment variable edits are lost | Truth | planned |
+| 3 | Environment variable edits are lost | Truth | in-progress |
 | 4 | CLI invents version names and change counts | Truth | planned |
 | 5 | CLI failures report success to scripts | Truth | planned |
 | 6 | Remove member always fails, member count ignores the owner | Truth | planned |

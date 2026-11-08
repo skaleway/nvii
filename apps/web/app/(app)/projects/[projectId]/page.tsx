@@ -42,6 +42,26 @@ export default function ProjectPage() {
     }
   };
 
+  const handleSave = async (
+    content: Record<string, string>,
+    message: string
+  ) => {
+    try {
+      await projectApi.update(
+        projectId as string,
+        user.id,
+        content,
+        message
+      );
+      refetchProject();
+      toast.success("Saved", {
+        description: "Environment variables updated.",
+      });
+    } catch (error: Error | any) {
+      toast.error(error.message || "Failed to save environment variables");
+    }
+  };
+
   // Fetch project
   const {
     data,
@@ -173,6 +193,7 @@ export default function ProjectPage() {
         environment={data.project?.content as unknown as Record<string, string>}
         projectUserId={data.project.userId}
         userId={user.id}
+        onSave={handleSave}
       />
     </div>
   );
