@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Solution Architect"
+  short_description: "Design features and write build specs"
+  default_prompt: "Run the solution-architect skill: read its SKILL.md, then deliberate the design decision and write a spec."

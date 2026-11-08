@@ -1,6 +1,7 @@
 {
   "extends": "@nvii/typescript-config/nextjs",
   "compilerOptions": {
+ "ignoreDeprecations": "6.0", // It helps suppress this error: baseUrl is deprecated and will stop functioning in TypeScript 7.0. Specify compilerOption
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],

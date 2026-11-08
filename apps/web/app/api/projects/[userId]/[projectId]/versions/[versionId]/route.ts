@@ -160,3 +160,83 @@ export async function PATCH(
     return ErrorResponse("Internal Server Error", 500);
   }
 }
+
+// Delete a version
+export async function DELETE(
+  request: Request,
+  {
+    params,
+  }: {
+    params: Promise<{ userId: string; projectId: string; versionId: string }>;
+  }
+): Promise<NextResponse> {
+  try {
+    // read request headers sent from the cli
+    const headersList = await headers();
+    // validate cli request headers
+    const cliUser = await validateCliAuth(headersList);
+
+    // read web request headers
+    const webUser = await getCurrentUserFromSession();
+
+    // validate either cli or web request headers
+    if (!webUser && !cliUser) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    const { projectId, versionId } = await params;
+    const user = webUser || cliUser;
+    if (!user) {
+      return ErrorResponse("Unauthorized", 401);
+    }
+
+    // Verify user has access to the project
+    const project = await db.project.findUnique({
+      where: {
+        id: projectId,
+        OR: [
+          { userId: user.id },
+          {
+            ProjectAccess: {
+              some: {
+                userId: user.id,
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    if (!project) {
+      return ErrorResponse("Project not found or unauthorized", 404);
+    }
+
+    const version = await db.envVersion.findFirst({
+      where: {
+        id: versionId,
+        projectId,
+      },
+    });
+
+    if (!version) {
+      return ErrorResponse("Version not found or unauthorized", 404);
+    }
+
+    if (version.isCurrent) {
+      return ErrorResponse("Cannot delete the current version", 400);
+    }
+
+    await db.envVersion.delete({
+      where: {
+        id: versionId,
+      },
+    });
+
+    return NextResponse.json({
+      message: "Version deleted successfully",
+    });
+  } catch (error) {
+    console.error("[VERSION_DELETE]", error);
+    return ErrorResponse("Internal Server Error", 500);
+  }
+}

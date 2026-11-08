@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { VersionActions } from "@/components/version-actions";
@@ -57,7 +56,6 @@ export default function VersionDetailsPage() {
     isPending,
     isError,
     refetch,
-    isRefetching,
   } = useQuery<(EnvVersion & { user: UserType }) | null>({
     queryFn: fetchVersionDetails,
     queryKey: ["versionDetails", projectId, versionId],
@@ -65,25 +63,81 @@ export default function VersionDetailsPage() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  const versionActionUrl = (id: string, suffix = "") =>
+    `/api/projects/${user.id}/${projectId}/versions/${id}${suffix}`;
+
+  const throwForBadResponse = async (response: Response, fallback: string) => {
+    if (response.ok) return;
+    let message = fallback;
+    try {
+      const body = await response.json();
+      if (body?.error) message = body.error;
+    } catch {
+      // keep the fallback message
+    }
+    throw new Error(message);
+  };
+
   const handleRollback = async (versionId: string) => {
-    toast.success("Version rollback initiated");
+    const response = await fetch(versionActionUrl(versionId, "/rollback"), {
+      method: "POST",
+    });
+    await throwForBadResponse(response, "Failed to rollback version");
+    await refetch();
   };
 
   const handleCreateTag = async (versionId: string, tagName: string) => {
-    toast.success(`Tag "${tagName}" created`);
+    const response = await fetch(versionActionUrl(versionId, "/tags"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: tagName }),
+    });
+    await throwForBadResponse(response, "Failed to create tag");
+    await refetch();
   };
 
   const handleCreateBranch = async (versionId: string, branchName: string) => {
-    toast.success(`Branch "${branchName}" created`);
+    const response = await fetch(
+      `/api/projects/${user.id}/${projectId}/versions/branches`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          branchName,
+          baseVersionId: versionId,
+        }),
+      }
+    );
+    await throwForBadResponse(response, "Failed to create branch");
   };
 
   const handleDeleteVersion = async (versionId: string) => {
-    toast.success("Version deleted");
+    const response = await fetch(versionActionUrl(versionId), {
+      method: "DELETE",
+    });
+    await throwForBadResponse(response, "Failed to delete version");
     router.push(`/projects/${projectId}/versions`);
   };
 
   const handleExportVersion = async (versionId: string) => {
-    toast.success("Version exported");
+    const response = await fetch(
+      versionActionUrl(versionId, "/export?format=env")
+    );
+    await throwForBadResponse(response, "Failed to export version");
+    const text = await response.text();
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `version-${versionId.slice(0, 8)}.env`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const copyToClipboard = (text: string) => {

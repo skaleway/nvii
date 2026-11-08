@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Scope Plan"
+  short_description: "Plan and reconcile feature scopes"
+  default_prompt: "Run the scope-plan skill: read its SKILL.md, then plan the next feature slices for this product, or reconcile the scope with what has shipped."

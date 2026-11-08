@@ -31,13 +31,17 @@ import {
   XCircle,
   Check,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EnvVariableTableProps {
   environment: Record<string, string>;
   isLoading?: boolean;
   projectUserId: string;
   userId: string;
+  onSave?: (
+    content: Record<string, string>,
+    message: string
+  ) => Promise<void>;
 }
 
 export function EnvVariableTable({
@@ -45,6 +49,7 @@ export function EnvVariableTable({
   isLoading = false,
   userId,
   projectUserId,
+  onSave,
 }: EnvVariableTableProps) {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -96,6 +101,49 @@ export function EnvVariableTable({
     );
   };
 
+  const contentMap = () =>
+    variables.reduce<Record<string, string>>((acc, variable) => {
+      acc[variable.key] = variable.value;
+      return acc;
+    }, {});
+
+  const finishEdit = (id: string) => {
+    setVariables((prevVars) =>
+      prevVars.map((variable) =>
+        variable.id === id ? { ...variable, isEditing: false } : variable
+      )
+    );
+  };
+
+  const commitEdit = async (id: string) => {
+    const variable = variables.find((v) => v.id === id);
+    if (!variable || !variable.isEditing) return;
+    finishEdit(id);
+    if (!onSave) return;
+    try {
+      await onSave(
+        contentMap(),
+        `Updated environment variable ${variable.key}`
+      );
+    } catch {
+      toast({ title: "Failed to save changes" });
+    }
+  };
+
+  const deleteVariable = async (id: string) => {
+    const variable = variables.find((v) => v.id === id);
+    setVariables((prevVars) => prevVars.filter((v) => v.id !== id));
+    if (!onSave) return;
+    try {
+      await onSave(
+        contentMap(),
+        `Deleted environment variable ${variable?.key ?? ""}`
+      );
+    } catch {
+      toast({ title: "Failed to delete variable" });
+    }
+  };
+
   const togglePublic = (id: string) => {
     setVariables((prevVars) =>
       prevVars.map((variable) =>
@@ -105,6 +153,25 @@ export function EnvVariableTable({
       )
     );
   };
+
+  // Keep the table in sync with the server after a reload or a refetch so a
+  // saved edit survives a page reload. Skip while a variable is being edited
+  // so an in-progress change is not discarded.
+  useEffect(() => {
+    if (variables.some((variable) => variable.isEditing)) return;
+    setVariables(
+      Object.entries(environment ?? {}).map(([key, value], index) => ({
+        id: `${index}-${key}`,
+        key,
+        value: value.replace(/^"|"$/g, ""),
+        isPublic: false,
+        isVisible: false,
+        isEditing: false,
+        status: value ? "valid" : "missing",
+        requiredBy: [],
+      }))
+    );
+  }, [environment]);
 
   const copyToClipboard = async (variable: Variable) => {
     try {
@@ -210,6 +277,11 @@ export function EnvVariableTable({
                     type={variable.isVisible ? "text" : "password"}
                     value={variable.value}
                     onChange={(e) => updateValue(variable.id, e.target.value)}
+                    onBlur={() => commitEdit(variable.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") commitEdit(variable.id);
+                      if (e.key === "Escape") finishEdit(variable.id);
+                    }}
                     autoFocus
                     className="font-mono text-sm"
                   />
@@ -316,7 +388,13 @@ export function EnvVariableTable({
                         </Link>
                       </DropdownMenuItem> */}
                       {projectUserId === userId && (
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteVariable(variable.id);
+                          }}
+                        >
                           Delete Variable
                         </DropdownMenuItem>
                       )}
