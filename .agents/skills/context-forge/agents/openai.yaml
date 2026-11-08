@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Context Forge"
+  short_description: "Generate enforceable agent working rules"
+  default_prompt: "Run the context-forge skill: read its SKILL.md, then generate working rules for this codebase."

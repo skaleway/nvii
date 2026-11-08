@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Fault Fix"
+  short_description: "Reproduce and fix a bug at its root cause"
+  default_prompt: "Run the fault-fix skill: read its SKILL.md, then reproduce the bug and fix the root cause."

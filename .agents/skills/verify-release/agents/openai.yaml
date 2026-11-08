@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Verify Release"
+  short_description: "Prove a change works in the real app"
+  default_prompt: "Run the verify-release skill: read its SKILL.md, then drive the app and prove the change against its spec."

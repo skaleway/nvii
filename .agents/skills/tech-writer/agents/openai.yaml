@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Tech Writer"
+  short_description: "Write PR, changelog, release notes, postmortem"
+  default_prompt: "Run the tech-writer skill: read its SKILL.md, then write the requested document from the change history."

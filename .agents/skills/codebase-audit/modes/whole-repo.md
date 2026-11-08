@@ -1,0 +1,5 @@
+# Audit Mode: whole-repo scan (Phase 2: root + judged nested)
+
+Trigger: pre-flight classified the repo as clearly established (real feature code, real history, no in-progress workflow setup), or Phase 0 → `Existing codebase`. Run the Tool skills sweep (`modes/tool-skills.md`, web/registry discovery in a `researcher` subagent) once the scan has identified the stack, before/with writing `AGENTS.md`.
+
+The main thread writes root + nested `AGENTS.md` itself, following the WHOLE-REPO phase in `agent-prompt.md`. The scan reads across the codebase, the one expensive part: for a large repo, offload just the reading to a read only `scout` subagent on the cheapest model (Claude Code: `haiku`, not inheriting the session model), briefed to return a compact map (stack, commands, major areas, conventions, gotchas), and write from that map; for a small repo, read it directly. The inputs to apply: `PHASE=whole-repo`, root AGENTS.md noted as MISSING, `MONOREPO_OR_NO`. Read `agent-prompt.md` at write time.
