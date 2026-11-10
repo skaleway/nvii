@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Test Engineer"
+  short_description: "Write tests for uncommitted changes"
+  default_prompt: "Run the test-engineer skill: read its SKILL.md, then write the test suite for the current changes."
