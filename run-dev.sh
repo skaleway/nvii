@@ -18,12 +18,13 @@ pnpm install
 
 echo "Ensuring environment files exist..."
 mkdir -p packages/database apps/web
-if [ ! -f "packages/database/.env" ]; then
-  printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" > packages/database/.env
-fi
-if [ ! -f "apps/web/.env" ]; then
-  printf 'DATABASE_URL="%s"\n' "$DATABASE_URL" > apps/web/.env
-fi
+for env_file in packages/database/.env apps/web/.env; do
+  if [[ -f "$env_file" ]] && rg -q '^[[:space:]]*DATABASE_URL[[:space:]]*=' "$env_file"; then
+    sed -i -E "s|^[[:space:]]*DATABASE_URL[[:space:]]*=.*|DATABASE_URL=\"${DATABASE_URL}\"|" "$env_file"
+  else
+    printf '\nDATABASE_URL="%s"\n' "$DATABASE_URL" >> "$env_file"
+  fi
+done
 
 echo "Starting PostgreSQL database with Docker Compose on port ${DB_PORT}..."
 DB_PORT="$DB_PORT" docker compose up -d

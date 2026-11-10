@@ -136,6 +136,7 @@ export type ProjectAccessUser = {
 export type ProjectAccess = {
   projectId: string;
   userId: string;
+  role: string;
   assignedAt: string;
   user: ProjectAccessUser;
 };
@@ -173,11 +174,19 @@ export const projectAccessApi = {
     return await response.json();
   },
 
-  remove: async (projectId: string, userIdToRemove: string): Promise<void> => {
+  remove: async (
+    projectId: string,
+    userIdToRemove: string,
+    actorUserId: string
+  ): Promise<void> => {
     const response = await fetch(
-      `${API_BASE}/projects/${userIdToRemove}/${projectId}/access/${userIdToRemove}`,
+      `${API_BASE}/projects/${actorUserId}/${projectId}/access`,
       {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ projectId, userId: userIdToRemove }),
       }
     );
     if (!response.ok) {

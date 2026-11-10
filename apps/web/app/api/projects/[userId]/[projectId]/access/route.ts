@@ -31,6 +31,16 @@ export async function GET(
           { ProjectAccess: { some: { userId: session.user.id } } },
         ],
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+      },
     });
 
     if (!project) {
@@ -53,7 +63,23 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(projectAccess);
+    // The project owner is not stored in the access table, but the owner is a
+    // member of the project. Include them in the list so the member count
+    // includes the owner and the Admin badge reflects stored ownership
+    // (project.userId) rather than a guess.
+    const owner = project.user;
+    const membersWithOwner = [
+      ...projectAccess,
+      {
+        projectId,
+        userId: owner.id,
+        role: "OWNER",
+        assignedAt: project.createdAt.toISOString(),
+        user: owner,
+      },
+    ];
+
+    return NextResponse.json(membersWithOwner);
   } catch (error) {
     console.error("[PROJECT_ACCESS_GET]", error);
     return ErrorResponse("Internal error", 500);
@@ -101,6 +127,7 @@ export async function POST(
       data: {
         projectId,
         userId: userExists.id,
+        role: "COLLABORATOR",
       },
     });
 
