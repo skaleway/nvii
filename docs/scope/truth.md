@@ -36,7 +36,8 @@ code in `packages/cli/src/commands/push.ts`, `packages/cli/src/commands/new.ts`,
 ### 5. CLI failures report success to scripts
 Every command catches a failed request, prints a friendly line, and exits 0. A script or a CI job cannot tell a failed push from a successful one.
 **Done when:** any command that fails to do its job exits non zero with a message a script can read, and a success path never hides a failure.
-- [ ] Build it: `/feature-build CLI failures report success to scripts`
+- [x] Build it: `/feature-build CLI failures report success to scripts`
+code in packages/cli/src/commands/push.ts, packages/cli/src/commands/pull.ts, packages/cli/src/commands/history.ts, packages/cli/src/commands/rollback.ts, packages/cli/src/commands/branch.ts, packages/cli/src/commands/tag.ts, packages/cli/src/commands/link.ts, packages/cli/src/commands/update.ts, packages/cli/src/commands/unlink.ts, packages/cli/src/commands/auth/logout.ts, packages/cli/src/commands/auth/whoami.ts, packages/cli/src/commands/generate.ts, packages/cli/src/commands/some.ts
 
 ### 6. Remove member always fails, member count ignores the owner
 Removing a member calls a route that does not exist, so it always fails. The member count comes from the access table alone, so a project you own by yourself reads as zero members. The Admin badge is derived from ownership because no role is stored.

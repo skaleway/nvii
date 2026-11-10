@@ -15,7 +15,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 2 | Version actions claim success without acting | Truth | in-progress |
 | 3 | Environment variable edits are lost | Truth | in-progress |
 | 4 | CLI invents version names and change counts | Truth | planned |
-| 5 | CLI failures report success to scripts | Truth | planned |
+| 5 | CLI failures report success to scripts | Truth | in-progress |
 | 6 | Remove member always fails, member count ignores the owner | Truth | planned |
 | 7 | Paginated and searchable project list | At scale | in-progress |
 | 8 | Search and pagination on the web projects page · needs a decision | At scale | planned |

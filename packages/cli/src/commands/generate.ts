@@ -79,7 +79,7 @@ export async function generateExample(args?: {
     const fileError = error as FileError;
     if (fileError.code === "ENOENT") {
       console.error(pc.red("✗"), fileError.message);
-      return;
+      process.exit(1);
     }
     console.error(
       pc.red("✗"),
