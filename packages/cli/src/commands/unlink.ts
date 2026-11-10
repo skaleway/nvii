@@ -1,4 +1,3 @@
-import { Project } from "@nvii/db";
 import {
   getConfiguredClient,
   isLogedIn,
@@ -27,24 +26,29 @@ export async function unlinkProject(checkProjects = true) {
     const projectConfig = await readProjectConfig();
 
     const client = await getConfiguredClient();
-    const response = await client.get(`/projects/${userConfig.userId}`);
-    const projects = response.data as Project[];
 
-    if (checkProjects && !projects.length) {
-      console.log(
-        pc.gray("No projects found for current user. Run 'nvii new'.")
-      );
-      return;
+    let project: { id: string; name: string } | null = null;
+
+    if (projectConfig?.projectId) {
+      try {
+        const response = await client.get<{
+          project: { id: string; name: string };
+        }>(`/projects/${userConfig.userId}/${projectConfig.projectId}?summary=1`);
+        project = response.data.project;
+      } catch (error: Error | any) {
+        if (error.response?.status === 404) {
+          console.log(
+            pc.red("Project is not linked to a remote project yet.")
+          );
+          return;
+        }
+        throw error;
+      }
     }
 
-    const project = projects.find(
-      (item) => item.id === projectConfig?.projectId
-    );
-    if (checkProjects) {
-      if (!project) {
-        console.log(pc.red("Project is not linked to a remote project yet."));
-        return;
-      }
+    if (checkProjects && !project) {
+      console.log(pc.red("Project is not linked to a remote project yet."));
+      return;
     }
 
     // Fall back when theres is not project found to unlink from

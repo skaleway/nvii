@@ -8,7 +8,6 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   projectsApi,
   CreateProjectInput,
@@ -19,9 +18,14 @@ import {
 import { Project } from "../types/project";
 import { useSession } from "@/provider/session";
 import { EnvVersion, User } from "@nvii/db";
+import { useQueryStates } from "nuqs";
+import { searchParamsSchema } from "@/nuqs_config";
 
 type ProjectsContextType = {
   projects: Project[];
+  total: number;
+  limit: number;
+  offset: number;
   isRefetchingProjects: boolean;
   refetchProjects: () => void;
   isLoading: boolean;
@@ -94,18 +98,30 @@ function ProjectsProviderInner({
   const queryClient = useQueryClient();
   const { user } = useSession();
 
+  // Page based nuqs layer: page (default 1), limit (default 30), search.
+  // The list route takes an offset, so convert page + limit into an offset.
+  const [queryParams] = useQueryStates(searchParamsSchema);
+  const page = queryParams.page ?? 1;
+  const limit = queryParams.limit ?? 30;
+  const search = queryParams.search ?? "";
+  const offset = (page - 1) * limit;
+
   const {
-    data: projects = [],
+    data,
     isLoading,
     error,
     refetch: refetchProjects,
     isRefetching: isRefetchingProjects,
   } = useQuery({
-    queryKey: ["projects"],
-    queryFn: projectsApi.list,
+    queryKey: ["projects", page, limit, search],
+    queryFn: ({ signal }) =>
+      projectsApi.list({ limit, offset, search }, signal),
     staleTime: Infinity,
     gcTime: 500,
   });
+
+  const projects: Project[] = data?.items ?? [];
+  const total: number = data?.total ?? 0;
 
   const addProjectMutation = useMutation({
     mutationFn: (project: CreateProjectInput) =>
@@ -230,6 +246,9 @@ function ProjectsProviderInner({
     <ProjectsContext.Provider
       value={{
         projects,
+        total,
+        limit,
+        offset,
         isLoading,
         error: error as Error | null,
         addProject,

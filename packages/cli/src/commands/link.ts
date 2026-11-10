@@ -24,12 +24,6 @@ const createEnvFiles = (enviDirPath: string, enviFilePath: string) => {
 };
 
 export async function linkProject(args?: { token: string }) {
-  let projectId = "";
-  if (args) {
-    if (args.token) {
-      projectId = args.token;
-    }
-  }
   try {
     if (!isLogedIn()) {
       console.log(pc.red("You must be logged in to link a project."));
@@ -48,17 +42,26 @@ export async function linkProject(args?: { token: string }) {
     const enviDirPath = path.join(currentDir, ".nvii");
     const enviFilePath = path.join(enviDirPath, "nvii.json");
 
-    const response = await client.get(`/projects/${userConfig.userId}`);
-    const projects = response.data as Project[];
-
-    if (!projects.length) {
-      console.log(
-        pc.yellowBright("No projects found for this directory. Run 'nvii new'.")
-      );
-      return;
-    }
+    let projectId = args?.token;
+    let projects: Project[] = [];
 
     if (!projectId) {
+      // Request a single page explicitly so a large account never streams
+      // thousands of rows into the picker. The response shape is
+      // { items, total, limit, offset }; the empty state branches on total.
+      const response = await client.get<{
+        items: Project[];
+        total: number;
+      }>(`/projects/${userConfig.userId}?limit=100`);
+      projects = response.data.items;
+
+      if (response.data.total === 0) {
+        console.log(
+          pc.yellowBright("No projects found for this directory. Run 'nvii new'.")
+        );
+        return;
+      }
+
       const { selectedProjectId } = await inquirer.prompt([
         {
           type: "list",
@@ -74,17 +77,10 @@ export async function linkProject(args?: { token: string }) {
       projectId = selectedProjectId;
     }
 
-    const selectedProject = projects.find((proj) => proj.id === projectId);
-
-    if (!selectedProject) {
-      console.log(pc.red(`Project with id <${projectId}> not found.`));
-      process.exit(1);
-    }
-
     createEnvFiles(enviDirPath, enviFilePath);
     // update current env version in the db
     // const updateResponse = await client.patch(`/projects/${userConfig.userId}/${projectId}/versions/${versionId}`);
-    await writeProjectConfig(projectId, "main");
+    await writeProjectConfig(projectId!, "main");
     console.log(pc.green("Project linked successfully!"));
   } catch (error: Error | any) {
     if (error.response) {

@@ -22,7 +22,7 @@ import { useProjects } from "@/components/projects-provider";
 import { format } from "date-fns";
 
 export default function ProjectsPage() {
-  const { projects, isLoading } = useProjects();
+  const { projects, isLoading, total } = useProjects();
   const { user } = useSession();
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -52,7 +52,12 @@ export default function ProjectsPage() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Projects</h1>
+        <div>
+          <h1 className="text-2xl font-bold">Projects</h1>
+          <p className="text-sm text-muted-foreground">
+            Showing {projects.length} of {total}
+          </p>
+        </div>
         <Button variant="outline" size="sm" onClick={toggleSortOrder}>
           {sortOrder === "asc" ? "Sort Descending" : "Sort Ascending"}
         </Button>

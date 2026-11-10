@@ -9,12 +9,13 @@ Both project list routes return every row with no limit, no total, and no way to
 spec [0001](../specs/_root/0001-paginated-and-searchable-project-list.md)
 
 - [x] Design it (spec): `/solution-architect paginated and searchable project list`
-- [ ] Build it: `/feature-build 7. Paginated and searchable project list`
-  - [ ] Thin thread: query parsing, the shared list module with paging and a total, the web route on it, and the web client reading the new shape (spec tasks 1 to 3)
-  - [ ] The CLI list route on the same module, with its own lean rows and the `nvii link` call site (spec task 4)
-  - [ ] Ownership check on the CLI list and create routes, answering 403 on a path userId that is not the caller (spec task 5)
-  - [ ] CLI commands made paging proof: `--token` links without a list request, unlink reads the summary branch (spec tasks 6 and 7)
-  - [ ] Page number to offset helper, cancellable requests, and a "Showing N of M" line on the projects page (spec task 8)
+- [x] Build it: `/feature-build 7. Paginated and searchable project list`
+  - [x] Thin thread: query parsing, the shared list module with paging and a total, the web route on it, and the web client reading the new shape (spec tasks 1 to 3)
+  - [x] The CLI list route on the same module, with its own lean rows and the `nvii link` call site (spec task 4)
+  - [x] Ownership check on the CLI list and create routes, answering 403 on a path userId that is not the caller (spec task 5)
+  - [x] CLI commands made paging proof: `--token` links without a list request, unlink reads the summary branch (spec tasks 6 and 7)
+  - [x] Page number to offset helper, cancellable requests, and a "Showing N of M" line on the projects page (spec task 8)
+code in `apps/web/lib/projects-list.ts`, `apps/web/app/api/projects/route.ts`, `apps/web/app/api/projects/[userId]/route.ts`, `apps/web/app/api/projects/[userId]/[projectId]/route.ts`, `apps/web/lib/api-client.ts`, `apps/web/components/projects-provider.tsx`, `packages/cli/src/commands/link.ts`, `packages/cli/src/commands/unlink.ts`, `apps/web/app/(app)/projects/page.tsx`
 - [ ] Verify it: `/verify-release 7. Paginated and searchable project list`
 - [ ] Test it: `/test-engineer 7. Paginated and searchable project list`
 

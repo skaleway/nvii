@@ -1,7 +1,7 @@
 # 0001. Paginate and search the project list
 
 **Date**: 2026-10-10
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
