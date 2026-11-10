@@ -47,4 +47,5 @@ code in `apps/web/components/project-access-manager.tsx`, `apps/web/lib/api-clie
 ### 28. A stub decryption function shadows the real one · from spec 0001
 `apps/web/lib/encryption.ts` exports a `decryptEnvValues` that only parses JSON, and it shadows the real AES implementation the same file re exports from `@nvii/env-helpers`. Every route that imports it through that path reports the encryption envelope as if it were the variables. That is why every project card reads "3 variables". Spec 0001 fixes the list path only.
 **Done when:** no route returns the `{iv, content, authTag}` envelope as decrypted content, every card shows the real variable count, and content written before encryption still reads correctly.
-- [ ] Build it: `/feature-build a stub decryption function shadows the real one`
+- [x] Build it: `/feature-build a stub decryption function shadows the real one`
+  code in `apps/web/lib/encryption.ts`

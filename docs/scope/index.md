@@ -38,7 +38,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 25 | Marketing claims match the product | Real pages | planned |
 | 26 | Rate limit the project list routes · needs a decision | At scale | planned |
 | 27 | Index the project list for search · needs a decision | At scale | planned |
-| 28 | A stub decryption function shadows the real one · from spec 0001 | Truth | planned |
+| 28 | A stub decryption function shadows the real one · from spec 0001 | Truth | in-progress |
 
 ### Epic rollups
 
