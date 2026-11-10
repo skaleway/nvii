@@ -27,10 +27,11 @@ Editing a variable value in the web table changes it on screen only. The delete 
 code in `apps/web/components/env-variable-table.tsx`, `apps/web/lib/api-client.ts`, `apps/web/app/(app)/projects/[projectId]/page.tsx`
 - [x] Build it: `/feature-build environment variable edits are lost`
 
-### 4. CLI invents version names and change counts
+### 4. CLI invents version names and change counts · in-progress
 Every `nvii push` and `nvii new` prints the literal text `Version created: v1.0.0` and `Added: 0 | Modified: 0 | Removed: 0`. The server already computes the real changes and sends them back, and the command throws them away.
 **Done when:** a push prints the version the server created and the real added, modified, and removed counts, and an empty push says nothing changed instead of printing zeros.
-- [ ] Build it: `/feature-build CLI invents version names and change counts`
+- [x] Build it: `/feature-build CLI invents version names and change counts`
+code in `packages/cli/src/commands/push.ts`, `packages/cli/src/commands/new.ts`, `apps/web/app/api/projects/[userId]/route.ts`
 
 ### 5. CLI failures report success to scripts
 Every command catches a failed request, prints a friendly line, and exits 0. A script or a CI job cannot tell a failed push from a successful one.

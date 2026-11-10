@@ -119,7 +119,7 @@ export const POST = async (
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const project = await db.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx) => {
       const newProject = await tx.project.create({
         data: {
           userId,
@@ -140,7 +140,7 @@ export const POST = async (
         },
       });
 
-      await tx.envVersion.create({
+      const version = await tx.envVersion.create({
         data: {
           projectId: newProject.id,
           content: body.content,
@@ -154,9 +154,12 @@ export const POST = async (
         },
       });
 
-      return newProject;
+      return { project: newProject, version };
     });
-    return Response(project);
+    return NextResponse.json({
+      project: result.project,
+      version: result.version,
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

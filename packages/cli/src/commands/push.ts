@@ -179,7 +179,7 @@ export async function pushLatestChanges(args?: {
 
     spinner.text = "Updating remote variables...";
     spinner.start();
-    await client.patch<{
+    const response = await client.patch<{
       version: EnvVersion;
       versions: EnvVersion[];
     }>(`/projects/${userConfig.userId}/${projectId}`, {
@@ -189,9 +189,28 @@ export async function pushLatestChanges(args?: {
 
     spinner.succeed("Updating remote variables...");
 
-    // TODO: Update these lines to display real data.
-    console.log("\n" + chalk.white("Version created: v1.0.0"));
-    console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
+    const { version } = response.data;
+    const changes = (version.changes as {
+      added: string[];
+      modified: string[];
+      deleted: string[];
+    }) || { added: [], modified: [], deleted: [] };
+    const addedCount = changes.added.length;
+    const modifiedCount = changes.modified.length;
+    const removedCount = changes.deleted.length;
+
+    if (addedCount === 0 && modifiedCount === 0 && removedCount === 0) {
+      console.log(
+        pc.bold(`\nNo changes detected for project: ${pc.cyan(`${projectId}`)}`)
+      );
+    } else {
+      console.log("\n" + chalk.white(`Version created: ${version.id}`));
+      console.log(
+        chalk.white(
+          `Added: ${addedCount} | Modified: ${modifiedCount} | Removed: ${removedCount}`
+        )
+      );
+    }
   } catch (error: Error | any) {
     if (error.response) {
       console.error(pc.yellowBright(`\n${error.response.data.error}`));
