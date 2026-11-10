@@ -163,10 +163,12 @@ function ProjectsProviderInner({
     mutationFn: ({
       projectId,
       userId,
+      actorUserId,
     }: {
       projectId: string;
       userId: string;
-    }) => projectAccessApi.remove(projectId, userId),
+      actorUserId: string;
+    }) => projectAccessApi.remove(projectId, userId, actorUserId),
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({
         queryKey: ["projectAccess", projectId],
@@ -215,9 +217,13 @@ function ProjectsProviderInner({
 
   const removeProjectAccess = React.useCallback(
     async (projectId: string, userId: string) => {
-      await removeProjectAccessMutation.mutateAsync({ projectId, userId });
+      await removeProjectAccessMutation.mutateAsync({
+        projectId,
+        userId,
+        actorUserId: user?.id,
+      });
     },
-    [removeProjectAccessMutation]
+    [removeProjectAccessMutation, user]
   );
 
   return (
