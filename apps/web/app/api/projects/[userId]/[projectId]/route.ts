@@ -12,7 +12,7 @@ import { calculateChanges, encryptEnvValues } from "@nvii/env-helpers";
 import { validateCliAuth } from "@/lib/cli-auth";
 
 export async function GET(
-  _: Request,
+  request: Request,
   { params }: { params: Promise<{ userId: string; projectId: string }> }
 ): Promise<NextResponse> {
   try {
@@ -34,6 +34,35 @@ export async function GET(
       return ErrorResponse("Unauthorized", 401);
     }
     const { projectId } = await params;
+
+    // summary=1 returns only the project id and name: no version query and
+    // no decrypt, so a terminal command can confirm a project without
+    // downloading plaintext secrets.
+    const searchParams = new URL(request.url).searchParams;
+    if (searchParams.get("summary") === "1") {
+      const project = await db.project.findUnique({
+        where: {
+          id: projectId,
+          OR: [
+            { userId: user.id },
+            {
+              ProjectAccess: {
+                some: {
+                  userId: user.id,
+                },
+              },
+            },
+          ],
+        },
+        select: { id: true, name: true },
+      });
+
+      if (!project) {
+        return ErrorResponse(`Project id <${projectId}> not found.`, 404);
+      }
+
+      return NextResponse.json({ project: { id: project.id, name: project.name } });
+    }
 
     // Verify the user has access to this project
     const [project, versions] = await db.$transaction([

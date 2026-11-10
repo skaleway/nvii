@@ -4,6 +4,12 @@ import { ErrorResponse, Response } from "@/lib/response";
 import { db } from "@nvii/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import {
+  listProjects,
+  cliProjectSelect,
+  extractListQuery,
+} from "@/lib/projects-list";
+import { z } from "zod";
 
 export const GET = async (
   request: Request,
@@ -28,31 +34,30 @@ export const GET = async (
       return ErrorResponse("Unauthorized", 401);
     }
 
-    const projects = await db.project.findMany({
-      where: {
-        OR: [
-          { userId: user.id },
-          {
-            ProjectAccess: {
-              some: {
-                userId: user.id,
-              },
-            },
-          },
-        ],
-      },
-      include: {
-        ProjectAccess: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
+    // the path userId must match the authenticated caller
+    if (userId !== user.id) {
+      return ErrorResponse("Forbidden", 403);
+    }
+
+    let parsed: ReturnType<typeof extractListQuery>;
+    try {
+      parsed = extractListQuery(new URL(request.url).searchParams);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return ErrorResponse("Invalid query parameters", 400);
+      }
+      throw error;
+    }
+
+    const { items, total, limit, offset } = await listProjects({
+      viewerId: user.id,
+      limit: parsed.limit,
+      offset: parsed.offset,
+      search: parsed.search,
+      select: cliProjectSelect,
     });
 
-    return NextResponse.json(projects);
+    return NextResponse.json({ items, total, limit, offset });
   } catch (error) {
     console.error("[PROJECTS_GET]", error);
     return ErrorResponse("Internal Server Error", 500);
@@ -82,6 +87,13 @@ export const POST = async (
 
     if (!user) {
       return ErrorResponse("Unauthorized", 401);
+    }
+
+    // the path userId must match the authenticated caller; this closes the
+    // hole where any authenticated user could plant a project in another
+    // account by putting that user's id in the path.
+    if (userId !== user.id) {
+      return ErrorResponse("Forbidden", 403);
     }
 
     const body = await request.json();

@@ -16,19 +16,48 @@ export type CreateProjectInput = Omit<
   "id" | "createdAt" | "updatedAt" | "userId" | "content" | "deviceId"
 >;
 
+export interface ListProjectsResponse {
+  items: Project[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export type ListProjectsParams = {
+  limit?: number;
+  offset?: number;
+  search?: string;
+};
+
 export const projectsApi = {
-  list: async (): Promise<Project[]> => {
-    const response = await fetch(`${API_BASE}/projects`);
+  list: async (
+    params: ListProjectsParams = {},
+    signal?: AbortSignal
+  ): Promise<ListProjectsResponse> => {
+    const searchParams = new URLSearchParams();
+    searchParams.set("limit", String(params.limit ?? 30));
+    searchParams.set("offset", String(params.offset ?? 0));
+    if (params.search) {
+      searchParams.set("search", params.search);
+    }
+    const response = await fetch(`${API_BASE}/projects?${searchParams}`, {
+      signal,
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch projects");
     }
     const data = await response.json();
 
-    return data.map((project: Project) => ({
-      ...project,
-      status: project.content.totalEmpty > 0 ? "missing" : "valid",
-      envCount: project.content.totalElem,
-    }));
+    return {
+      items: data.items.map((project: Project) => ({
+        ...project,
+        status: project.content.totalEmpty > 0 ? "missing" : "valid",
+        envCount: project.content.totalElem,
+      })),
+      total: data.total,
+      limit: data.limit,
+      offset: data.offset,
+    };
   },
 
   create: async (
@@ -136,6 +165,7 @@ export type ProjectAccessUser = {
 export type ProjectAccess = {
   projectId: string;
   userId: string;
+  role: string;
   assignedAt: string;
   user: ProjectAccessUser;
 };
@@ -173,11 +203,19 @@ export const projectAccessApi = {
     return await response.json();
   },
 
-  remove: async (projectId: string, userIdToRemove: string): Promise<void> => {
+  remove: async (
+    projectId: string,
+    userIdToRemove: string,
+    actorUserId: string
+  ): Promise<void> => {
     const response = await fetch(
-      `${API_BASE}/projects/${userIdToRemove}/${projectId}/access/${userIdToRemove}`,
+      `${API_BASE}/projects/${actorUserId}/${projectId}/access`,
       {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ projectId, userId: userIdToRemove }),
       }
     );
     if (!response.ok) {
