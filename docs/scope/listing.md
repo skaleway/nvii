@@ -39,6 +39,11 @@ A project someone shared with you looks identical to your own in the terminal, a
 **Done when:** the picker shows two labelled groups, a shared row says who shared it, and the terminal reads the same way the web card already does.
 - [ ] Design it (spec): `/solution-architect shared indication in the terminal picker`
 
+### 29. Shared indication on environment variables in the CLI
+Environment variables that the CLI lists or displays look the same whether the project is yours or shared with you, so there is no shared by indication like the web project card already shows. Starting with the `nvii pull` change summary, each variable on a shared project should say who shared it, in clean terminal text.
+**Done when:** the `nvii pull` change summary names who shared each variable on a shared project, in clean terminal text that matches the web card's Shared by wording, and nothing extra is printed for variables the user owns.
+- [ ] Design it (spec): `/solution-architect shared indication on environment variables in the CLI`
+
 ### 26. Rate limit the project list routes · needs a decision · from spec 0001
 Nothing in the API limits a request today, so search as you type will put one unindexed query per keystroke per open tab against the database. Spec 0001 defers this deliberately because the repo has no limiter anywhere and adding one to a single route would be a pattern with no precedent.
 **Done when:** a caller who exceeds a per user limit on the list routes gets a clear 429 with a retry hint, the normal list call is never blocked, and search as you type cannot be used to hammer the database.
