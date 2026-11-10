@@ -38,7 +38,11 @@ Every command catches a failed request, prints a friendly line, and exits 0. A s
 ### 6. Remove member always fails, member count ignores the owner
 Removing a member calls a route that does not exist, so it always fails. The member count comes from the access table alone, so a project you own by yourself reads as zero members. The Admin badge is derived from ownership because no role is stored.
 **Done when:** removing a member actually removes them and the count drops, the count includes the owner, and the badge reflects something stored rather than something guessed.
-- [ ] Build it: `/feature-build remove member always fails, member count ignores the owner`
+- [x] Build it: `/feature-build remove member always fails, member count ignores the owner`
+  - [x] Fix the remove-member route call so it hits the existing DELETE route
+  - [x] Include the project owner in the member list so the count includes them
+  - [x] Store a role on each invited member and show it as a badge
+code in `apps/web/components/project-access-manager.tsx`, `apps/web/lib/api-client.ts`, `apps/web/app/api/projects/[userId]/[projectId]/access/route.ts`, `packages/database/prisma/schema.prisma`
 
 ### 28. A stub decryption function shadows the real one · from spec 0001
 `apps/web/lib/encryption.ts` exports a `decryptEnvValues` that only parses JSON, and it shadows the real AES implementation the same file re exports from `@nvii/env-helpers`. Every route that imports it through that path reports the encryption envelope as if it were the variables. That is why every project card reads "3 variables". Spec 0001 fixes the list path only.

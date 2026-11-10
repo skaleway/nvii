@@ -11,12 +11,12 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
-| 1 | Login redirect lands on null · GA | Truth | in-progress |
-| 2 | Version actions claim success without acting | Truth | planned |
-| 3 | Environment variable edits are lost | Truth | planned |
+| 1 | Login redirect lands on null · GA | Truth | done |
+| 2 | Version actions claim success without acting | Truth | in-progress |
+| 3 | Environment variable edits are lost | Truth | in-progress |
 | 4 | CLI invents version names and change counts | Truth | planned |
-| 5 | CLI failures report success to scripts | Truth | planned |
-| 6 | Remove member always fails, member count ignores the owner | Truth | planned |
+| 5 | CLI failures report success to scripts | Truth | in-progress |
+| 6 | Remove member always fails, member count ignores the owner | Truth | in-progress |
 | 7 | Paginated and searchable project list | At scale | in-progress |
 | 8 | Search and pagination on the web projects page · needs a decision | At scale | planned |
 | 9 | Version list is silently cut at thirty | At scale | planned |
