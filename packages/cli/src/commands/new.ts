@@ -1,4 +1,4 @@
-import { Project, VersionBranch } from "@nvii/db";
+import { Project, VersionBranch, EnvVersion } from "@nvii/db";
 import {
   encryptEnvValues,
   getConfiguredClient,
@@ -79,7 +79,8 @@ export async function createProject() {
 
     const client = await getConfiguredClient();
     const response = await client.post<{
-      data: Project & { branches: VersionBranch[] };
+      project: Project & { branches: VersionBranch[] };
+      version: EnvVersion;
     }>(`/projects/${userConfig.userId}`, {
       name: projectName,
       content: encryptedEnvs,
@@ -87,15 +88,35 @@ export async function createProject() {
       description: projectDescription,
     });
 
-    const projectId = response.data.data.id;
+    const projectId = response.data.project.id;
+    const version = response.data.version;
     const branchName = "main";
     await writeProjectConfig(projectId, branchName);
     spinner.succeed("Creating project...");
 
     spinner.succeed(pc.green("Project created and configuration saved!"));
 
-    console.log("\n" + chalk.white("Version created: v1.0.0"));
-    console.log(chalk.white(`Added: 0 | Modified: 0 | Removed: 0`));
+    const changes = (version.changes as {
+      added: string[];
+      modified: string[];
+      deleted: string[];
+    }) || { added: [], modified: [], deleted: [] };
+    const addedCount = changes.added.length;
+    const modifiedCount = changes.modified.length;
+    const removedCount = changes.deleted.length;
+
+    if (addedCount === 0 && modifiedCount === 0 && removedCount === 0) {
+      console.log(
+        pc.bold(`\nNo changes detected for project: ${pc.cyan(`${projectId}`)}`)
+      );
+    } else {
+      console.log("\n" + chalk.white(`Version created: ${version.id}`));
+      console.log(
+        chalk.white(
+          `Added: ${addedCount} | Modified: ${modifiedCount} | Removed: ${removedCount}`
+        )
+      );
+    }
   } catch (error: Error | any) {
     if (error.response) {
       spinner.stop();

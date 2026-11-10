@@ -79,34 +79,6 @@ interface VersionAnalyticsData {
   };
 }
 
-function generateEnvVersion(
-  content: EnvVersion,
-  format: "env" | "json" | "yaml" = "env"
-): string {
-  switch (format) {
-    case "json": {
-      let jsonContent = {};
-      Object.entries(content).map(([key, value]) => {
-        jsonContent = { ...jsonContent, [key]: value };
-      });
-      return JSON.stringify(jsonContent, null, 2);
-    }
-    case "yaml":
-      return (
-        "nvii:\n" +
-        Object.entries(content)
-          .map(([key, value]) => `\t${key}: ${value}`)
-          .join("\n")
-      );
-
-    case "env":
-    default:
-      return Object.entries(content)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n");
-  }
-}
-
 export default function VersionsPage() {
   const { projectId } = useParams();
   const { user } = useSession();
@@ -120,7 +92,7 @@ export default function VersionsPage() {
   const [versions, setVersions] = useState<
     Array<EnvVersion & { user: UserType }>
   >([]);
-  const { getProjectVersions, getProjectAccess, getProjectVersion } =
+  const { getProjectVersions, getProjectAccess } =
     useProjects();
 
   const [users, setUsers] = useState<
@@ -144,71 +116,64 @@ export default function VersionsPage() {
     loadUsers();
   }, [loadUsers]);
 
-  useEffect(() => {
-    const handleFetch = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getProjectVersions(
-          projectId as string,
-          user.id as string
-        );
+  const loadVersions = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await getProjectVersions(
+        projectId as string,
+        user.id as string
+      );
 
-        if (!data) {
-          toast.error("Cannot fetch env versions at the moment.");
-          return;
-        }
-
-        setVersions(data as Array<EnvVersion & { user: UserType }>);
-        // (data as Version[] & EnvVersion[]).map((item) =>{
-        //   const changeFrequency = {
-        //     date: item.createdAt,
-        //     changes: item.changes,
-        //     versions: data.length,
-        //   };
-
-        //  const  mostChangedVariables = {
-        //     variable: string;
-        //     changeCount: item.changes.
-        //     lastChanged: Date;
-        //   }
-        //   const userActivity = {
-        //     user: {
-        //       name: item.user.name,
-        //       email: item.user.email
-        //     }
-        //     versions: item.
-        //     lastActivity: Date;
-        //   }
-        //   versionStats: {
-        //     total: number;
-        //     thisWeek: number;
-        //     thisMonth: number;
-        //     averagePerDay: number;
-        //   }
-        //   changeTypes: {
-        //     added: number;
-        //     modified: number;
-        //     deleted: number;
-        //   }
-        // })
-      } catch (error) {
-        toast.error("An error occurred loading env versions.");
-      } finally {
-        setIsLoading(false);
+      if (!data) {
+        toast.error("Cannot fetch env versions at the moment.");
+        return;
       }
-    };
 
-    handleFetch();
+      setVersions(data as Array<EnvVersion & { user: UserType }>);
+    } catch (error) {
+      toast.error("An error occurred loading env versions.");
+    } finally {
+      setIsLoading(false);
+    }
   }, [getProjectVersions, user.id, projectId]);
 
+  useEffect(() => {
+    loadVersions();
+  }, [loadVersions]);
+
+  const versionActionUrl = (versionId: string, suffix = "") =>
+    `/api/projects/${user.id}/${projectId}/versions/${versionId}${suffix}`;
+
+  const throwForBadResponse = async (response: Response, fallback: string) => {
+    if (response.ok) return;
+    let message = fallback;
+    try {
+      const body = await response.json();
+      if (body?.error) message = body.error;
+    } catch {
+      // keep the fallback message
+    }
+    throw new Error(message);
+  };
+
   const handleRollback = async (versionId: string) => {
-    // Implement rollback logic
-    console.log("Rolling back to version:", versionId);
+    const response = await fetch(versionActionUrl(versionId, "/rollback"), {
+      method: "POST",
+    });
+    await throwForBadResponse(response, "Failed to rollback version");
+    await loadVersions();
   };
 
   const handleCreateTag = async (versionId: string, tagName: string) => {
-    // Implement tag creation logic
-    console.log("Creating tag:", tagName, "for version:", versionId);
+    const response = await fetch(versionActionUrl(versionId, "/tags"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: tagName }),
+    });
+    await throwForBadResponse(response, "Failed to create tag");
+    await loadVersions();
   };
 
   const handleCreateBranch = async (
@@ -216,41 +181,40 @@ export default function VersionsPage() {
     branchName: string,
     description?: string
   ) => {
-    // Implement branch creation logic
-    console.log("Creating branch:", branchName, "from version:", versionId);
+    const response = await fetch(
+      `/api/projects/${user.id}/${projectId}/versions/branches`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          branchName,
+          baseVersionId: versionId,
+          description,
+        }),
+      }
+    );
+    await throwForBadResponse(response, "Failed to create branch");
   };
 
   const handleDeleteVersion = async (versionId: string) => {
-    // Implement version deletion logic
-    console.log("Deleting version:", versionId);
+    const response = await fetch(versionActionUrl(versionId), {
+      method: "DELETE",
+    });
+    await throwForBadResponse(response, "Failed to delete version");
+    await loadVersions();
   };
 
   const handleExportVersion = async (versionId: string) => {
-    const version = filteredVersions.find((item) => item.id === versionId);
-
-    if (!version) return;
-    let data: EnvVersion | null = null;
-
-    try {
-      data = await getProjectVersion(
-        projectId as string,
-        user.id,
-        versionId as string
-      );
-    } catch (error) {
-      toast.error("Failed to load version details");
-      console.error("Error fetching version details:", error);
-    }
-
-    if (!data) return;
-    // @ts-ignore
-    const result = generateEnvVersion(data?.content, "env");
-    // Create and download file
-    const blob = new Blob([result], { type: "text/plain" });
+    const response = await fetch(versionActionUrl(versionId, "/export?format=env"));
+    await throwForBadResponse(response, "Failed to export version");
+    const text = await response.text();
+    const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `version-details-${data.id.slice(0, 8)}-to-${data.id.slice(0, 8)}.env`;
+    a.download = `version-${versionId.slice(0, 8)}.env`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

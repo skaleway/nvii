@@ -170,7 +170,7 @@ export async function rollback(args?: { version: string; force: boolean }) {
   } catch (error: any) {
     if (error.response) {
       console.error(pc.yellowBright(`\n${error.response.data.error}`));
-      return;
+      process.exit(1);
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
       console.log(pc.yellowBright("\nRollback cancelled."));

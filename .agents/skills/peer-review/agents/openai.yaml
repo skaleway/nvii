@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Peer Review"
+  short_description: "Fresh model code review before merge"
+  default_prompt: "Run the peer-review skill: read its SKILL.md, then review the diff on a fresh model."

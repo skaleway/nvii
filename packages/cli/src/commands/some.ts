@@ -5,7 +5,7 @@ export async function some() {
   } catch (error: Error | any) {
     if (error.response) {
       console.error(pc.yellowBright(`\n${error.response.data.error}`));
-      return;
+      process.exit(1);
     }
     console.error(
       pc.red("\nError merging env branches (versions):"),

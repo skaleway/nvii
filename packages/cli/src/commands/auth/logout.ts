@@ -16,7 +16,7 @@ export async function logout(args?: { username: string; email: string }) {
           "Unexpected input. Ether provide your email or username to logout. NOT BOTH"
         )
       );
-      process.exit(0);
+      process.exit(1);
     }
     if (args.username) {
       username = args.username;
@@ -107,7 +107,7 @@ export async function logout(args?: { username: string; email: string }) {
   } catch (error: Error | any) {
     if (error.response) {
       console.error(pc.gray(`\n${error.response.data.error}\n`));
-      return;
+      process.exit(1);
     }
     if (error.message.includes("User force closed the prompt with SIGINT")) {
       console.log(pc.gray("\nLogout cancelled.\n"));

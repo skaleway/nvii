@@ -1,0 +1,5 @@
+# OpenAI Codex adapter. Interface metadata only; instructions live in ../SKILL.md.
+interface:
+  display_name: "Feature Build"
+  short_description: "Build a feature from its spec"
+  default_prompt: "Run the feature-build skill: read its SKILL.md, then build the feature to its spec."

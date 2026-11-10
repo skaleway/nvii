@@ -124,6 +124,32 @@ export const projectApi = {
 
     return data;
   },
+
+  update: async (
+    projectId: string,
+    userId: string,
+    content: Record<string, string>,
+    message?: string
+  ): Promise<{
+    version: EnvVersion & { user: User };
+    project: Project;
+    versions: (EnvVersion & { user: User })[];
+  }> => {
+    const response = await fetch(
+      `${API_BASE}/projects/${userId}/${projectId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content, message }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to update project");
+    }
+    return response.json();
+  },
 };
 
 export type ProjectAccessUser = {
