@@ -78,6 +78,7 @@ export function ProjectAccessManager({
       email: string | null;
       name: string | null;
       image: string | null;
+      role: string;
     }>
   >([]);
   const { getProjectAccess, addProjectAccess, removeProjectAccess } =
@@ -86,7 +87,15 @@ export function ProjectAccessManager({
   const loadUsers = React.useCallback(async () => {
     try {
       const projectAccess = await getProjectAccess(projectId, userId);
-      setUsers(projectAccess.map((access) => access.user));
+      setUsers(
+        projectAccess.map((access) => ({
+          id: access.user.id,
+          email: access.user.email,
+          name: access.user.name,
+          image: access.user.image,
+          role: access.role,
+        }))
+      );
     } catch (error) {
       console.error("Failed to load users:", error);
       toast.error("Failed to load users with access");
@@ -116,9 +125,9 @@ export function ProjectAccessManager({
     }
   };
 
-  const handleRemove = async (userId: string) => {
+  const handleRemove = async (memberId: string) => {
     try {
-      await removeProjectAccess(projectId, userId);
+      await removeProjectAccess(projectId, memberId);
       toast.success("User access removed");
       loadUsers();
     } catch (error) {
@@ -205,14 +214,19 @@ export function ProjectAccessManager({
                     {user.id === projectUserId ? (
                       <Badge variant="secondary">Admin</Badge>
                     ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemove(user.id)}
-                        disabled={userId !== projectUserId}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">
+                          {user.role}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemove(user.id)}
+                          disabled={userId !== projectUserId}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     )}
                   </div>
                 ))}
